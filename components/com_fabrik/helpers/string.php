@@ -24,8 +24,9 @@ class FabrikString extends JString{
 
 	function ltrimword($str, $word = false)
 	{
-		$pos = strpos($str,$word);
-		if ($pos === 0) { // true ? then exectue!
+		$pos = strpos($str, $word);
+		if ($pos === 0)
+		{
 			$str = JString::substr($str, strlen($word));
 		}
 		return $str;
@@ -38,13 +39,17 @@ class FabrikString extends JString{
 	 * @param string the word to trim
 	 * @return string the trimmed string
 	 */
+	
 	function rtrimword(&$str, $word = false)
 	{
 		$l = strlen($word);
 		$end = substr($str, -$l);
-		if ($end === $word) {
+		if ($end === $word)
+		{
 			return substr($str, 0, strlen($str)-$l);
-		}else{
+		}
+		else
+		{
 			return $str;
 		}
 	}
@@ -63,7 +68,8 @@ class FabrikString extends JString{
 	function ltrimiword($str, $word = false)
 	{
 		$pos = stripos($str, $word);
-		if ($pos === 0) { // true ? then exectue!
+		if ($pos === 0)
+		{
 			$str = JString::substr($str, strlen($word));
 		}
 		return $str;
@@ -78,24 +84,29 @@ class FabrikString extends JString{
 	 * @param string in table`.field` format
 	 */
 
-	function safeColName($col)
+	public static function safeColName($col)
 	{
 		$db = FabrikWorker::getDbo();
 		$col = str_replace('`', '', $col);
 		$splitter = '';
-		if (strstr($col, '___')) {
+		if (strstr($col, '___'))
+		 {
 			$splitter = '___';
 		}
-		if (strstr($col, '.')) {
+		if (strstr($col, '.'))
+		{
 			$splitter = '.';
 		}
-		if ($splitter == '') {
-			return $db->nameQuote($col);
+		if ($splitter == '')
+		{
+			return $db->quoteName($col);
 		}
-		if (strstr($col, $splitter)) {
+		if (strstr($col, $splitter))
+		{
 			$col = explode($splitter, $col);
-			foreach ($col as &$c) {
-				$c = $db->nameQuote($c);
+			foreach ($col as &$c)
+			{
+				$c = $db->quoteName($c);
 			}
 			return implode('.', $col);
 		}
@@ -111,7 +122,7 @@ class FabrikString extends JString{
 
 	function safeColNameToArrayKey($col)
 	{
-		$col = str_replace(array("`.`", "." ) , "___", $col);
+		$col = str_replace(array("`.`", "." ) , '___', $col);
 		$col = str_replace("`", "", $col);
 		return $col;
 	}
@@ -125,10 +136,13 @@ class FabrikString extends JString{
 
 	function shortColName($col)
 	{
-		if (strstr($col, '.')) {
+		if (strstr($col, '.'))
+		{
 			$bits = explode('.', $col);
 			$col = array_pop($bits);
-		} else	if (strstr($col, '___')) {
+		}
+		else	if (strstr($col, '___'))
+		{
 			$bits = explode('___', $col);
 			$col = array_pop($bits);
 		}
@@ -143,11 +157,12 @@ class FabrikString extends JString{
 	 * @return string shortened element label
 	 */
 
-	function getShortDdLabel($label)
+	public static function getShortDdLabel($label)
 	{
 		$label = strip_tags($label);
 		preg_replace('/<[a-z][a-z0-9]*[^<>]*>/', '', $label);
-		if (strlen($label) > 50) {
+		if (strlen($label) > 50)
+		{
 			$label = substr($label, 0, 47).'...';
 		}
 		$label = trim($label);
@@ -172,10 +187,11 @@ class FabrikString extends JString{
 		//replace umlauts
 
 		$out = "";
-		for ($i = 0; $i<strlen($str);$i++){
-			$ch= ord($str{$i});
-
-			switch($ch){
+		for ($i = 0; $i < strlen($str); $i++)
+		{
+			$ch = ord($str{$i});
+			switch($ch)
+			{
 				case 195: $out .= "";break;
 				case 164: $out .= "ae"; break;
 				case 188: $out .= "ue"; break;
@@ -187,7 +203,8 @@ class FabrikString extends JString{
 			}
 		}
 		$str = $out;
-		if (function_exists('iconv')) {
+		if (function_exists('iconv'))
+		{
 			// $$$ rob added @ incase its farsi which creates a notice:
 			// https://github.com/Fabrik/fabrik/issues/72
 			$str = (str_replace("'", '', @iconv($fromEnc, $toEnc, $str))); // replace accented characters with ascii equivalent e.g. é => e
@@ -227,13 +244,16 @@ class FabrikString extends JString{
 		$text = explode(" ", $text);
 		$summary = array_slice($text, 0, $wordCount);
 
-		if (count($text) > $wordCount) {
+		if (count($text) > $wordCount)
+		{
 			$summary[] = " ...";
 		}
 		$summary = implode(" ", $summary);
-		if ($showTip && count($text) > $wordCount) {
+		if ($showTip && count($text) > $wordCount)
+		{
 			FabrikHelperHTML::tips();
-			if($title !== '') {
+			if ($title !== '')
+			{
 				$title .= "::";
 			}
 			$tip = htmlspecialchars('<div class="truncate_text">'.$title.$orig.'</div>');
@@ -257,25 +277,32 @@ class FabrikString extends JString{
 	function removeQSVar($url, $key)
 	{
 		$pair = explode('?', $url);
-		if (count($pair) === 2) {
+		if (count($pair) === 2)
+		{
 			$url = $pair[0];
 			$bits = JArrayHelper::getValue($pair, 1);
-		} else {
+		}
+		else {
+			
 			$url = '';
 			$bits = JArrayHelper::getValue($pair, 0);
 		}
 		$glue = strstr($bits, '&amp;') ? '&amp;' : '&';
 		$bits = explode($glue, $bits);
 		$a = array();
-		foreach ($bits as $bit) {
-			if (strstr($bit, '=')) {
+		foreach ($bits as $bit)
+		{
+			if (strstr($bit, '='))
+			{
 				list($thisKey, $val) = explode('=', $bit);
-				if ($thisKey !== $key) {
+				if ($thisKey !== $key)
+				{
 					$a[] = $bit;
 				}
 			}
 		}
-		if (!empty($a)) {
+		if (!empty($a))
+		{
 			$url .= '?' . implode($glue, $a);
 		}
 	  return $url;
@@ -292,7 +319,8 @@ class FabrikString extends JString{
 		list($site, $qs) = explode('?', $url);
 		if (!empty($qs)) {
 			$new_qs = array();
-			foreach (explode('&', $qs) as $arg) {
+			foreach (explode('&', $qs) as $arg)
+			{
 				list($key, $val) = explode('=', $arg);
 				$new_qs[] = $key . "=" . urlencode($val);
 			}

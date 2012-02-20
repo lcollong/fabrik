@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormConfirmation extends plgFabrik_Form {
 
@@ -88,13 +88,13 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 
 		// tell the form model that it's data is loaded from the session
 		$session = JFactory::getSession();
-		$session->set('com_fabrik.form.'.$formModel->getId().'.session.on', true);
-		$session->set('com_fabrik.form.'.$formModel->getId().'.session.hash', $sessionModel->getHash());
+		$session->set('com_fabrik.form.' . $formModel->getId() . '.session.on', true);
+		$session->set('com_fabrik.form.' . $formModel->getId() . '.session.hash', $sessionModel->getHash());
 
 		//set an error so we can reshow the same form for confirmation purposes
 		$formModel->_arErrors['confirmation_required'] = true;
 		$form->error = JText::_('PLG_FORM_CONFIRMATION_PLEASE_CONFIRM_YOUR_DETAILS');
-		$formModel->_editable = false;
+		$formModel->editable = false;
 
 		//clear out unwanted buttons
 		$formParams = $formModel->getParams();
@@ -124,7 +124,7 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 	 * @param object form model
 	 */
 
-	function getBottomContent(&$params, $formModel)
+	function getBottomContent($params, $formModel)
 	{
 		//if we have already processed the form
 		$this->html = '';
@@ -190,18 +190,6 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 				);
 				$this->html = implode("\n", $fields);
 		}
-	}
-
-	/**
-	 * inject custom html into the bottom of the form
-	 *
-	 * @param int plugin counter
-	 * @return string html
-	 */
-
-	function getBottomContent_result($c)
-	{
-		return $this->html;
 	}
 
 }

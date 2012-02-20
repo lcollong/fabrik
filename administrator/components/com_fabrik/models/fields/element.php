@@ -9,7 +9,7 @@
 // Check to ensure this file is within the rest of the framework
 defined('JPATH_BASE') or die();
 
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'element.php');
+require_once(JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php');
 
 /**
  * Renders a fabrik element drop down
@@ -44,7 +44,8 @@ class JFormFieldElement extends JFormFieldList
 	function getInput()
 	{
 		static $fabrikelements;
-		if (!isset($fabrikelements)) {
+		if (!isset($fabrikelements))
+		{
 			$fabrikelements = array();
 		}
 		JDEBUG ? JHtml::_('script', 'media/com_fabrik/js/lib/head/head.js'): JHtml::_('script', 'media/com_fabrik/js/lib/head/head.min.js');
@@ -78,7 +79,7 @@ class JFormFieldElement extends JFormFieldList
 			$opts->showintable = $showintable;
 			$opts->excludejoined = (int)$this->element['excludejoined'];
 			$opts->livesite = COM_FABRIK_LIVESITE;
-			$opts->conn = 'jform_'.$conn;
+			$opts->conn = 'jform_' . $conn;
 			$opts->value = $this->value;
 			$opts->include_calculations = $include_calculations;
 			$opts = json_encode($opts);

@@ -57,7 +57,7 @@ class plgContentFabrik extends JPlugin
 
 		//load fabrik language
 		$lang = JFactory::getLanguage();
-		$lang->load('com_fabrik', JPATH_BASE.DS.'components'.DS.'com_fabrik');
+		$lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
 		if (!defined('COM_FABRIK_FRONTEND')) {
 			JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
@@ -76,7 +76,7 @@ class plgContentFabrik extends JPlugin
 			return true;
 		}
 
-		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'parent.php');
+		require_once(COM_FABRIK_FRONTEND . '/helpers/parent.php');
 		// $$$ hugh - having to change this to use {[]}
 		$regex = "/{" .$botRegex ."\s*.*?}/i";
 		$row->text = preg_replace_callback($regex, array($this, 'replace'), $row->text);
@@ -86,7 +86,7 @@ class plgContentFabrik extends JPlugin
 	protected function parse($match)
 	{
 		$match = $match[0];
-		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'parent.php');
+		require_once(COM_FABRIK_FRONTEND . '/helpers/parent.php');
 		$w =new FabrikWorker();
 		$w->replaceRequest($match);
 		// stop [] for ranged filters from being removed
@@ -226,7 +226,7 @@ class plgContentFabrik extends JPlugin
 				return;
 			}
 			$model->setId($id);
-			$model->_editable = false;
+			$model->editable = false;
 			$form = $model->getForm();
 			$listModel = $model->getListModel();
 			$table = $listModel->getTable();
@@ -274,8 +274,8 @@ class plgContentFabrik extends JPlugin
 			$defaultdata = get_object_vars($row);
 			// $$$ hugh - if we don't do this, our passed data gets blown away when render() merges the form data
 			// not sure why, but apparently if you do $foo =& $bar and $bar is NULL ... $foo ends up NULL
-			$activeEl->_form->_data = $defaultdata;
-			$activeEl->_editable 	= false;
+			$activeEl->getFormModel()->_data = $defaultdata;
+			$activeEl->editable = false;
 			//set row id for things like user element
 			$origRowid = JRequest::getVar('rowid');
 			JRequest::setVar('rowid', $rowid);
@@ -482,7 +482,7 @@ class plgContentFabrik extends JPlugin
 			$prefix = 'FabrikFEModel';
 		}
 		if (!isset($controller->_model)) {
-			$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models', $prefix);
+			$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', $prefix);
 			if(!$controller->_model = $controller->getModel($viewName, $prefix)) {
 				JError::raiseNotice(500, 'Fabrik Content Plug-in: could not create model');
 				return false;
@@ -552,18 +552,18 @@ class plgContentFabrik extends JPlugin
 			case 'visualization':
 				/*
 				$name = $this->_getPluginVizName($id);
-				$path = COM_FABRIK_BASE.'plugins'.DS.'fabrik_visualization'.DS.$name.DS.'controllers'.DS.$name.'.php';
+				$path = COM_FABRIK_BASE.'plugins/fabrik_visualization/' . $name . '/controllers/' . $name.'.php';
 				if (file_exists($path)) {
 					require_once $path;
 				}
 				$controllerName = 'FabrikControllerVisualization'.$name;
 				$controller = new $controllerName();
-				$controller->addViewPath(COM_FABRIK_FRONTEND.DS.'plugins'.DS.'visualization'.DS.$name.DS.'views');
-				$controller->addViewPath(COM_FABRIK_FRONTEND.DS.'views');
+				$controller->addViewPath(COM_FABRIK_FRONTEND . '/plugins/visualization/' . $name . '/views');
+				$controller->addViewPath(COM_FABRIK_FRONTEND . '/views');
 
 				//add the model path
-				$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'plugins'.DS.'visualization'.DS.$name.DS.'models');
-				$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models');
+				$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND . '/plugins/visualization/' . $name . '/models');
+				$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 				*/
 				$controller = new FabrikControllerVisualization();
 				break;
@@ -605,16 +605,16 @@ class plgContentFabrik extends JPlugin
 
 	protected function generalIncludes($view)
 	{
-		require_once(COM_FABRIK_FRONTEND.DS.'controller.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'controllers/form.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'controllers/details.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'controllers/package.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'controllers/list.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'controllers/visualization.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'parent.php');
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
-		JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models');
-		JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models', 'FabrikFEModel');
+		require_once(COM_FABRIK_FRONTEND . '/controller.php');
+		require_once(COM_FABRIK_FRONTEND . '/controllers/form.php');
+		require_once(COM_FABRIK_FRONTEND . '/controllers/details.php');
+		require_once(COM_FABRIK_FRONTEND . '/controllers/package.php');
+		require_once(COM_FABRIK_FRONTEND . '/controllers/list.php');
+		require_once(COM_FABRIK_FRONTEND . '/controllers/visualization.php');
+		require_once(COM_FABRIK_FRONTEND . '/models/parent.php');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
+		JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
+		JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 		if ($view == 'details') {
 			$view = 'form';
 		}
@@ -623,7 +623,7 @@ class plgContentFabrik extends JPlugin
 		}
 		//$$$rob looks like including the view does something to the layout variable
 		$layout = JRequest::getVar('layout', 'default');
-		require_once(COM_FABRIK_FRONTEND.DS.'views'.DS.$view.DS.'view.html.php');
+		require_once(COM_FABRIK_FRONTEND . '/views/' . $view . '/view.html.php');
 		if (!is_null($layout)) {
 			JRequest::setVar('layout', $layout);
 		}

@@ -22,7 +22,8 @@ if ($version->RELEASE == '1.6') {
 			$prefix = preg_replace('/[^A-Z0-9_]/i', '', $prefix);
 
 			//Make sure we are returning a DBO object
-			if (!array_key_exists('dbo', $config))  {
+			if (!array_key_exists('dbo', $config))
+			{
 				$config['dbo'] = $this->getDbo();
 			}
 			return FabTable::getInstance($name, $prefix, $config);;
@@ -38,11 +39,13 @@ if ($version->RELEASE == '1.6') {
 		 */
 		public function getTable($name='', $prefix='Table', $options = array())
 		{
-			if (empty($name)) {
+			if (empty($name))
+			{
 				$name = $this->getName();
 			}
 
-			if ($table = $this->_createTable($name, $prefix, $options))  {
+			if ($table = $this->_createTable($name, $prefix, $options))
+			{
 				return $table;
 			}
 
@@ -69,7 +72,8 @@ if ($version->RELEASE == '1.6') {
 			$prefix = preg_replace('/[^A-Z0-9_]/i', '', $prefix);
 
 			//Make sure we are returning a DBO object
-			if (!array_key_exists('dbo', $config))  {
+			if (!array_key_exists('dbo', $config))
+			{
 				$config['dbo'] = $this->getDbo();
 			}
 			return FabTable::getInstance($name, $prefix, $config);;
@@ -85,11 +89,13 @@ if ($version->RELEASE == '1.6') {
 		 */
 		public function getTable($name='', $prefix='Table', $options = array())
 		{
-			if (empty($name)) {
+			if (empty($name))
+			{
 				$name = $this->getName();
 			}
 
-			if ($table = $this->_createTable($name, $prefix, $options))  {
+			if ($table = $this->_createTable($name, $prefix, $options))
+			{
 				return $table;
 			}
 

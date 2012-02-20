@@ -91,7 +91,7 @@ echo "
 	border: 1px solid #BDD0D5;
 }
 
-/** bump calendar above mocha window in mootools 1.2**/
+/** bump calendar above window in mootools 1.2**/
 div.calendar{
 	z-index:10000 !important;
 }

@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'visualization.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/visualization.php');
 
 class fabrikModelCoverflow extends FabrikFEModelVisualization { //JModel
 
@@ -23,7 +23,7 @@ class fabrikModelCoverflow extends FabrikFEModelVisualization { //JModel
 
  	function render()
  	{
- 		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'html.php');
+ 		require_once(COM_FABRIK_FRONTEND . '/helpers/html.php');
  		$app = JFactory::getApplication();
  		$params = $this->getParams();
  		$config	= JFactory::getConfig();

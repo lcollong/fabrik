@@ -35,29 +35,31 @@ class FabrikControllerList extends JController
 
 		//menu links use fabriklayout parameters rather than layout
 		$flayout = JRequest::getVar('fabriklayout');
-		if ($flayout != '') {
+		if ($flayout != '')
+		{
 			JRequest::setVar('layout', $flayout);
 		}
 
 		$document = JFactory::getDocument();
 
-		$viewName	= JRequest::getVar('view', 'list', 'default', 'cmd');
+		$viewName = JRequest::getVar('view', 'list', 'default', 'cmd');
 		$modelName = $viewName;
-		$layout		= JRequest::getWord('layout', 'default');
+		$layout = JRequest::getWord('layout', 'default');
 
-		$viewType	= $document->getType();
+		$viewType = $document->getType();
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 		$view->setLayout($layout);
 		// Push a model into the view
-		if (is_null($model)) {
+		if (is_null($model))
+		{
 			$model = $this->getModel($modelName, 'FabrikFEModel');
 		}
-		if (!JError::isError($model) && is_object($model)) {
+		if (!JError::isError($model) && is_object($model))
+		{
 			$view->setModel($model, true);
 		}
-
 		// Display the view
 		$view->assign('error', $this->getError());
 
@@ -67,9 +69,12 @@ class FabrikControllerList extends JController
 		$cacheid = serialize(array(JRequest::getURI(), $post, $user->get('id'), get_class($view), 'display', $this->cacheId));
 		$cache = JFactory::getCache('com_fabrik', 'view');
 		// f3 cache with raw view gives error
-		if (in_array(JRequest::getCmd('format'), array('raw', 'csv', 'pdf', 'json', 'fabrikfeed'))) {
+		if (in_array(JRequest::getCmd('format'), array('raw', 'csv', 'pdf', 'json', 'fabrikfeed')))
+		{
 			$view->display();
-		} else {
+		}
+		else
+		{
 			$cache->get($view, 'display', $cacheid);
 		}
 	}
@@ -150,22 +155,28 @@ class FabrikControllerList extends JController
 
 		$ref = JRequest::getVar('fabrik_referrer', "index.php?option=com_fabrik&view=list&listid=$listid", 'post');
 		// $$$ hugh - for some reason fabrik_referrer is sometimes empty, so a little defensive coding ...
-		if (empty($ref)) {
+		if (empty($ref))
+		{
 			$ref = JRequest::getVar('HTTP_REFERER', "index.php?option=com_fabrik&view=list&listid=$listid", 'server');
 		}
 		if ($total >= $limitstart) {
+			
 			$newlimitstart = $limitstart - $length;
-			if ($newlimitstart < 0) {
+			if ($newlimitstart < 0)
+			{
 				$newlimitstart = 0;
 			}
 			$ref = str_replace("limitstart$listid=$limitstart", "limitstart$listid=$newlimitstart", $ref);
 			$context = 'com_fabrik.list.'.$model->getRenderContext().'.';
 			$app->setUserState($context.'limitstart', $newlimitstart);
 		}
-		if (JRequest::getVar('format') == 'raw') {
+		if (JRequest::getVar('format') == 'raw')
+		{
 			JRequest::setVar('view', 'list');
 			$this->display();
-		} else {
+		}
+		else
+		{
 			//@TODO: test this
 			$app->redirect($ref, count($ids) . " " . JText::_('COM_FABRIK_RECORDS_DELETED'));
 		}
@@ -200,21 +211,29 @@ class FabrikControllerList extends JController
 		$model->setLimits();
 		$model->getData();
 		//if showing n tables in article page then ensure that only activated table runs its plugin
-		if (JRequest::getInt('id') == $model->get('id') || JRequest::getVar('origid', '') == '') {
+		if (JRequest::getInt('id') == $model->get('id') || JRequest::getVar('origid', '') == '')
+		{
 			$msgs = $model->processPlugin();
-			if (JRequest::getVar('format') == 'raw') {
+			if (JRequest::getVar('format') == 'raw')
+			{
 				JRequest::setVar('view', 'list');
-			} else {
-				foreach ($msgs as $msg) {
+			}
+			else
+			{
+				foreach ($msgs as $msg)
+				{
 					$app->enqueueMessage($msg);
 				}
 			}
 		}
 		//3.0 use redirect rather than calling view() as that gave an sql error (joins seemed not to be loaded for the list)
 		$format = JRequest::getVar('format', 'html');
-		if ($format !== 'raw') {
+		if ($format !== 'raw')
+		{
 			$ref = JRequest::getVar('fabrik_referrer', "index.php?option=com_fabrik&view=list&listid=". $model->getId() . '&format=' . $format, 'post');
-		} else {
+		}
+		else
+		{
 			$ref = "index.php?option=com_fabrik&view=list&listid=". $model->getId() . '&format=' . $format;
 		}
 		$app->redirect($ref);

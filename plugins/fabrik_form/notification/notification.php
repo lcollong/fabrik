@@ -15,20 +15,9 @@ defined('_JEXEC') or die();
 
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormNotification extends plgFabrik_Form {
-
-	/**
-	 * inject custom html into the bottom of the form
-	 * @param int plugin counter
-	 * @return string html
-	 */
-
-	function getBottomContent_result($c)
-	{
-		return $this->html;
-	}
 
 	/**
 	 * set up the html to be injected into the bottom of the form
@@ -37,22 +26,24 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 	 * which calls this function has already done the work for you
 	 */
 
-	function getBottomContent(&$params, &$formModel)
+	function getBottomContent($params, $formModel)
 	{
 		$user = JFactory::getUser();
-		if ($user->get('id') == 0) {
+		if ($user->get('id') == 0)
+		{
 			$this->html = JText::_('PLG_CRON_NOTIFICATION_SIGN_IN_TO_RECEIVE_NOTIFICATIONS');
 			return;
 		}
 		$opts = new stdClass();
 		$opts->listid = $formModel->getListModel()->getId();
 		$opts->fabrik = $formModel->getId();
-		$opts->rowid = $formModel->_rowId;
+		$opts->rowid = $formModel->rowId;
 		$opts->senderBlock = JRequest::getCmd('view') == 'form' ? 'form_' : 'details_';
 		$opts->senderBlock .= $formModel->getId();
 		$opts = json_encode($opts);
 		$id = uniqid('fabrik_notification');
-		if ($params->get('notification_ajax', 0) == 1) {
+		if ($params->get('notification_ajax', 0) == 1)
+		{
 			FabrikHelperHTML::script('components/com_fabrik/plugins/form/fabriknotification/javascript.js');
 			$script = "head.ready(function() {
 				var notify = new Notify('$id', $opts);
@@ -86,19 +77,18 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 
 	protected function process($add = true, $why = 'author')
 	{
-
 		$db = FabrikWorker::getDbo();
 		$user = JFactory::getUser();
 		$userid = $user->get('id');
-
 		$ref = $this->getRef();
-
-		if ($add) {
+		if ($add)
+		{
 			echo JText::_('PLG_CRON_NOTIFICATION_ADDED');
 			$db->setQuery("INSERT INTO #__{package}_notification (`reference`, `user_id`, `reason`) VALUES ( $ref, $userid, '$why') ON DUPLICATE KEY update reason = '$why'");
 			$db->query();
-
-		} else {
+		}
+		else
+		{
 			echo JText::_('PLG_CRON_NOTIFICATION_REMOVED');
 			$db->setQuery("DELETE FROM #__{package}_notification WHERE reference = $ref AND user_id = $userid");
 			$db->query();
@@ -106,7 +96,7 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 		}
 	}
 
- 	function onAfterProcess($params, &$formModel)
+ 	public function onAfterProcess($params, &$formModel)
 	{
 		if ($params->get('notification_ajax', 0) == 1) {
 			return;
@@ -114,7 +104,8 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 		$user = JFactory::getUser();
 		$userid = $user->get('id');
 		$notify = JRequest::getInt('fabrik_notification', 0);
-		if ($userid == 0) {
+		if ($userid == 0)
+		{
 			return;
 		}
 		$why = JRequest::getInt('rowid') == 0 ? 'author' : 'editor';

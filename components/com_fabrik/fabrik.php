@@ -15,7 +15,7 @@ jimport('joomla.filesystem.file');
 if (!defined('COM_FABRIK_FRONTEND')) {
 	JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
 }
-require_once(JPATH_COMPONENT.DS.'controller.php');
+require_once(JPATH_COMPONENT . '/controller.php');
 
 //test for YQL & XML document type
 // use the format request value to check for document type
@@ -23,7 +23,7 @@ $docs = array("yql", "xml");
 foreach ($docs as $d) {
 	if (JRequest::getCmd("type") == $d) {
 		// get the class
-		require_once(JPATH_SITE.DS.'administrator'.DS.'components'.DS.'com_fabrik'.DS.'classes'.DS.$d.'document.php');
+		require_once(JPATH_SITE . '/administrator/components/com_fabrik/classes/' . $d.'document.php');
 		// replace the document
 		$document = JFactory::getDocument();
 		$docClass = 'JDocument'.strtoupper($d);
@@ -31,10 +31,10 @@ foreach ($docs as $d) {
 	}
 }
 
-JModel::addIncludePath(JPATH_COMPONENT.DS.'models');
+JModel::addIncludePath(JPATH_COMPONENT . '/models');
 //$$$ rob if you want to you can override any fabrik model by copying it from
 // models/ to models/adaptors the copied file will overwrite (NOT extend) the original
-JModel::addIncludePath(JPATH_COMPONENT.DS.'models'.DS.'adaptors');
+JModel::addIncludePath(JPATH_COMPONENT . '/models/adaptors');
 
 $controllerName = JRequest::getCmd('view');
 //check for a plugin controller
@@ -48,9 +48,9 @@ if (JString::strpos($cName, '.') != false)
 {
 	list($type, $name) = explode('.', $cName);
 	if ($type == 'visualization') {
-		require_once(JPATH_COMPONENT.DS.'controllers'.DS.'visualization.php');
+		require_once(JPATH_COMPONENT . '/controllers/visualization.php');
 	}
-	$path = JPATH_SITE.DS.'plugins'.DS.'fabrik_'.$type.DS.$name.DS.'controllers'.DS.$name.'.php';
+	$path = JPATH_SITE . '/plugins/fabrik_'.$type . '/' . $name . '/controllers/' . $name.'.php';
 	if (JFile::exists($path)) {
 		require_once $path;
 		$isplugin = true;
@@ -74,7 +74,7 @@ if (JString::strpos($cName, '.') != false)
 		$controller = $controllerName;
 	}
 
-	$path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
+	$path = JPATH_COMPONENT . '/controllers/' . $controller.'.php';
 	if (JFile::exists($path)) {
 		require_once $path;
 	} else {
@@ -87,7 +87,7 @@ if (JString::strpos($cName, '.') != false)
 if (strpos(JRequest::getCmd('task'), '.') !== false) {
 	$controller = array_shift(explode('.', JRequest::getCmd('task')));
 	$classname	= 'FabrikController'.ucfirst($controller);
-	$path = JPATH_COMPONENT.DS.'controllers'.DS.$controller.'.php';
+	$path = JPATH_COMPONENT . '/controllers/' . $controller.'.php';
 	if (JFile::exists($path)) {
 		require_once $path;
 		JRequest::setVar('view', $controller); //needed to process J content plugin (form)
@@ -107,9 +107,9 @@ if (strpos(JRequest::getCmd('task'), '.') !== false) {
 
 if ($isplugin) {
 	//add in plugin view
-	$controller->addViewPath(JPATH_SITE.DS.'plugins'.DS.'fabrik_'.$type.DS.$name.DS.'views');
+	$controller->addViewPath(JPATH_SITE . '/plugins/fabrik_'.$type . '/' . $name . '/views');
 	//add the model path
-	$modelpaths = JModel::addIncludePath(JPATH_SITE.DS.'plugins'.DS.'fabrik_'.$type.DS.$name.DS.'models');
+	$modelpaths = JModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_'.$type . '/' . $name . '/models');
 }
 $app = JFactory::getApplication();
 $package = JRequest::getVar('package', 'fabrik');

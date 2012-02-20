@@ -10,7 +10,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 {
@@ -99,7 +99,7 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 
 		$str = "<div $attribs>$fromlist</div><div class='picklistcontainer'>$tolist</div>";
 		$str .=  $this->getHiddenField($name, json_encode($arSelected), $id);
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			return implode(', ', $aRoValues);
 		}
 		$str .= $this->getAddOptionFields($repeatCounter);

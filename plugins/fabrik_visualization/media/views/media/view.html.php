@@ -33,15 +33,9 @@ class fabrikViewMedia extends JView
 		$this->assignRef('filters', $this->get('Filters'));
 		$pluginParams = $model->getPluginParams();
 		$tmpl = $pluginParams->get('media_layout', $tmpl);
-		$tmplpath = JPATH_ROOT.DS.'plugins'.DS.'fabrik_visualization'.DS.'media'.DS.'views'.DS.'media'.DS.'tmpl'.DS.$tmpl;
+		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/media/views/media/tmpl/' .$tmpl;
 		$this->_setPath('template', $tmplpath);
-
-		$ab_css_file = $tmplpath.DS."template.css";
-
-		if (JFile::exists($ab_css_file))
-		{
-			JHTML::stylesheet('plugins/fabrik_visualization/media/views/media/tmpl/'.$tmpl.'/template.css');
-		}
+		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/media/views/media/tmpl/' . $tmpl . '/template.css');
 		echo parent::display();
 	}
 

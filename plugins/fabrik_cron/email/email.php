@@ -13,11 +13,11 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-cron.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-cron.php');
 
 class plgFabrik_Cronemail extends plgFabrik_Cron {
 
-	function canUse()
+	public function canUse(&$model, $location, $event)
 	{
 		return true;
 	}
@@ -82,7 +82,7 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 			$field = $params->get('cronemail-updatefield');
 			$value = $params->get('cronemail-updatefield-value');
 
-			$field = str_replace("___", ".", $field);
+			$field = str_replace('___', ".", $field);
 			$query = "UPDATE $table->db_table_name set $field = " . $fabrikDb->Quote($value) . " WHERE $table->db_primary_key IN (" . implode(',', $updates) . ")";
 			$this->log .= "\n update query: $query";
 			$fabrikDb = $listModel->getDb();

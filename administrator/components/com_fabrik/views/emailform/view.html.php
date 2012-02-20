@@ -17,8 +17,8 @@ class fabrikViewEmailform extends JView
 	var $_template 	= null;
 	var $_errors 	= null;
 	var $_data 		= null;
-	var $_rowId 	= null;
-	var $_params 	= null;
+	/*var $rowId 	= null;
+	 var $params 	= null; */
 	var $isMambot = null;
 
 	var $_id 			= null;
@@ -88,7 +88,7 @@ class fabrikViewEmailform extends JView
 		}
 
 		$config = JFactory::getConfig();
-		$sitename = $config->getValue('sitename');
+		$sitename = $config->get('sitename');
 		// link sent in email
 
 		$link = JRequest::getVar('referrer');

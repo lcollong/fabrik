@@ -36,21 +36,18 @@ class FabrikControllerElement extends JController
 	function display()
 	{
 		$document = JFactory::getDocument();
-
-		$viewName	= JRequest::getVar('view', 'element', 'default', 'cmd');
+		$viewName = JRequest::getVar('view', 'element', 'default', 'cmd');
 		$modelName = $viewName;
-
-		$viewType	= $document->getType();
+		$viewType = $document->getType();
 		// Set the default view name from the Request
 		$view = &$this->getView($viewName, $viewType);
 
 		// $$$ rob 04/06/2011 don't assign a model to the element as its only a plugin
 
-		$view->_editable = ($this->mode == 'readonly') ? false : true;
+		$view->editable = ($this->mode == 'readonly') ? false : true;
 
 		// Display the view
 		$view->assign('error', $this->getError());
-
 		return $view->display();
 	}
 
@@ -65,7 +62,7 @@ class FabrikControllerElement extends JController
 		$listModel->setId(JRequest::getInt('listid'));
 		$rowId = JRequest::getVar('rowid');
 		$key = JRequest::getVar('element');
-		$key = array_pop(explode("___", $key));
+		$key = array_pop(explode('___', $key));
 		$value = JRequest::getVar('value');
 		$listModel->storeCell($rowId, $key, $value);
 		$this->mode = 'readonly';

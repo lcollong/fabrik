@@ -39,10 +39,10 @@ class videoRender
 	{
 		$src = str_replace("\\", "/", COM_FABRIK_LIVESITE  . $file);
 		ini_set('display_errors', true);
-		require_once(COM_FABRIK_FRONTEND.DS.'libs'.DS.'getid3'.DS.'getid3'.DS.'getid3.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'libs'.DS.'getid3'.DS.'getid3'.DS.'getid3.lib.php');
+		require_once(COM_FABRIK_FRONTEND . '/libs/getid3/getid3/getid3.php');
+		require_once(COM_FABRIK_FRONTEND . '/libs/getid3/getid3/getid3.lib.php');
 			
-		getid3_lib::IncludeDependency(COM_FABRIK_FRONTEND.DS.'libs'.DS.'getid3'.DS.'getid3'.DS.'extension.cache.mysql.php', __FILE__, true);
+		getid3_lib::IncludeDependency(COM_FABRIK_FRONTEND . '/libs/getid3/getid3/extension.cache.mysql.php', __FILE__, true);
 		$config = JFactory::getConfig();
 		$host =  $config->getValue('host');
 		$database = $config->getValue('db');

@@ -24,10 +24,8 @@ class FabrikControllerPackage extends JController
 	function display()
 	{
 		$document = JFactory::getDocument();
-
-		$viewName	= JRequest::getVar('view', 'package', 'default', 'cmd');
-
-		$viewType	= $document->getType();
+		$viewName = JRequest::getVar('view', 'package', 'default', 'cmd');
+		$viewType = $document->getType();
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
@@ -38,7 +36,7 @@ class FabrikControllerPackage extends JController
 		$tableView->setModel($listModel, true);
 		$view->_tableView = $tableView;
 
-		$view->_formView = &$this->getView('Form', $viewType);
+		$view->_formView = $this->getView('Form', $viewType);
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
 		$formModel->setDbo(FabrikWorker::getDbo());
 		$view->_formView->setModel($formModel, true);
@@ -47,7 +45,8 @@ class FabrikControllerPackage extends JController
 		$model = $this->getModel($viewName, 'FabrikFEModel');
 		$model->setDbo(FabrikWorker::getDbo());
 
-		if (!JError::isError($model)) {
+		if (!JError::isError($model))
+		{
 			$view->setModel($model, true);
 		}
 		// Display the view

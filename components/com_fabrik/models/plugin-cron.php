@@ -29,8 +29,9 @@ class plgFabrik_Cron extends FabrikPlugin
 	
 	public function &getTable($force = false)
 	{
-		if (!$this->row || $force) {
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
+		if (!$this->row || $force)
+		{
+			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 			$row = FabTable::getInstance('Cron', 'FabrikTable');
 			$row->load($this->row);
 			$this->row = $row;
@@ -43,7 +44,8 @@ class plgFabrik_Cron extends FabrikPlugin
 	* @return bool
 	*/
 	
-	public function requiresTableData() {
+	public function requiresTableData()
+	{
 		return true;
 	}
 	
@@ -68,11 +70,17 @@ class plgFabrik_Cron extends FabrikPlugin
 	public function queryStringActivated()
 	{
 		$params = $this->getParams();
-		if (!$params->get('require_qs', false)) {
+		if (!$params->get('require_qs', false))
+		{
 			// querystring not required so plugin should be activated
 			return true;
 		}
 		return JRequest::getInt('fabrik_cron', 0);
+	}
+	
+	public function canUse(&$model, $location, $event)
+	{
+		return true;
 	}
 }
 ?>

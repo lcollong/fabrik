@@ -12,8 +12,8 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin.php');
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'validation_rule.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
+require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleAkismet extends plgFabrik_Validationrule
 {
@@ -41,7 +41,7 @@ class plgFabrik_ValidationruleAkismet extends plgFabrik_Validationrule
 		{
 			$username = $user->get('username') != '' ? $user->get('username') : $this->_randomSring();
 			$email = $user->get('email') != '' ? $user->get('email') : $this->_randomSring().'@'.$this->_randomSring().'com';
-			require_once(JPATH_COMPONENT.DS.'plugins'.DS.'validationrule'.DS.'akismet'.DS.'akismet.class.php');
+			require_once(JPATH_COMPONENT. '/' .'plugins/validationrule/akismet/akismet.class.php');
 			$akismet_comment = array (
 															'author' => $username,
 															'email' => $user->get('email'),

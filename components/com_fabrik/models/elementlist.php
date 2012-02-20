@@ -15,9 +15,9 @@ jimport('joomla.filesystem.file');
 
 class plgFabrik_ElementList extends plgFabrik_Element{
 
-	var $hasSubElements = true;
+	public $hasSubElements = true;
 
-	var $defaults = null;
+	public $defaults = null;
 
 	protected $fieldDesc = 'TEXT';
 
@@ -42,13 +42,17 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		$labels = $this->getSubOptionLabels();
 		$values = $this->getSubOptionValues();
 		$str = '';
-		if (is_array($val)) {
-			foreach ($val as $tmpVal) {
+		if (is_array($val))
+		{
+			foreach ($val as $tmpVal)
+			{
 				$key = array_search($tmpVal, $values);
 				$str.= ($key === false) ? $tmpVal : $labels[$key];
 				$str.= " ";
 			}
-		} else {
+		}
+		else
+		{
 			$str = $val;
 		}
 		return $str;
@@ -72,8 +76,10 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	function dataConsideredEmpty($data, $repeatCounter)
 	{
 		$data = (array)$data;
-		foreach ($data as $d) {
-			if ($d != '') {
+		foreach ($data as $d)
+		{
+			if ($d != '')
+			{
 				return false;
 			}
 		}
@@ -89,10 +95,14 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	{
 		$params = $this->getParams();
 		$opts = $params->get('sub_options');
-		if (!isset($this->_default)) {
-			if (isset($opts->sub_initial_selection)) {
+		if (!isset($this->_default))
+		{
+			if (isset($opts->sub_initial_selection))
+			{
 				$this->_default = $this->getSubInitialSelection();
-			} else {
+			}
+			else
+			{
 				$this->_default = parent::getDefaultValue($data);
 			}
 		}
@@ -107,7 +117,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	 * @return string filter html
 	 */
 
-	function getFilter($counter = 0, $normal = true)
+	public function getFilter($counter = 0, $normal = true)
 	{
 		$element = $this->getElement();
 		$values = $this->getSubOptionValues();
@@ -118,10 +128,12 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		$params	= $this->getParams();
 		$v = $this->filterName($counter, $normal);
 
-		if (in_array($element->filter_type, array('range', 'dropdown', ''))) {
+		if (in_array($element->filter_type, array('range', 'dropdown', '')))
+		{
 			$rows = $this->filterValueList($normal);
 			JArrayHelper::sortObjects($rows, $params->get('filter_groupby', 'text'));
-			if (!in_array('', $values)) {
+			if (!in_array('', $values))
+			{
 				array_unshift($rows, JHTML::_('select.option',  '', $this->filterSelectLabel()));
 			}
 		}
@@ -132,7 +144,8 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		switch ($element->filter_type)
 		{
 			case "range":
-				if (!is_array($default)) {
+				if (!is_array($default))
+				{
 					$default = array('', '');
 				}
 				$return[] = JHTML::_('select.genericlist', $rows, $v.'[]', $attribs, 'value', 'text', $default[0], $element->name . "_filter_range_0");
@@ -144,7 +157,8 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 				break;
 
 			case "field":
-				if (get_magic_quotes_gpc()) {
+				if (get_magic_quotes_gpc())
+				{
 					$default = stripslashes($default);
 				}
 				$default = htmlspecialchars($default);
@@ -152,7 +166,8 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 				break;
 
 			case "hidden":
-				if (get_magic_quotes_gpc()) {
+				if (get_magic_quotes_gpc())
+				{
 					$default = stripslashes($default);
 				}
 				$default = htmlspecialchars($default);
@@ -160,7 +175,8 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 				break;
 
 			case 'auto-complete':
-				if (get_magic_quotes_gpc()) {
+				if (get_magic_quotes_gpc())
+				{
 					$default = stripslashes($default);
 				}
 				$default = htmlspecialchars($default);
@@ -171,9 +187,12 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 
 				break;
 		}
-		if ($normal) {
+		if ($normal)
+		{
 			$return[] = $this->getFilterHiddenFields($counter, $elName);
-		} else {
+		}
+		else
+		{
 			$return[] = $this->getAdvancedFilterHiddenFields();
 		}
 		return implode("\n", $return);
@@ -197,38 +216,47 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 
 	/**
 	 * used to format the data when shown in the form's email
-	 * @param mixed element's data
-	 * @param array form records data
-	 * @param int repeat group counter
-	 * @return string formatted value
+	 * @param	mixed	element's data
+	 * @param	array	form records data
+	 * @param	int		repeat group counter
+	 * @return	string	formatted value
 	 */
+	
 	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
-		$params 	=& $this->getParams();
+		$params = $this->getParams();
 		$split_str = $params->get('options_split_str', '');
-		$element 	= $this->getElement();
-		$values 	= $this->getSubOptionValues();
-		$labels 	= $this->getSubOptionLabels();
-		$aLabels 	= array();
+		$element = $this->getElement();
+		$values = $this->getSubOptionValues();
+		$labels = $this->getSubOptionLabels();
+		$aLabels = array();
 
-		if (is_string($value)) {
+		if (is_string($value))
+		{
 			$value = array($value);
 		}
 
-		if (is_array($value)) {
-			foreach ($value as $tmpVal) {
+		if (is_array($value))
+		{
+			foreach ($value as $tmpVal)
+			{
 				$key = array_search($tmpVal, $values);
-				if ($key !== false) {
+				if ($key !== false)
+				{
 					$aLabels[] = $labels[$key];
 				}
 			}
 		}
 		if ($split_str == '') {
-			$val = "<ul><li>".implode("</li><li>", $aLabels ) . "</li></ul>";
-		} else {
+			
+			$val = "<ul><li>" . implode("</li><li>", $aLabels ) . "</li></ul>";
+		}
+		else
+		{
 			$val = implode($split_str, $aLabels);
 		}
-		if ($val === '') {
+		if ($val === '')
+		{
 			$val = $params->get('sub_default_label');
 		}
 		return $val;
@@ -255,8 +283,10 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		$listModel = $this->getListModel();
 		$rows = $this->filterValueList(true);
 		$v = addslashes(JRequest::getVar('value'));
-		for ($i = count($rows)-1; $i >= 0; $i--) {
-			if (!preg_match("/$v(.*)/i", $rows[$i]->text)) {
+		for ($i = count($rows)-1; $i >= 0; $i--)
+		{
+			if (!preg_match("/$v(.*)/i", $rows[$i]->text))
+			{
 				unset($rows[$i]);
 			}
 		}
@@ -271,33 +301,38 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	 * @return string formatted value
 	 */
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		$element = $this->getElement();
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
 		$multiple = $params->get('multiple', 0) || $this->isJoin();
-		$sLabels 	= array();
+		$sLabels = array();
 		//repeat group data
 		$gdata = FabrikWorker::JSONtoData($data, true);
 		$uls = array();
 		$useIcon = $params->get('icon_folder', 0);
-		foreach ($gdata as $i => $d) {
+		foreach ($gdata as $i => $d)
+		{
 			$lis = array();
 			$vals = is_array($d) ? $d : FabrikWorker::JSONtoData($d, true);
-			foreach ($vals as $val) {
+			foreach ($vals as $val)
+			{
 				$l = $useIcon ? $this->_replaceWithIcons($val) : $val;
-				if (!$this->iconsSet == true) {
+				if (!$this->iconsSet == true)
+				{
 					$l = $this->getLabelForValue($val);
 					$l = $this->_replaceWithIcons($l);
 				}
-				$l = $this->rollover($l, $oAllRowsData, 'list');
-				$l = $listModel->_addLink($l, $this, $oAllRowsData, $i);
-				if (trim($l) !== '') {
+				$l = $this->rollover($l, $thisRow, 'list');
+				$l = $listModel->_addLink($l, $this, $thisRow, $i);
+				if (trim($l) !== '')
+				{
 					$lis[] =  $multiple ? "<li>$l</li>" : $l;
 				}
 			}
-			if (!empty($lis)) {
+			if (!empty($lis))
+			{
 				$uls[] = ($multiple && $this->renderWithHTML) ? '<ul class="fabrikRepeatData">'.implode(' ', $lis).'</ul>' : implode(' ', $lis);
 			}
 		}
@@ -307,15 +342,15 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 
 	/**
 	* shows the data formatted for the csv data
-	* @param string data
-	* @param object all the data in the tables current row
-	* @return string formatted value
+	* @param	string	data
+	* @param	object	all the data in the tables current row
+	* @return	string	formatted value
 	*/
 
-	function renderListData_csv($data, $oAllRowsData)
+	function renderListData_csv($data, &$thisRow)
 	{
 		$this->renderWithHTML = false;
-		$d = $this->renderListData($data, $oAllRowsData);
+		$d = $this->renderListData($data, $thisRow);
 		$this->renderWithHTML = true;
 		return $d;
 	}
@@ -340,27 +375,26 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		// and I'm not sure if we enforce that.  Problem being that if we just cast directly to
 		// an array, the array isn't "empty()", as it has a single, empty string entry.  So then
 		// the array_diff() we're about to do sees that as a diff.
-		// $selected = (array)$this->getValue($data, $repeatCounter);
 		$selected = $this->getValue($data, $repeatCounter);
-		if (is_string($selected)) {
-			if (empty($selected)) {
-				$selected = array();
-			}
-			else {
-				$selected = array($selected);
-			}
+		if (is_string($selected))
+		{
+			$selected = empty($selected) ?  array() : array($selected);  
 		}
 		//$$$ rob 06/10/2011 if front end add option on, but added option not saved we should add in the selected value to the
 		// values and labels.
 		$diff = array_diff($selected, $values);
-		if (!empty($diff)) {
+		if (!empty($diff))
+		{
 			$values = array_merge($values, $diff);
 			$labels = array_merge($labels, $diff);
 		}
-		if (!$this->_editable) {
+		if (!$this->editable)
+		{
 			$aRoValues = array();
-			for ($i = 0; $i < count($values); $i ++) {
-				if (in_array($values[$i], $selected)) {
+			for ($i = 0; $i < count($values); $i ++)
+			{
+				if (in_array($values[$i], $selected))
+				{
 					$aRoValues[] = $this->getReadOnlyOutput($values[$i],  $labels[$i]);
 				}
 			}
@@ -372,6 +406,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		$elBeforeLabel = (bool)$this->getParams()->get('element_before_label', true);
 		//element_before_label
 		if (JRequest::getVar('format') == 'raw') {
+			
 			$optionsPerRow = 1;
 		}
 		$grid = FabrikHelperHTML::grid($values, $labels, $selected, $name, $this->inputType, $elBeforeLabel, $optionsPerRow);
@@ -379,7 +414,8 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		array_unshift($grid, '<div class="fabrikSubElementContainer" id="'.$id.'">');
 
 		$grid[] = '</div>';
-		if ($params->get('allow_frontend_addto', false)) {
+		if ($params->get('allow_frontend_addto', false))
+		{
 			$onlylabel = $params->get('allowadd-onlylabel');
 			$grid[] = $this->getAddOptionFields($onlylabel, $repeatCounter);
 		}
@@ -413,11 +449,13 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		$data = (array)$data;
-		if (!isset($this->defaults)) {
+		if (!isset($this->defaults))
+		{
 			$this->defaults = array();
 		}
 		$valueKey = $repeatCounter.serialize($opts);
-		if (!array_key_exists($valueKey, $this->defaults)) {
+		if (!array_key_exists($valueKey, $this->defaults))
+		{
 			$value = '';
 			$groupModel = $this->_group;
 			$group = $groupModel->getGroup();
@@ -431,41 +469,61 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 			$name = $this->getValueFullName($opts);
 			// $name could already be in _raw format - so get inverse name e.g. with or without raw
 			$rawname = substr($name, -4) === '_raw' ? substr($name, 0 ,-4) :  $name . "_raw";
-			if ($groupModel->isJoin() || $this->isJoin()) {
-				if ($groupModel->canRepeat()) {
+			if ($groupModel->isJoin() || $this->isJoin())
+			{
+				if ($groupModel->canRepeat())
+				{
 					if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($name, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$name])) {
+						
 						$value = $data['join'][$joinid][$name][$repeatCounter];
-					} else {
-						if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($rawname, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$rawname])) {
+					}
+					else
+					{
+						if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($rawname, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$rawname]))
+						{
 							$value = $data['join'][$joinid][$rawname][$repeatCounter];
 						}
 					}
-				} else {
-					if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($name, $data['join'][$joinid])) {
+				}
+				else
+				{
+					if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($name, $data['join'][$joinid]))
+					{
 						$value = $data['join'][$joinid][$name];
-					} else {
-						if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($rawname, $data['join'][$joinid])) {
+					}
+					else {
+						if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($rawname, $data['join'][$joinid]))
+						{
 							$value = $data['join'][$joinid][$rawname];
 						}
 					}
-					if (is_array($value) && (array_key_exists(0, $value) && is_array($value[0]))) {
+					if (is_array($value) && (array_key_exists(0, $value) && is_array($value[0])))
+					{
 						// fix for http://fabrikar.com/forums/showthread.php?t=23568&page=2
 						$value = $value[0];
 					}
 				}
-			} else {
-				if ($groupModel->canRepeat()) {
+			}
+			else
+			{
+				if ($groupModel->canRepeat())
+				{
 					//can repeat NO join
-					if (array_key_exists($name, $data)) {
+					if (array_key_exists($name, $data))
+					{
 						//occurs on form submission for fields at least : occurs when getting from the db
 						$a = is_array($data[$name]) ? $a = $data[$name] : FabrikWorker::JSONtoData($data[$name], true);
 						$value = JArrayHelper::getValue($a, $repeatCounter, $value);
-					} else if (array_key_exists($rawname, $data)) {
+					}
+					else if (array_key_exists($rawname, $data))
+					{
 						//occurs on form submission for fields at least : occurs when getting from the db
 						$a = is_array($data[$rawname]) ? $a = $data[$rawname] : FabrikWorker::JSONtoData($data[$rawname], true);
 						$value = JArrayHelper::getValue($a, $repeatCounter, $value);
 					}
-				} else {
+				}
+				else
+				{
 					// $$$ rob - default should be an array (otherwise default options for database join element are not used)
 					/* if (array_key_exists($name, $data)) {
 						if (is_array($data[$name])) {
@@ -478,30 +536,37 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 					$default = FabrikWorker::JSONtoData($data[$name], false);
 					}
 					} */
-					if (array_key_exists($name, $data)) {
+					if (array_key_exists($name, $data))
+					{
 						$value = $data[$name]; //put this back in for radio button after failed validation not picking up previously selected option
-					} else if (array_key_exists($rawname, $data)) {
+					}
+					else if (array_key_exists($rawname, $data))
+					{
 						$value = $data[$rawname];
 					}
 				}
 			}
-			if ($value === '') {
+			if ($value === '')
+			{
 				//query string for joined data
 				$value = JArrayHelper::getValue($data, $name);
 			}
 			// $$$ hugh -- added this so we are consistent in what we return, otherwise uninitialized values,
 			// i.e. if you've added a checkbox element to a form with existing data, don't get set, and causes
 			// issues with methods that call getValue().
-			if (!isset($value)) {
+			if (!isset($value))
+			{
 				$value = '';
 			}
 			$element->default = $value;
 			$formModel = $this->getForm();
 			//stops this getting called from form validation code as it messes up repeated/join group validations
-			if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1) {
+			if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1)
+			{
 				FabrikWorker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
 			}
-			if (is_string($element->default)) {
+			if (is_string($element->default))
+			{
 				//$$$ rob changed to false below as when saving encrypted data a stored valued of 62
 				// was being returned as [62], then [[62]] etc.
 				$element->default = FabrikWorker::JSONtoData($element->default, false);
@@ -530,9 +595,11 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	protected function getReadOnlyOutput($value, $label)
 	{
 		$params = $this->getParams();
-		if ($params->get('icon_folder') != -1 && $params->get('icon_folder') != '') {
+		if ($params->get('icon_folder') != -1 && $params->get('icon_folder') != '')
+		{
 			$icon = $this->_replaceWithIcons($value);
-			if ($this->iconsSet) {
+			if ($this->iconsSet)
+			{
 				$label = $icon;
 			}
 		}
@@ -545,27 +612,32 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	 * @param array data to store
 	 */
 
-	function onStoreRow($data)
+	function onStoreRow(&$data)
 	{
 		$element = $this->getElement();
 		$params = $this->getParams();
-		if ($params->get('savenewadditions') && array_key_exists($element->name . '_additions', $data)) {
+		if ($params->get('savenewadditions') && array_key_exists($element->name . '_additions', $data))
+		{
 			$added = stripslashes($data[$element->name . '_additions']);
-			if (trim($added) == '') {
+			if (trim($added) == '')
+			{
 				return;
 			}
 			$added = json_decode($added);
 			$values = $this->getSubOptionValues();
 			$labels = $this->getSubOptionLabels();
 			$found = false;
-			foreach ($added as $obj) {
-				if (!in_array($obj->val, $values)) {
+			foreach ($added as $obj)
+			{
+				if (!in_array($obj->val, $values))
+				{
 					$values[] = $obj->val;
 					$found = true;
 					$labels[] = $obj->label;
 				}
 			}
-			if ($found) {
+			if ($found)
+			{
 				$opts = $params->get('sub_options');
 				$opts->sub_values = $values;
 				$opts->sub_labels = $labels;
@@ -591,10 +663,12 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	{
 		/////$elementList = 'media/com_fabrik/js/elementlist.js';
 		$files = array('media/com_fabrik/js/element.js', 'media/com_fabrik/js/elementlist.js');
-		foreach ($files as $file) {
-		if (!in_array($file, $srcs)) {
-			$srcs[] = $file;
-		}
+		foreach ($files as $file)
+		{
+			if (!in_array($file, $srcs))
+			{
+				$srcs[] = $file;
+			}
 		}
 		parent::formJavascriptClass($srcs, $script);
 	}

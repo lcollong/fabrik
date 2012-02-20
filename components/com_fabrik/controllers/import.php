@@ -44,14 +44,16 @@ class FabrikControllerImport extends JController
 	function doimport()
 	{
 		$model = $this->getModel('Importcsv', 'FabrikFEModel');
-		$listModel =& $model->getListModel();
+		$listModel = $model->getListModel();
 
-		if (!$listModel->canCSVImport()) {
+		if (!$listModel->canCSVImport())
+		{
 			JError::raiseError(400, 'Naughty naughty!');
 			jexit;
 		}
 
-		if (!$model->checkUpload()) {
+		if (!$model->checkUpload())
+		{
 			$this->display();
 			return;
 		}
@@ -63,15 +65,18 @@ class FabrikControllerImport extends JController
 		$view = $this->getView($viewName, $viewType);
 		$model->import();
 		$Itemid = JRequest::getInt('Itemid');
-		if (!empty($model->newHeadings)) {
+		if (!empty($model->newHeadings))
+		{
 			//as opposed to admin you can't alter table structure with a CSV import
 			//from the front end
 			JError::raiseNotice(500, $model->_makeError());
-			$this->setRedirect("index.php?option=com_fabrik&view=import&fietype=csv&listid=".$id."&Itemid=".$Itemid);
-		} else {
+			$this->setRedirect('index.php?option=com_fabrik&view=import&fietype=csv&listid=' . $id . '&Itemid=' . $Itemid);
+		}
+		else
+		{
 			JRequest::setVar('fabrik_list', $id);
 			$msg = $model->insertData();
-			$this->setRedirect('index.php?option=com_fabrik&view=list&listid='.$id."&resetfilters=1&Itemid=".$Itemid, $msg);
+			$this->setRedirect('index.php?option=com_fabrik&view=list&listid=' . $id . '&resetfilters=1&Itemid='' . $Itemid, $msg);
 		}
 	}
 

@@ -26,24 +26,34 @@ class FabrikFEModel extends JModel
 	/**
 	 * requires that the child object has the corrent 'mambo' fields for
 	 * publsihing - ie state, publish_up, publish_down.
-	 * @return bol can show the published item or not
+	 * @return	bol	can show the published item or not
 	 */
 
 	function canPublish()
 	{
 		$app = JFactory::getApplication();
-		$config		= JFactory::getConfig();
-		if ($app->isAdmin()) {
+		$config = JFactory::getConfig();
+		if ($app->isAdmin())
+		{
 			return true;
 		}
-		$now = date( 'Y-m-d H:i:s', time() + $config->getValue('offset') * 60 * 60);
+		$now = date( 'Y-m-d H:i:s', time() + $config->get('offset') * 60 * 60);
 		/* set the publish down date into the future */
-		if (trim($this->publish_down) == '0000-00-00 00:00:00') { $this->publish_down = $now + 30;}
+		if (trim($this->publish_down) == '0000-00-00 00:00:00')
+		{
+			$this->publish_down = $now + 30;
+		}
 		/* set the publish up date into the past */
-		if (trim($this->publish_up) == '0000-00-00 00:00:00') { $this->publish_up = $now - 30;}
-		if ($this->state == '1' and $now >=$this->publish_up and $now <= $this->publish_down) {
+		if (trim($this->publish_up) == '0000-00-00 00:00:00')
+		{
+			$this->publish_up = $now - 30;
+		}
+		if ($this->state == '1' and $now >=$this->publish_up and $now <= $this->publish_down)
+		{
 			return true;
-		} else {
+		}
+		else
+		{
 			return false;
 		}
 	}
@@ -51,14 +61,18 @@ class FabrikFEModel extends JModel
 	function replace_num_entity($ord)
 	{
 		$ord = $ord[1];
-		if (preg_match('/^x([0-9a-f]+)$/i', $ord, $match)) {
+		if (preg_match('/^x([0-9a-f]+)$/i', $ord, $match))
+		{
 			$ord = hexdec($match[1]);
-		} else {
+		}
+		else
+		{
 			$ord = intval($ord);
 		}
 		$no_bytes = 0;
 		$byte = array();
-		if ($ord < 128) {
+		if ($ord < 128)
+		{
 			return chr($ord);
 		}
 		elseif ($ord < 2048)
@@ -95,12 +109,14 @@ class FabrikFEModel extends JModel
 					$prefix = array(7, 240);
 				}
 		}
-		for ($i = 0; $i < $no_bytes; $i++) {
+		for ($i = 0; $i < $no_bytes; $i++)
+		{
 			$byte[$no_bytes - $i - 1] = (($ord & (63 * pow(2, 6 * $i))) / pow(2, 6 * $i)) & 63 | 128;
 		}
 		$byte[0] = ($byte[0] & $prefix[0]) | $prefix[1];
 		$ret = '';
-		for ($i = 0; $i < $no_bytes; $i++) {
+		for ($i = 0; $i < $no_bytes; $i++)
+		{
 			$ret .= chr($byte[$i]);
 		}
 		return $ret;
@@ -110,10 +126,11 @@ class FabrikFEModel extends JModel
 	 * required for compatibility with mambo 4.5.4
 	 */
 
-	function reset($value=null)
+	function reset($value = null)
 	{
 		$keys = $this->getProperties();
-		foreach ($keys as $k) {
+		foreach ($keys as $k)
+		{
 			$this->$k = $value;
 		}
 	}

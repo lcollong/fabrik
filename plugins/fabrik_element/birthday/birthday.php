@@ -36,6 +36,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$element = $this->getElement();
+		$formModel = $this->getFormModel();
 		$monthlabels = array(JText::_('January'), JText::_('February'), JText::_('March'), JText::_('April'), JText::_('May'), JText::_('June'), JText::_('July'), JText::_('August'), JText::_('September'), JText::_('October'), JText::_('November'), JText::_('December'));
 		$monthnumbers = array('01','02','03','04','05','06','07','08','09','10','11','12');
 		$daysys = array('01','02','03','04','05','06','07','08','09');
@@ -46,12 +47,12 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		//but in table view when getting read only filter value from url filter this
 		// _form_data was not set to no readonly value was returned
 		// added little test to see if the data was actually an array before using it
-		if (is_array($this->_form->_data)) {
-			$data = $this->_form->_data;
+		if (is_array($formModel->_data)) {
+			$data = $formModel->_data;
 		}
 		$value = $this->getValue($data, $repeatCounter);
 		$fd = $params->get('details_day_format', 'd.m.Y');
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			if(!in_array($value, $aNullDates)) {
 				//avoid 0000-00-00
 				list($year,$month,$day) = strstr('-', $value) ? explode('-', $value) : explode(',', $value);;
@@ -322,7 +323,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		return "new FbBirthday('$id', $opts)";
 	}
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		$db = FabrikWorker::getDbo();
 		$aNullDates = array('0000-00-000000-00-00','0000-00-00 00:00:00','0000-00-00','', $db->getNullDate());
@@ -431,7 +432,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 			}
 		}
 		$data = json_encode($format);
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 
 }

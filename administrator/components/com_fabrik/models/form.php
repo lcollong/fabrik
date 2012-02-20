@@ -1,13 +1,13 @@
 <?php
 /*
  * Admin Form Model
- *
- * @package Joomla.Administrator
- * @subpackage Fabrik
- * @since	1.6
- * @copyright Copyright (C) 2005 Rob Clayburn. All rights reserved.
- * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
- */
+*
+* @package Joomla.Administrator
+* @subpackage Fabrik
+* @since	1.6
+* @copyright Copyright (C) 2005 Rob Clayburn. All rights reserved.
+* @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
+*/
 
 // No direct access.
 defined('_JEXEC') or die;
@@ -56,7 +56,8 @@ class FabrikModelForm extends FabModelAdmin
 	{
 		// Get the form.
 		$form = $this->loadForm('com_fabrik.form', 'form', array('control' => 'jform', 'load_data' => $loadData));
-		if (empty($form)) {
+		if (empty($form))
+		{
 			return false;
 		}
 		$form->model = $this;
@@ -74,7 +75,8 @@ class FabrikModelForm extends FabModelAdmin
 	{
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.form.data', array());
-		if (empty($data)) {
+		if (empty($data))
+		{
 			$data = $this->getItem();
 		}
 		return $data;
@@ -87,7 +89,8 @@ class FabrikModelForm extends FabModelAdmin
 
 	public function getAbstractPlugins()
 	{
-		if (isset($this->abstractPlugins)) {
+		if (isset($this->abstractPlugins))
+		 {
 			return $this->abstractPlugins;
 		}
 
@@ -105,14 +108,13 @@ class FabrikModelForm extends FabModelAdmin
 		$feFormModel = JModel::getInstance('form', 'FabrikFEModel');
 		$feFormModel->setId($this->getState('form.id'));
 
-		foreach ($plugins as $x => $plugin) {
-
+		foreach ($plugins as $x => $plugin)
+		{
 			$data = array();
-
 			$o = $pluginManager->getPlugIn($plugin->name, 'Form');
-			if ($o !== false) {
+			if ($o !== false)
+			{
 				$o->getJForm()->model = $feFormModel;
-
 				// $$$ rob 0 was $x below but that rendered first set of plugins with indexes 1,2,3
 				// think they should all be indexed 0
 				$str = $o->onRenderAdminSettings($data, 0);
@@ -155,11 +157,13 @@ class FabrikModelForm extends FabModelAdmin
 	"
   head.ready(function() {\n";
 		$js .= "\t\tvar aPlugins = [];\n";
-		foreach ($abstractPlugins as $abstractPlugin) {
+		foreach ($abstractPlugins as $abstractPlugin)
+		{
 			$js .= "\t\taPlugins.push(".$abstractPlugin['js'].");\n";
 		}
 		$js .= "controller = new fabrikAdminForm(aPlugins);\n";
-		foreach ($plugins as $plugin) {
+		foreach ($plugins as $plugin)
+		{
 			$opts = array_key_exists('opts', $plugin) ? $plugin['opts'] : new stdClass();
 			$opts->location = @$plugin['location'];
 			$opts->event = @$plugin['event'];
@@ -200,14 +204,16 @@ class FabrikModelForm extends FabModelAdmin
 		// params (did that for ease of rendering admin output)
 
 		$opts = array('reset_button_label', 'submit_button_label');
-		foreach ($opts as $opt) {
+		foreach ($opts as $opt)
+		{
 			$data[$opt] = $data['params'][$opt];
 		}
 		$tmpName = JArrayHelper::getValue($data, 'db_table_name');
 		unset($data['db_table_name']);
 
 		$return = parent::save($data);
-		if ($return) {
+		if ($return)
+		{
 			$data['db_table_name'] = $tmpName;
 			$this->saveFormGroups($data);
 		}
@@ -234,13 +240,15 @@ class FabrikModelForm extends FabModelAdmin
 		$currentGroups = (array)JArrayHelper::getValue($data, 'current_groups');
 		$record_in_database = $data['record_in_database'];
 		$createGroup = $data['_createGroup'];
-		$form =& $this->getForm();
+		$form = $this->getForm();
 
 		$fields = array('id' => 'internalid', 'date_time' => 'date');;
 		//if new and record in db and group selected then we want to get those groups elements to create fields for in the db table
-		if ($isnew && $record_in_database) {
+		if ($isnew && $record_in_database)
+		{
 			$groups = JArrayHelper::getValue($data, 'current_groups');
-			if (!empty($groups)) {
+			if (!empty($groups))
+			{
 				$query = $db->getQuery(true);
 				$query->select('plugin, name')->from('#__fabrik_elements')->where('group_id IN ('.implode(',', $groups).')');
 				$db->setQuery($query);
@@ -251,7 +259,8 @@ class FabrikModelForm extends FabModelAdmin
 			}
 		}
 
-		if ($createGroup) {
+		if ($createGroup)
+		{
 			$group = FabTable::getInstance('Group', 'FabrikTable');
 			$group->name = $data['label'];
 			$group->published = 1;
@@ -259,17 +268,22 @@ class FabrikModelForm extends FabModelAdmin
 			$currentGroups[] = $db->insertid();
 		}
 		$this->_makeFormGroups($data, $currentGroups);
-		if ($record_in_database == '1') {
+		if ($record_in_database == '1')
+		{
 			$listModel = JModel::getInstance('List', 'FabrikModel');
 			$item = $listModel->loadFromFormId($formid);
-			if ($isnew) {
+			if ($isnew)
+			{
 				$dbTableName = $data['db_table_name'] !== '' ? $data['db_table_name'] : FabrikString::clean($data['label']);
-			} else {
+			}
+			else
+			{
 				$dbTableName = $item->db_table_name == '' ? $data['database_name'] : $item->db_table_name;
 			}
 
 			$dbTableExists = $listModel->databaseTableExists($dbTableName);
-			if (!$dbTableExists) {
+			if (!$dbTableExists)
+			{
 				// @TODO - need to sanitize table name (get rid of non alphanumeirc or _),
 				// just not sure whether to do it here, or above (before we test for existinance)
 				// $$$ hugh - for now, just do it here, after we test for the 'unsanitized', as
@@ -277,7 +291,8 @@ class FabrikModelForm extends FabModelAdmin
 				// BUT ... as we're potentially changing the table name after testing for existance
 				// we need to test again.
 				$dbTableName = preg_replace('#[^0-9a-zA-Z_]#', '_', $dbTableName);
-				if ($listModel->databaseTableExists($dbTableName)) {
+				if ($listModel->databaseTableExists($dbTableName))
+				{
 					return JError::raiseWarning(500, JText::_("COM_FABRIK_DB_TABLE_ALREADY_EXISTS"));
 				}
 				$listModel->set('form.id', $formid);
@@ -287,20 +302,22 @@ class FabrikModelForm extends FabModelAdmin
 			{
 				$connection = FabrikWorker::getConnection(-1);
 				$item->id = null;
-				$item->label 				= $data['label'];
-				$item->form_id 			= $formid;
+				$item->label = $data['label'];
+				$item->form_id = $formid;
 				$item->connection_id = $connection->getConnection()->id;
-				$item->db_table_name	= $dbTableName;
-				// store key without nameQuotes as thats db specific *which we no longer want
-				$item->db_primary_key = $dbTableName.'.id';
-				$item->auto_inc 			= 1;
-				$item->published 		= $data['published'];
-				$item->created				= $data['created'];
-				$item->created_by		= $data['created_by'];
+				$item->db_table_name = $dbTableName;
+				// store key without quoteNames as thats db specific *which we no longer want
+				$item->db_primary_key = $dbTableName . '.id';
+				$item->auto_inc = 1;
+				$item->published = $data['published'];
+				$item->created = $data['created'];
+				$item->created_by = $data['created_by'];
 				$item->access = $data['published'];
 				$item->params = $listModel->getDefaultParams();
 				$res = $item->store();
-			} else {
+			}
+			else
+			{
 				//update existing table
 				$listModel->ammendTable();
 				// $$$ rob no longer in front end model?
@@ -323,19 +340,22 @@ class FabrikModelForm extends FabModelAdmin
 		$query->delete('#__{package}_formgroup')->where("form_id = ".(int)$formid);
 		$db->setQuery($query);
 		// delete the old form groups
-		if (!$db->query()) {
+		if (!$db->query())
+		{
 			JError::raiseError(500, $db->stderr());
 		}
-
 		$orderid = 1;
 		$currentGroups = array_unique($currentGroups);
-		foreach ($currentGroups as $group_id) {
-			if ($group_id != '') {
+		foreach ($currentGroups as $group_id)
+		{
+			if ($group_id != '')
+			{
 				$group_id = (int)$group_id;
 				$query = $db->getQuery(true);
 				$query->insert('#__{package}_formgroup')->set(array('form_id ='.(int)$formid, 'group_id = '.$group_id, 'ordering = '.$orderid));
 				$db->setQuery($query);
-				if (!$db->query()) {
+				if (!$db->query())
+				{
 					JError::raiseError(500, $db->stderr());
 				}
 				$orderid ++;
@@ -352,7 +372,8 @@ class FabrikModelForm extends FabModelAdmin
 
 	public function swapListToFormIds($ids = array())
 	{
-		if (empty($ids)) {
+		if (empty($ids))
+		{
 			return array();
 		}
 		JArrayHelper::toInteger($ids);
@@ -374,16 +395,19 @@ class FabrikModelForm extends FabModelAdmin
 		$model->setId($formId);
 		$form = $model->getForm();
 		//use this in case there is not table view linked to the form
-		if ($form->record_in_database == 1) {
+		if ($form->record_in_database == 1)
+		{
 			//there is a table view linked to the form so lets load it
 			$listModel = JModel::getInstance('List', 'FabrikModel');
 			$listModel->loadFromFormId($formId);
-			//$listModel->set('form.id', $formId);
 			$listModel->setFormModel($model);
 			$dbExisits = $listModel->databaseTableExists();
-			if (!$dbExisits) {
+			if (!$dbExisits)
+			{
 				$listModel->createDBTable();
-			} else {
+			}
+			else
+			{
 				$listModel->ammendTable();
 			}
 		}
@@ -394,16 +418,18 @@ class FabrikModelForm extends FabModelAdmin
 	 *
 	 * @param	object		$form		The form to validate against.
 	 * @param	array		$data		The data to validate.
+	 * @param   string  $group  The name of the field group to validate.
 	 * @return	mixed		Array of filtered data if valid, false otherwise.
 	 * @since	1.1
 	 */
-	function validate($form, $data)
+	function validate($form, $data, $group = null)
 	{
 		$params = $data['params'];
 		$ok = parent::validate($form, $data);
 		//standard jform validation failed so we shouldn't test further as we can't
 		//be sure of the data
-		if (!$ok) {
+		if (!$ok)
+		{
 			return false;
 		}
 		//hack - must be able to add the plugin xml fields file to $form to include in validation
@@ -412,23 +438,25 @@ class FabrikModelForm extends FabModelAdmin
 		return $data;
 	}
 
-/**
- *  delete form and form groups
- * @param array $cids to delete
- */
+	/**
+	 *  delete form and form groups
+	 * @param array $cids to delete
+	 */
 
-public function delete($cids)
-{
-	$res = parent::delete($cids);
-	if ($res) {
-		foreach ($cids as $cid) {
-			$item = FabTable::getInstance('FormGroup', 'FabrikTable');
-			$item->load(array('form_id'=> $cid));
-			$item->delete();
+	public function delete(&$pks)
+	{
+		$res = parent::delete($pks);
+		if ($res)
+		{
+			foreach ($pks as $pk)
+			{
+				$item = FabTable::getInstance('FormGroup', 'FabrikTable');
+				$item->load(array('form_id'=> $pk));
+				$item->delete();
+			}
 		}
+		return $res;
 	}
-	return $res;
-}
 
 }
 ?>

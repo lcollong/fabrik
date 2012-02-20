@@ -12,7 +12,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormLogs extends plgFabrik_Form {
 
@@ -47,11 +47,9 @@ class plgFabrik_FormLogs extends plgFabrik_Form {
 	 * @returns bol
 	 */
 
-	function onLastProcess(&$params, &$formModel )
+	function onLastProcess(&$params, &$formModel)
 	{
 	  $app 				=& JFactory::getApplication();
-	  //$data 			=& $formModel->_fullFormData;
-	  //$data 			=& $formModel->_formData;
 
 	 	// Generate random filename
 		if ($params->get('logs_random_filename') == 1) {

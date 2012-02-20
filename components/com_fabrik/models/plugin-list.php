@@ -14,9 +14,6 @@ jimport('joomla.application.component.model');
 
 class plgFabrik_List extends FabrikPlugin
 {
-	/** determines if the plugin requires mocha to be loaded */
-	var $useMocha = false;
-
 	protected $buttonPrefix = '';
 
 	protected $jsInstance = null;
@@ -31,7 +28,7 @@ class plgFabrik_List extends FabrikPlugin
 		return '';
 	}
 
-	function canUse(&$model = null, $location = null, $event = null)
+	public function canUse(&$model = null, $location = null, $event = null)
 	{
 		$aclParam = $this->getAclParam();
 		if ($aclParam == '') {

@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-list.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-list.php');
 
 class plgFabrik_ListFilter_view extends plgFabrik_List {
 
@@ -68,9 +68,9 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 							$aAsFields = array();
 							$element->getAsField_html($aFields, $aAsFields);
 							$pval= str_replace('___', '.', $val);
-							$query->select(implode(', ', $aFields))->from($db->nameQuote($item->db_table_name));
+							$query->select(implode(', ', $aFields))->from($db->quoteName($item->db_table_name));
 							$query = $model->_buildQueryJoin($query);
-							$query->group($db->nameQuote($pval));
+							$query->group($db->quoteName($pval));
 							$query->order($pval.' ASC');
 							$db->setQuery($query);
 							$rows = $db->loadObjectList();

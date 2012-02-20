@@ -13,14 +13,9 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-cron.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-cron.php');
 
 class plgFabrik_Cronnotification extends plgFabrik_Cron {
-
-	function canUse()
-	{
-		return true;
-	}
 
 	/**
 	 * do the plugin action
@@ -47,11 +42,12 @@ class plgFabrik_Cronnotification extends plgFabrik_Cron {
 		$rows = $db->loadObjectList();
 
 		$config = JFactory::getConfig();
-		$email_from = $config->getValue('mailfrom');
-		$sitename = $config->getValue('sitename');
+		$email_from = $config->get('mailfrom');
+		$sitename = $config->get('sitename');
 		$sent = array();
 		$usermsgs = array();
-		foreach ($rows as $row) {
+		foreach ($rows as $row)
+		{
 			/*
 			 * {observer_name, creator_name, event, record url
 			 * dear %s, %s has %s on %s
@@ -61,44 +57,26 @@ class plgFabrik_Cronnotification extends plgFabrik_Cron {
 
 			$url = JRoute::_('index.php?option=com_fabrik&view=details&listid='.$listid.'&formid='.$formid.'&rowid='.$rowid);
 			$msg = JText::sprintf('FABRIK_NOTIFICATION_EMAIL_PART', $row->creator_name, $url, $event);
-			if (!array_key_exists($row->observer_id, $usermsgs )) {
+			if (!array_key_exists($row->observer_id, $usermsgs ))
+			{
 				$usermsgs[$row->observer_email] = array();
 			}
 			$usermsgs[$row->observer_email][] = $msg;
 
 			$sent[] = 'INSERT INTO #__{package}_notification_event_sent (`notification_event_id`, `user_id`, `sent`) VALUES ('.$row->event_id.', '.$row->observer_id.', 1)';
 		}
-		$subject = $sitename.": " .JText::_('FABRIK_NOTIFICATION_EMAIL_SUBJECT');
-		foreach ($usermsgs as $email => $messages) {
+		$subject = $sitename . ": " . JText::_('FABRIK_NOTIFICATION_EMAIL_SUBJECT');
+		foreach ($usermsgs as $email => $messages)
+		{
 			$msg = implode( ' ', $messages);
 			$res = JUtility::sendMail( $email_from, $email_from, $email, $subject, $msg, true);
 		}
-		if (!empty( $sent )) {
+		if (!empty($sent))
+		{
 			$sent = implode(';', $sent);
 			$db->setQuery($sent);
 			$db->query();
 		}
-	}
-
-	/**
-	 * show a new for entering the form actions options
-	 */
-
-	function renderAdminSettings()
-	{
-		//JHTML::stylesheet('fabrikadmin.css', 'administrator/components/com_fabrik/views/');
-		$this->getRow();
-		$pluginParams = $this->getParams();
-
-		$document = JFactory::getDocument();
-		?>
-<div id="page-<?php echo $this->_name;?>" class="pluginSettings"
-	style="display: none"><?php
-	echo $pluginParams->render('params');
-	?></div>
-
-	<?php
-	return ;
 	}
 
 }

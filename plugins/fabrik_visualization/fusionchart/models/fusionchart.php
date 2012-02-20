@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'visualization.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/visualization.php');
 
 class fabrikModelFusionchart extends FabrikFEModelVisualization {
 
@@ -276,17 +276,17 @@ class fabrikModelFusionchart extends FabrikFEModelVisualization {
 		$worker = new FabrikWorker();
 		$fc_version = $params->get('fusionchart_version', 'free_old');
 		if ($fc_version == 'free_22') {
-			require_once($this->pathBase.'fusionchart'.DS.'lib'.DS.'FusionChartsFree'.DS.'Code'.DS.'PHPClass'.DS.'Includes'.DS.'FusionCharts_Gen.php');
+			require_once($this->pathBase.'fusionchart/lib/FusionChartsFree/Code/PHPClass/Includes/FusionCharts_Gen.php');
 			$document->addScript($this->srcBase."fusionchart/lib/FusionChartsFree/JSClass/FusionCharts.js");
 			$fc_swf_path = COM_FABRIK_LIVESITE.$this->srcBase."fusionchart/lib/FusionChartsFree/Charts/";
 		}
 		else if ($fc_version == 'pro_30') {
-			require_once($this->pathBase.'fusionchart'.DS.'lib'.DS.'FusionCharts'.DS.'Code'.DS.'PHPClass'.DS.'Includes'.DS.'FusionCharts_Gen.php');
+			require_once($this->pathBase.'fusionchart/lib/FusionCharts/Code/PHPClass/Includes/FusionCharts_Gen.php');
 			$document->addScript($this->srcBase."fusionchart/lib/FusionCharts/Charts/FusionCharts.js");
 			$fc_swf_path = COM_FABRIK_LIVESITE.$this->srcBase."fusionchart/lib/FusionCharts/Charts/";
 		}
 		else {
-			require_once($this->pathBase.'fusionchart'.DS.'lib'.DS.'FCclass'.DS.'FusionCharts_Gen.php');
+			require_once($this->pathBase.'fusionchart/lib/FCclass/FusionCharts_Gen.php');
 			$document->addScript($this->srcBase."fusionchart/lib/FCcharts/FusionCharts.js");
 			$fc_swf_path = COM_FABRIK_LIVESITE.$this->srcBase."fusionchart/lib/FCcharts/";
 		}

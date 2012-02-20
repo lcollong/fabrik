@@ -16,7 +16,7 @@ jimport('joomla.application.component.model');
  * @version $Revision: 1.3 $
  */
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'plugin.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/plugin.php');
 
 class plgFabrik_Validationrule extends FabrikPlugin
 {
@@ -106,7 +106,7 @@ class plgFabrik_Validationrule extends FabrikPlugin
 	function &getValidationRule()
 	{
 		if (!$this->_rule) {
-			JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
+			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 			$row = FabTable::getInstance('Validationrule', 'FabrikTable');
 			$row->load($this->_id);
 			$this->_rule = $row;

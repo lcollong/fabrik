@@ -25,9 +25,10 @@ class FabrikViewList extends JView{
 		$item = $model->getTable();
 		$listid = $model->getId();
 		$formModel = $model->getFormModel();
-		$elementsNotInTable = $formModel->getElementsNotInTable();
+		$elementsNotInTable = $formModel->getElementsNotInList();
 
-		if ($model->requiresSlimbox()) {
+		if ($model->requiresSlimbox())
+		{
 			FabrikHelperHTML::slimbox();
 		}
 
@@ -37,9 +38,10 @@ class FabrikViewList extends JView{
 
 		$this->get('ListCss');
 		// check for a custom js file and include it if it exists
-		$aJsPath = JPATH_SITE.DS."components".DS."com_fabrik".DS."views".DS."list".DS."tmpl".DS.$tmpl.DS."javascript.js";
-		if (JFile::exists($aJsPath)) {
-			FabrikHelperHTML::script('components/com_fabrik/views/list/tmpl/'.$tmpl.'/javascript.js');
+		$aJsPath = JPATH_SITE . "/components/com_fabrik/views/list/tmpl/" . $tmpl . "'/javascript.js";
+		if (JFile::exists($aJsPath))
+		{
+			FabrikHelperHTML::script('components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js');
 		}
 
 		$origRows = $this->rows;
@@ -58,7 +60,8 @@ class FabrikViewList extends JView{
 		$opts->form = 'listform_' . $listid;
 		$opts->headings = $model->_jsonHeadings();
 		$labels = $this->headings;
-		foreach ($labels as &$l) {
+		foreach ($labels as &$l)
+		{
 			$l = strip_tags($l);
 		}
 		$opts->labels 		= $labels;
@@ -75,12 +78,13 @@ class FabrikViewList extends JView{
 		//if table data starts as empty then we need the html from the row
 		// template otherwise we can't add a row to the table
 
-		if ($model->isAjax()) {
+		if ($model->isAjax())
+		{
 			ob_start();
 			$this->_row = new stdClass();
 			$this->_row->id = '';
 			$this->_row->class = 'fabrik_row';
-			require(COM_FABRIK_FRONTEND.DS.'views'.DS.'list'.DS.'tmpl'.DS.$tmpl.DS.'default_row.php');
+			require(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tmpl . '/default_row.php');
 			$opts->rowtemplate = ob_get_contents();
 			ob_end_clean();
 		}
@@ -173,11 +177,12 @@ class FabrikViewList extends JView{
 		$Itemid	= @$app->getMenu('site')->getActive()->id;
 		// turn off deprecated warnings in 5.3 or greater,
 		// or J!'s PDF lib throws warnings about set_magic_quotes_runtime()
-		if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+		if (version_compare(PHP_VERSION, '5.3.0') >= 0)
+		{
 			$current_level = error_reporting();
 			error_reporting($current_level & ~E_DEPRECATED);
 		}
-		require_once(COM_FABRIK_FRONTEND.DS.'views'.DS.'modifiers.php');
+		require_once(COM_FABRIK_FRONTEND . '/views/modifiers.php');
 		$user = JFactory::getUser();
 		$model = $this->getModel();
 
@@ -197,14 +202,16 @@ class FabrikViewList extends JView{
 		$data = $model->getData();
 
 		//add in some styling short cuts
-		$c 		= 0;
+		$c = 0;
 		$form = $model->getFormModel();
-		$nav 	= $model->getPagination();
+		$nav = $model->getPagination();
 
-		foreach ($data as $groupk => $group) {
+		foreach ($data as $groupk => $group)
+		{
 			$last_pk = '';
 			$last_i = 0;
-			for ($i=0; $i<count($group); $i++) {
+			for ($i = 0; $i < count($group); $i++)
+			{
 				$o = new stdClass();
 				// $$$ rob moved merge wip code to FabrikModelTable::formatForJoins() - should contain fix for pagination
 				$o->data = $data[$groupk][$i];
@@ -213,22 +220,27 @@ class FabrikViewList extends JView{
 				$o->id = "list_".$item->id."_row_".@$o->data->__pk_val;
 				$o->class = "fabrik_row oddRow".$c;
 				$data[$groupk][$i] = $o;
-				$c = 1-$c;
+				$c = 1 - $c;
 			}
 		}
 		$groups = $form->getGroupsHiarachy();
-		foreach ($groups as $groupModel) {
+		foreach ($groups as $groupModel)
+		{
 			$elementModels = $groupModel->getPublishedElements();
-			foreach ($elementModels as $elementModel) {
+			foreach ($elementModels as $elementModel)
+			{
 				$e = $elementModel->getElement();
 				$elementModel->setContext($groupModel, $form, $model);
 				$elparams = $elementModel->getParams();
 				$col 	= $elementModel->getFullName(false, true, false);
 				$col .= "_raw";
 				$rowclass = $elparams->get('use_as_row_class');
-				if ($rowclass == 1) {
-					foreach ($data as $groupk => $group) {
-						for ($i=0; $i < count($group); $i++) {
+				if ($rowclass == 1)
+				{
+					foreach ($data as $groupk => $group)
+					{
+						for ($i = 0; $i < count($group); $i++)
+						{
 							$data[$groupk][$i]->class .= " ". preg_replace('/[^A-Z|a-z|0-9]/', '-', $data[$groupk][$i]->data->$col);
 						}
 					}
@@ -243,39 +255,42 @@ class FabrikViewList extends JView{
 		$this->emptyStyle = $this->nodata ? '' : 'display:none';
 		$params = $model->getParams();
 
-		if (!$model->canPublish()) {
+		if (!$model->canPublish())
+		{
 			echo JText::_('COM_FABRIK_LIST_NOT_PUBLISHED');
 			return false;
 		}
 
-		if (!$model->canView()) {
+		if (!$model->canView())
+		{
 			echo JText::_('JERROR_ALERTNOAUTHOR');
 			return false;
 		}
 
-		$this->table 					= new stdClass();
-		$this->table->label 	= $w->parseMessageForPlaceHolder($item->label, $_REQUEST);
-		$this->table->intro 	= $w->parseMessageForPlaceHolder($item->introduction);
-		$this->table->id			= $item->id;
-		$this->group_by				= $item->group_by;
+		$this->table = new stdClass();
+		$this->table->label = $w->parseMessageForPlaceHolder($item->label, $_REQUEST);
+		$this->table->intro = $w->parseMessageForPlaceHolder($item->introduction);
+		$this->table->id = $item->id;
+		$this->group_by = $item->group_by;
 		$this->formid = 'listform_' . $item->id;
 		$page = $model->isAjax() ? "index.php?format=raw" : "index.php?";
-		$this->table->action 	=  $page . str_replace('&', '&amp;', JRequest::getVar('QUERY_STRING', 'index.php?option=com_fabrik', 'server'));
+		$this->table->action =  $page . str_replace('&', '&amp;', JRequest::getVar('QUERY_STRING', 'index.php?option=com_fabrik', 'server'));
 
-		if ($model->isAjax()) {
+		if ($model->isAjax())
+		{
 			$this->table->action .= '&format=raw';
 			$this->table->action = str_replace("task=package", "task=viewTable", $this->table->action);
 			//$this->table->action 	= JRoute::_($this->table->action);
 		}
 		$this->table->action 	= JRoute::_($this->table->action);
 
-		$this->showCSV 				= $model->canCSVExport();
+		$this->showCSV = $model->canCSVExport();
 		$this->canGroupBy = $model->canGroupBy();
-		$this->showCSVImport	= $model->canCSVImport();
-		$this->nav 						= $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $this->get('tmpl')) : '';
-		$this->fabrik_userid 	= $user->get('id');
-		$this->canDelete 			= $model->canDelete() ? true : false;
-		//$this->deleteButton 	= $model->canDelete() ?  "<input class='button' type='button' onclick=\"$jsdelete\" value='" . JText::_('COM_FABRIK_DELETE') . "' name='delete'/>" : '';
+		$this->showCSVImport = $model->canCSVImport();
+		$this->nav = $params->get('show-table-nav', 1) ? $nav->getListFooter($model->getId(), $this->get('tmpl')) : '';
+		$this->fabrik_userid = $user->get('id');
+		$this->canDelete = $model->canDelete() ? true : false;
+		//$this->deleteButton = $model->canDelete() ?  "<input class='button' type='button' onclick=\"$jsdelete\" value='" . JText::_('COM_FABRIK_DELETE') . "' name='delete'/>" : '';
 
 		$this->showPDF = false;
 		$this->pdfLink = false;
@@ -283,21 +298,27 @@ class FabrikViewList extends JView{
 		$this->emptyLink = $model->canEmpty() ? '#' : '';
 		$this->csvImportLink = $this->showCSVImport ? JRoute::_("index.php?option=com_fabrik&view=import&filetype=csv&listid=" . $item->id) : '';
 		$this->showAdd = $model->canAdd();
-		if ($this->showAdd) {
-			if ($params->get('show-table-add', 1)) {
+		if ($this->showAdd)
+		{
+			if ($params->get('show-table-add', 1))
+			{
 				$this->assign('addRecordLink', $this->get('AddRecordLink'));
 			}
-			else {
+			else
+			{
 				$this->showAdd = false;
 			}
 		}
 		$this->showRSS = $params->get('rss', 0) == 0 ?  0 : 1;
 
-		if ($this->showRSS) {
+		if ($this->showRSS)
+		{
 			$this->rssLink = $model->getRSSFeedLink();
-			if ($this->rssLink != '') {
+			if ($this->rssLink != '')
+			{
 				$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
-				if (method_exists($document, 'addHeadLink')) {
+				if (method_exists($document, 'addHeadLink'))
+				{
 					$document->addHeadLink($this->rssLink, 'alternate', 'rel', $attribs);
 				}
 			}
@@ -314,7 +335,7 @@ class FabrikViewList extends JView{
 
 		$this->assign('requiredFiltersFound', $this->get('RequiredFiltersFound'));
 		$this->assign('emptyDataMessage', $this->get('EmptyDataMsg'));
-		$this->calculations 	= $this->_getCalculations($this->headings);
+		$this->calculations = $this->_getCalculations($this->headings);
 
 		$this->assign('isGrouped', $item->group_by);
 		$this->assign('colCount', count($this->headings));
@@ -331,19 +352,19 @@ class FabrikViewList extends JView{
 		$this->pluginButtons = $model->getPluginButtons();
 
 		//force front end templates
-		$this->_basePath = COM_FABRIK_FRONTEND . DS . 'views';
+		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
 
 		$tmpl = $params->get('pdf_template');
-		if ($tmpl == -1) {
+		if ($tmpl == -1)
+		{
 			$tmpl = JRequest::getVar('layout', $item->template);
 		}
 
-		$this->addTemplatePath($this->_basePath.DS.$this->_name.DS.'tmpl'.DS.$tmpl);
-		$this->addTemplatePath(JPATH_SITE.DS.'templates'.DS.$app->getTemplate().DS.'html'.DS.'com_fabrik'.DS.'list'.DS.$tmpl);
+		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
+		$this->addTemplatePath(JPATH_SITE . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
 		//ensure we don't have an incorrect version of mootools loaded
 
 		$this->fixForPDF();
-
 		parent::display();
 	}
 
@@ -355,125 +376,144 @@ class FabrikViewList extends JView{
 	{
 		$this->pluginButtons = array();
 		$this->nav = null;
-		$this->emptyButton  = '';
+		$this->emptyButton = '';
 		$this->assign('showFilters', false);
-		$this->showCSV 				= false;
-		$this->showCSVImport	= false;
-		$this->canDelete 			= false;
-		$this->deleteButton 	='';
+		$this->showCSV = false;
+		$this->showCSVImport = false;
+		$this->canDelete = false;
+		$this->deleteButton ='';
 		$this->showPDF = false;
 		$this->showAdd = false;
 		$this->showRSS = false;
 	}
 
 	/**
-	 *
+	 * @TODO refractor this into the list model - its a duplication of code in view.html.php
 	 */
 
-protected function _getCalculations($aCols)
+	protected function _getCalculations($aCols)
 	{
 		$aData = array();
 		$found = false;
 		$model = $this->getModel();
 		$modelCals = $model->getCalculations();
 
-		foreach ($aCols as $key=>$val) {
+		foreach ($aCols as $key=>$val)
+		{
 			$calc = '';
 			$res = '';
 			$oCalcs = new stdClass();
 			$oCalcs->grouped = array();
 
-			if (array_key_exists($key, $modelCals['sums'])) {
+			if (array_key_exists($key, $modelCals['sums']))
+			{
 				$found = true;
 				$res = $modelCals['sums'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", "___", $key) . "_calc_sum";
+				$tmpKey = str_replace(".", '___', $key) . "_calc_sum";
 				$oCalcs->$tmpKey = $res;
 			}
-			if (array_key_exists($key . '_obj', $modelCals['sums'])) {
+			if (array_key_exists($key . '_obj', $modelCals['sums']))
+			{
 				$found = true;
 				$res = $modelCals['sums'][$key. '_obj'];
-				foreach ($res as $k => $v) {
-					if ($k != 'calc') {
-						@$oCalcs->grouped[$k] .= "<span class=\"calclabel\">".$v->calLabel . ":</span> " . $v->value . "<br />";
+				foreach ($res as $k => $v)
+				{
+					if ($k != 'calc')
+					{
+						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ":</span> " . $v->value . '<br />';
 					}
 				}
 			}
 
-			if (array_key_exists($key, $modelCals['avgs'])) {
+			if (array_key_exists($key, $modelCals['avgs']))
+			{
 				$found = true;
 				$res = $modelCals['avgs'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", "___", $key) . "_calc_average";
+				$tmpKey = str_replace(".", '___', $key) . "_calc_average";
 				$oCalcs->$tmpKey = $res;
 			}
 
-			if (array_key_exists($key . '_obj', $modelCals['avgs'])) {
+			if (array_key_exists($key . '_obj', $modelCals['avgs']))
+			{
 				$found = true;
 				$res = $modelCals['avgs'][$key. '_obj'];
-				foreach ($res as $k => $v) {
-					if ($k != 'calc') {
-						@$oCalcs->grouped[$k] .= "<span class=\"calclabel\">".$v->calLabel . ":</span> " . $v->value . "<br />";
+				foreach ($res as $k => $v)
+				{
+					if ($k != 'calc')
+					{
+						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ":</span> " . $v->value . '<br />';
 					}
 				}
 			}
 
-			if (array_key_exists($key. '_obj', $modelCals['medians'])) {
+			if (array_key_exists($key. '_obj', $modelCals['medians']))
+			{
 				$found = true;
 				$res = $modelCals['medians'][$key. '_obj'];
-				foreach ($res as $k => $v) {
-					if ($k != 'calc') {
-						@$oCalcs->grouped[$k] .= "<span class=\"calclabel\">".$v->calLabel . ":</span> " . $v->value . "<br />";
+				foreach ($res as $k => $v)
+				{
+					if ($k != 'calc')
+					{
+						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ":</span> " . $v->value . '<br />';
 					}
 				}
 			}
 
-			if (array_key_exists($key, $modelCals['medians'])) {
+			if (array_key_exists($key, $modelCals['medians']))
+			{
 				$found = true;
 				$res = $modelCals['medians'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", "___", $key) . "_calc_median";
+				$tmpKey = str_replace(".", '___', $key) . "_calc_median";
 				$oCalcs->$tmpKey = $res;
 			}
 
-			if (array_key_exists($key. '_obj', $modelCals['count'])) {
+			if (array_key_exists($key. '_obj', $modelCals['count']))
+			{
 				$found = true;
 				$res = $modelCals['count'][$key. '_obj'];
-				foreach ($res as $k => $v) {
-					if ($k != 'calc') {
-						@$oCalcs->grouped[$k] .= "<span class=\"calclabel\">".$v->calLabel . ":</span> " . $v->value . "<br />";
+				foreach ($res as $k => $v)
+				{
+					if ($k != 'calc')
+					{
+						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ":</span> " . $v->value . '<br />';
 					}
 				}
 			}
 
-			if (array_key_exists($key, $modelCals['count'])) {
+			if (array_key_exists($key, $modelCals['count']))
+			{
 				$res = $modelCals['count'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", "___", $key) . "_calc_count";
+				$tmpKey = str_replace(".", '___', $key) . "_calc_count";
 				$oCalcs->$tmpKey = $res;
 				$found = true;
 			}
 
-			if (array_key_exists($key. '_obj', $modelCals['custom_calc'])) {
+			if (array_key_exists($key. '_obj', $modelCals['custom_calc']))
+			{
 				$found = true;
 				$res = $modelCals['custom_calc'][$key. '_obj'];
-				foreach ($res as $k => $v) {
+				foreach ($res as $k => $v)
+				{
 					if ($k != 'calc') {
-						@$oCalcs->grouped[$k] .= "<span class=\"calclabel\">".$v->calLabel . ":</span> " . $v->value . "<br />";
+						@$oCalcs->grouped[$k] .= '<span class="calclabel">' . $v->calLabel . ":</span> " . $v->value . '<br />';
 					}
 				}
 			}
 
-			if (array_key_exists($key, $modelCals['custom_calc'])) {
+			if (array_key_exists($key, $modelCals['custom_calc']))
+			{
 				$res = $modelCals['custom_calc'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", "___", $key) . "_calc_custom_calc";
+				$tmpKey = str_replace(".", '___', $key) . "_calc_custom_calc";
 				$oCalcs->$tmpKey = $res;
 				$found = true;
 			}
 
-
-			$key = str_replace(".", "___", $key);
+			$key = str_replace(".", '___', $key);
 			$oCalcs->calc = $calc;
 			$aData[$key] = $oCalcs;
 		}

@@ -13,31 +13,31 @@ jimport('joomla.filesystem.file');
 
 //load front end language file as well
 $lang = JFactory::getLanguage();
-$lang->load('com_fabrik', JPATH_SITE.DS.'components'.DS.'com_fabrik');
+$lang->load('com_fabrik', JPATH_SITE . '/components/com_fabrik');
 
 if (!defined('COM_FABRIK_FRONTEND')) {
 	JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
 }
 jimport('joomla.application.component.model');
 jimport('joomla.application.component.helper');
-JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models', 'FabrikFEModel');
+JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
 $app = JFactory::getApplication();
 
-require_once(COM_FABRIK_FRONTEND.DS.'controller.php');
-require_once(COM_FABRIK_FRONTEND.DS.'controllers'.DS.'list.php');
+require_once(COM_FABRIK_FRONTEND . '/controller.php');
+require_once(COM_FABRIK_FRONTEND . '/controllers/list.php');
 
 //$$$rob looks like including the view does something to the layout variable
 $origLayout = JRequest::getVar('layout');
-require_once(COM_FABRIK_FRONTEND.DS.'views'.DS.'list'.DS.'view.html.php');
+require_once(COM_FABRIK_FRONTEND . '/views/list/view.html.php');
 JRequest::setVar('layout', $origLayout);
 
-require_once(COM_FABRIK_FRONTEND.DS.'views'.DS.'package'.DS.'view.html.php');
-JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models');
-JTable::addIncludePath(COM_FABRIK_BASE.DS.'administrator'.DS.'components'.DS.'com_fabrik'.DS.'tables');
+require_once(COM_FABRIK_FRONTEND . '/views/package/view.html.php');
+JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
+JTable::addIncludePath(COM_FABRIK_BASE . '/administrator/components/com_fabrik/tables');
 $document = JFactory::getDocument();
-require_once(COM_FABRIK_FRONTEND.DS.'controllers'.DS.'package.php');
-require_once(COM_FABRIK_FRONTEND.DS.'views'.DS.'form'.DS.'view.html.php');
+require_once(COM_FABRIK_FRONTEND . '/controllers/package.php');
+require_once(COM_FABRIK_FRONTEND . '/views/form/view.html.php');
 $listId	= intval($params->get('list_id', 0));
 if ($listId === 0) {
 	JError::raiseError(500, 'no list specified');

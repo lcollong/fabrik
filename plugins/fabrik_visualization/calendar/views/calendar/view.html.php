@@ -33,7 +33,8 @@ class fabrikViewCalendar extends JView
 
 		$canAdd = $this->get('CanAdd');
 		$this->assign('requiredFiltersFound', $this->get('RequiredFiltersFound'));
-		if ($canAdd && $this->requiredFiltersFound) {
+		if ($canAdd && $this->requiredFiltersFound)
+		{
 			$app->enqueueMessage(JText::_('PLG_VISUALIZATION_CALENDAR_DOUBLE_CLICK_TO_ADD'));
 		}
 		$this->assign('canAdd', $canAdd);
@@ -51,13 +52,14 @@ class fabrikViewCalendar extends JView
 		unset($urlfilters['Itemid']);
 		unset($urlfilters['visualizationid']);
 		unset($urlfilters['format']);
-		if (empty($urlfilters)) {
+		if (empty($urlfilters))
+		{
 			$urlfilters = new stdClass();
 		}
 		$urls = new stdClass();
 		//dont JRoute as its wont load with sef?
-		$urls->del = 'index.php?option=com_fabrik&controller=visualization.calendar&view=visualization&task=deleteEvent&format=raw&Itemid='.$Itemid.'&id='.$id;
-		$urls->add = 'index.php?option=com_fabrik&view=visualization&controller=visualization.calendar&format=raw&Itemid='.$Itemid.'&id='.$id;
+		$urls->del = 'index.php?option=com_fabrik&controller=visualization.calendar&view=visualization&task=deleteEvent&format=raw&Itemid=' . $Itemid . '&id=' . $id;
+		$urls->add = 'index.php?option=com_fabrik&view=visualization&controller=visualization.calendar&format=raw&Itemid=' . $Itemid . '&id=' . $id;
 		$user = JFactory::getUser();
 		$legend = $params->get('show_calendar_legend', 0 ) ? $model->getLegend() : '';
 		$tmpl = $params->get('calendar_layout', 'default');
@@ -75,7 +77,8 @@ class fabrikViewCalendar extends JView
 
 		$o = $model->getAddStandardEventFormInfo();
 
-		if ($o != null) {
+		if ($o != null)
+		{
 			$options->listid = $o->id;
 		}
 
@@ -84,13 +87,13 @@ class fabrikViewCalendar extends JView
 		$options->filters = $model->filters;
 		// end not sure
 		$options->Itemid = $Itemid;
-		$options->show_day 				= $params->get('show_day', true);
-		$options->show_week 			= $params->get('show_week', true);
-		$options->days 						= array(JText::_('SUNDAY'), JText::_('MONDAY'), JText::_('TUESDAY'), JText::_('WEDNESDAY'), JText::_('THURSDAY'), JText::_('FRIDAY'), JText::_('SATURDAY'));
-		$options->shortDays 			= array(JText::_('SUN'), JText::_('MON'), JText::_('TUE'), JText::_('WED'), JText::_('THU'), JText::_('FRI'), JText::_('SAT'));
-		$options->months 					= array(JText::_('JANUARY'), JText::_('FEBRUARY'), JText::_('MARCH'), JText::_('APRIL'), JText::_('MAY'), JText::_('JUNE'), JText::_('JULY'), JText::_('AUGUST'), JText::_('SEPTEMBER'), JText::_('OCTOBER'), JText::_('NOVEMBER'), JText::_('DECEMBER'));
-		$options->shortMonths 		= array(JText::_('JANUARY_SHORT'), JText::_('FEBRUARY_SHORT'), JText::_('MARCH_SHORT'), JText::_('APRIL_SHORT'), JText::_('MAY_SHORT'), JText::_('JUNE_SHORT'), JText::_('JULY_SHORT'), JText::_('AUGUST_SHORT'), JText::_('SEPTEMBER_SHORT'), JText::_('OCTOBER_SHORT'), JText::_('NOVEMBER_SHORT'), JText::_('DECEMBER_SHORT'));
-		$options->first_week_day 	= (int)$params->get('first_week_day', 0);
+		$options->show_day = $params->get('show_day', true);
+		$options->show_week = $params->get('show_week', true);
+		$options->days = array(JText::_('SUNDAY'), JText::_('MONDAY'), JText::_('TUESDAY'), JText::_('WEDNESDAY'), JText::_('THURSDAY'), JText::_('FRIDAY'), JText::_('SATURDAY'));
+		$options->shortDays = array(JText::_('SUN'), JText::_('MON'), JText::_('TUE'), JText::_('WED'), JText::_('THU'), JText::_('FRI'), JText::_('SAT'));
+		$options->months = array(JText::_('JANUARY'), JText::_('FEBRUARY'), JText::_('MARCH'), JText::_('APRIL'), JText::_('MAY'), JText::_('JUNE'), JText::_('JULY'), JText::_('AUGUST'), JText::_('SEPTEMBER'), JText::_('OCTOBER'), JText::_('NOVEMBER'), JText::_('DECEMBER'));
+		$options->shortMonths = array(JText::_('JANUARY_SHORT'), JText::_('FEBRUARY_SHORT'), JText::_('MARCH_SHORT'), JText::_('APRIL_SHORT'), JText::_('MAY_SHORT'), JText::_('JUNE_SHORT'), JText::_('JULY_SHORT'), JText::_('AUGUST_SHORT'), JText::_('SEPTEMBER_SHORT'), JText::_('OCTOBER_SHORT'), JText::_('NOVEMBER_SHORT'), JText::_('DECEMBER_SHORT'));
+		$options->first_week_day = (int)$params->get('first_week_day', 0);
 
 		$options->monthday = new stdClass();
 		$options->monthday->width = (int)$params->get('calendar-monthday-width', 90);
@@ -124,15 +127,9 @@ class fabrikViewCalendar extends JView
 		$pluginParams = $model->getPluginParams();
 		$this->assignRef('params', $pluginParams);
 		$tmpl = $pluginParams->get('calendar_layout', $tmpl);
-		$tmplpath = JPATH_ROOT.DS.'plugins'.DS.'fabrik_visualization'.DS.'calendar'.DS.'views'.DS.'calendar'.DS.'tmpl'.DS.$tmpl;
+		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);
-
-		$ab_css_file = $tmplpath.DS."template.css";
-
-		if (JFile::exists($ab_css_file))
-		{
-			JHTML::stylesheet('plugins/fabrik_visualization/calendar/views/calendar/tmpl/'.$tmpl.'/template.css');
-		}
+		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tmpl . '/template.css');
 		return parent::display();
 	}
 
@@ -151,14 +148,15 @@ class fabrikViewCalendar extends JView
 		$options = array();
 		$options[] = JHTML::_('select.option', '', JText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_SELECT'));
 
-		if ($o != null) {
+		if ($o != null)
+		{
 			$listid = $o->id;
 			$options[] = JHTML::_('select.option', $listid, JText::_('PLG_VISUALIZATION_CALENDAR_STANDARD_EVENT'));
 		}
 
 		$model->getEvents();
 		$config = JFactory::getConfig();
-		$prefix = $config->getValue('config.dbprefix');
+		$prefix = $config->get('dbprefix');
 
 		$this->_eventTypeDd = JHTML::_('select.genericlist', array_merge($options, $rows), 'event_type', 'class="inputbox" size="1" ', 'value', 'text', '', 'fabrik_event_type');
 
@@ -174,8 +172,10 @@ class fabrikViewCalendar extends JView
 		o.datefield2 = '{$prefix}fabrik_calendar_events___end_date';
 		o.labelfield = '{$prefix}fabrik_calendar_events___label';
 		";
-		foreach ($model->_events as $tid=>$arr) {
-			foreach ($arr as $ar) {
+		foreach ($model->_events as $tid=>$arr)
+		{
+			foreach ($arr as $ar)
+			{
 				$script .= "if(".$ar['formid']." == fid)	{\n";
 				$script .= "o.datefield = '".$ar['startdate'] . "'\n";
 				$script .= "o.datefield2 = '".$ar['enddate'] . "'\n";

@@ -13,11 +13,11 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 
-	var $_recordInDatabase = false;
+	protected $recordInDatabase = false;
 
 	function getLabel($repeatCounter, $tmpl = '')
 	{
@@ -25,7 +25,7 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 	}
 
 	function setIsRecordedInDatabase() {
-		$this->_recordInDatabase = false;
+		$this->recordInDatabase = false;
 	}
 
 	/**
@@ -40,7 +40,7 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 		$id	= $this->getHTMLId($repeatCounter);
 		$oDate = JFactory::getDate();
 		$config = JFactory::getConfig();
-		$tzoffset = $config->getValue('config.offset');
+		$tzoffset = $config->get('offset');
 		$oDate->setOffset($tzoffset);
 		$params = $this->getParams();
 		$gmt_or_local = $params->get('gmt_or_local');
@@ -50,16 +50,16 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 
 	/**
 	* shows the data formatted for the table view
-	* @param string data
-	* @param object all the data in the tables current row
-	* @return string formatted value
+	* @param	string	data
+	* @param	object	all the data in the tables current row
+	* @return	string	formatted value
 	*/
 	
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$data = JHTML::_('date', $data, JText::_($params->get('timestamp_format', 'DATE_FORMAT_LC2')));
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 	/**
 	 * defines the type of database table field that is created to store the element's data
@@ -69,12 +69,16 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 	function getFieldDescription()
 	{
 		$params = $this->getParams();
-		if ($params->get('encrypt', false)) {
+		if ($params->get('encrypt', false))
+		{
 			return 'BLOB';
 		}
-		if ($params->get('timestamp_update_on_edit')) {
+		if ($params->get('timestamp_update_on_edit'))
+		{
 			return "TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
-		} else {
+		}
+		else
+		{
 			return "TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP";
 		}
 	}

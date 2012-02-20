@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormRedirect extends plgFabrik_Form {
 
@@ -143,29 +143,39 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 	 * @return bol
 	 */
 
-	function customProcessResult($method, &$formModel)
+	public function customProcessResult($method, &$formModel)
 	{
 		// if we are applying the form don't run redirect
-		if (is_array($formModel->_formData) && array_key_exists('apply', $formModel->_formData)) {
+		if (is_array($formModel->_formData) && array_key_exists('apply', $formModel->_formData))
+		{
 			return true;
 		}
-		if ($method != 'onLastProcess') {
+		if ($method != 'onLastProcess')
+		{
 			return true;
 		}
-		if (JRequest::getVar('fabrik_ajax')) {
+		if (JRequest::getVar('fabrik_ajax'))
+		{
 			//return false to stop the default redirect occurring
 			return false;
-		} else {
-			if (!empty($this->_data->jump_page)) {
-				//ajax form submit load redirect page in mocha window
-				if (strstr($this->_data->jump_page, "?")) {
-					$this->_data->jump_page .= "&tmpl=component";
-				} else {
-					$this->_data->jump_page .= "?tmpl=component";
+		}
+		else
+		{
+			if (!empty($this->_data->jump_page))
+			{
+				//ajax form submit load redirect page in window
+				if (strstr($this->_data->jump_page, '?'))
+				{
+					$this->_data->jump_page .= '&tmpl=component';
+				}
+				else
+				{
+					$this->_data->jump_page .= '?tmpl=component';
 				}
 				return false;
 			}
-			else {
+			else
+			{
 				return true;
 			}
 		}

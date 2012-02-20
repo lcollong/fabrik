@@ -52,7 +52,7 @@ class plgSystemFabrikcron extends JPlugin
 			return;
 		}
 		//3.0 done in inAfterInitialize()
-		//$defines = JFile::exists(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'user_defines.php') ? JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'user_defines.php' : JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'defines.php';
+		//$defines = JFile::exists(JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'user_defines.php') ? JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'user_defines.php' : JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'defines.php';
 		//require_once($defines);
 		/* jimport('joomla.application.component.model');
 		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'params.php');
@@ -60,7 +60,7 @@ class plgSystemFabrikcron extends JPlugin
 		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'html.php');
 		require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'parent.php');
 		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
-		JModel::addIncludePath(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'); */
+		JModel::addIncludePath(JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'models'); */
 		//get all active tasks
 		$db = FabrikWorker::getDbo(true);
 		$now = JRequest::getVar('fabrikcron_run', false);

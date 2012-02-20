@@ -13,14 +13,9 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-cron.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-cron.php');
 
 class plgFabrik_CronGcalsync extends plgFabrik_Cron {
-
-	function canUse()
-	{
-		return true;
-	}
 
 	protected function _getGcalShortId( $long_id )
 	{
@@ -101,7 +96,7 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 			}
 
 			// include the Zend stuff
-			$path = JPATH_SITE.DS.'libraries';
+			$path = JPATH_SITE . '/libraries';
 			set_include_path(get_include_path() . ';' . $path);
 			$path = get_include_path();
 			require_once 'Zend/Loader.php';
@@ -187,7 +182,7 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 				// Grab the tzOffset.  Note that gcal want +/-XX (like -06)
 				// but J! gives us +/-X (like -6) so we sprintf it to the right format
 				$config = JFactory::getConfig();
-				$tzOffset = (int)$config->getValue('config.offset');
+				$tzOffset = (int)$config->get('offset');
 				$tzOffset = sprintf('%+03d', $tzOffset);
 				// loop thru the array we built earlier of events we have that aren't in gcal
 				foreach ($our_upload_ids as $id => $event) {

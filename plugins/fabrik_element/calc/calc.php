@@ -175,7 +175,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 	{
 		$params = $this->getParams();
 		$w = new FabrikWorker();
-		$form = $this->getForm();
+		$form = $this->getFormModel();
 		$d = $form->_formData;
 		$joindata = JArrayHelper::getValue($d, 'join', array());
 		$calc = $params->get('calc_calculation');
@@ -253,9 +253,9 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 	}
 	/**
 	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object current row's data
-	 * @return string formatted value
+	 * @param	string	data
+	 * @param	object	current row's data
+	 * @return	string	formatted value
 	 */
 
 	function renderListData($element_data, &$thisRow)
@@ -264,13 +264,16 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$format = trim($params->get('calc_format_string'));
 		// $$$ hugh - the 'calculated value' bit is for legacy data that was created
 		// before we started storing a value when row is saved
-		if ($params->get('calc_on_save_only', 0) && $element_data != 'calculated value') {
-			if ($format != '') {
+		if ($params->get('calc_on_save_only', 0) && $element_data != 'calculated value')
+		{
+			if ($format != '')
+			{
 				$element_data = sprintf($format, $element_data);
 			}
 			return parent::renderListData($element_data, $thisRow);
 		}
-		else {
+		else
+		{
 			$element = $this->getElement();
 			$cal = $params->get('calc_calculation', '');
 			$listModel = $this->getlistModel();
@@ -284,7 +287,8 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			$res = $listModel->parseMessageForRowHolder($cal, $data, true);
 			$res = @eval($res);
 			FabrikWorker::logEval($res, 'Caught exception on eval in '.$element->name.'::renderListData() : %s');
-			if ($format != '') {
+			if ($format != '')
+			{
 				$res = sprintf($format, $res);
 			}
 			// $$$ hugh - need to set _raw, might be needed if (say) calc is being used as 'use_as_row_class'
@@ -298,7 +302,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 	/**
 	 * fudge the CSV export so that we get the calculated result regardless of whether
 	 * the value has been stored in the database base (mimics what the user would see in the table view)
-	 * @see components/com_fabrik/models/plgFabrik_Element#renderListData($data, $oAllRowsData)
+	 * @see components/com_fabrik/models/plgFabrik_Element#renderListData($data, $thisRow)
 	 */
 
 	function renderListData_csv($data, &$thisRow)
@@ -331,7 +335,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		$id = $this->getHTMLId($repeatCounter);
 		$str = array();
 		if ($this->canView()) {
-			if (!$this->_editable) {
+			if (!$this->editable) {
 				$value = $this->_replaceWithIcons($value);
 				$str[] = $value;
 			}
@@ -408,7 +412,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			$table = $listModel->getTable();
 			$joinSQL = $listModel->_buildQueryJoin();
 			$whereSQL = $listModel->_buildQueryWhere();
-			return "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC($name))) AS value, $label AS label FROM " . $db->nameQuote($table->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC($name))) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
 		} else {
 			return parent::getSumQuery($listModel, $label);
 		}
@@ -430,7 +434,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			$table = $listModel->getTable();
 			$joinSQL = $listModel->_buildQueryJoin();
 			$whereSQL = $listModel->_buildQueryWhere();
-			return "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC($name))) AS value, $label AS label FROM " . $db->nameQuote($table->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT SEC_TO_TIME(AVG(TIME_TO_SEC($name))) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
 		} else {
 			return parent::getAvgQuery($listModel, $label);
 		}
@@ -452,7 +456,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			$table = $listModel->getTable();
 			$joinSQL = $listModel->_buildQueryJoin();
 			$whereSQL = $listModel->_buildQueryWhere();
-			return "SELECT SEC_TO_TIME(TIME_TO_SEC($name)) AS value, $label AS label FROM " . $db->nameQuote($table->db_table_name) . " $joinSQL $whereSQL";
+			return "SELECT SEC_TO_TIME(TIME_TO_SEC($name)) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
 		} else {
 			return parent::getMedianQuery($listModel, $label);
 		}

@@ -10,17 +10,16 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-list.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-list.php');
 
 class plgFabrik_ListEmail extends plgFabrik_List {
-
-	var $useMocha = true;
 
 	protected $buttonPrefix = 'email';
 
 	var $name = "plgFabrik_ListEmail";
 
-	function onPopupwin(){
+	function onPopupwin()
+	{
 		echo ' hre lklfsd k popupwin';
 	}
 
@@ -75,11 +74,14 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		$renderOrder = JRequest::getInt('renderOrder');
 		$toType = $params->get('emailtable_to_type');
 		$toType = is_array($toType) ? $toType[$renderOrder] : $toType;
-		if ($toType == 'field') {
+		if ($toType == 'field')
+		{
 			$to = $params->get('emailtable_to');
 			$to = is_array($to) ? $to[$renderOrder] : $to;
 			return "<input name=\"order_by\" id=\"order_by\" value=\"".$to."\" readonly=\"true\" />";
-		} else {
+		}
+		else
+		{
 			return $this->formModel->getElementList('order_by');
 		}
 	}
@@ -119,7 +121,8 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 	{
 		$ids = (array)JRequest::getVar($key, array());
 		JArrayHelper::toInteger($ids);
-		if (empty($ids)) {
+		if (empty($ids))
+		{
 			JError::raiseError(400, JText::_('PLG_LIST_EMAIL_ERR_NO_RECORDS_SELECTED'));
 			jexit();
 		}
@@ -136,12 +139,15 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		}
 		$model->setPluginQueryWhere($this->buttonPrefix, $whereClause);
 		$data = $model->getData();
-		if ($allData) {
+		if ($allData)
+		{
 			return $data;
 		}
 		$return = array();
-		foreach ($data as $gdata) {
-			foreach($gdata as $row) {
+		foreach ($data as $gdata)
+		{
+			foreach ($gdata as $row)
+			{
 				$return[] = $row->$pk2;
 			}
 		}
@@ -161,19 +167,24 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		jimport('joomla.client.helper');
 		JClientHelper::setCredentialsFromRequest('ftp');
 		$files = JRequest::getVar('attachement', array(), 'files');
-		$folder = JPATH_ROOT.DS.'images'.DS.'stories';
+		$folder = JPATH_ROOT. '/images/stories';
 		$this->filepath = array();
 		$c = 0;
-		if (array_key_exists('name', $files)) {
+		if (array_key_exists('name', $files))
+		{
 			foreach ($files['name'] as $name) {
-				if ($name == '') {
+				if ($name == '')
+				{
 					continue;
 				}
-				$path = $folder.DS.strtolower($name);
-				if (!JFile::upload($files['tmp_name'][$c], $path)) {
+				$path = $folder. '/' .strtolower($name);
+				if (!JFile::upload($files['tmp_name'][$c], $path))
+				{
 					JError::raiseWarning(100, JText::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'));
 					return false;
-				} else {
+				}
+				else
+				{
 					$this->filepath[] = $path;
 				}
 				$c ++;
@@ -187,82 +198,102 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		$listModel = $this->listModel;
 		$app = JFactory::getApplication();
 		jimport('joomla.mail.helper');
-		if (!$this->_upload()) {
+		if (!$this->_upload())
+		{
 			return false;
 		}
-
 		$listModel->setId(JRequest::getInt('id', 0));
 		$w = new FabrikWorker();
 		$config = JFactory::getConfig();
-
 		$params = $this->getParams();
 		$to = JRequest::getVar('order_by');
 		$renderOrder = JRequest::getInt('renderOrder');
 		$toType = $params->get('emailtable_to_type', 'list');
 		$fromUser = $params->get('emailtable_from_user');
-		if ($toType == 'list') {
+		if ($toType == 'list')
+		{
 			$to = str_replace('.', '___', $to);
 		}
 		$subject = JRequest::getVar('subject');
 		$message = JRequest::getVar('message', '', 'post', 'string', 4);
 		$data = $this->getRecords('recordids', true);
-		if ($fromUser) {
+		if ($fromUser)
+		{
 			$my = JFactory::getUser();
 			$from = $my->get('email');
 			$fromname = $my->get('name');
-		} else {
-			$from = $config->getValue('mailfrom');
-			$fromname = $config->getValue('fromname');
+		}
+		else
+		{
+			$from = $config->get('mailfrom');
+			$fromname = $config->get('fromname');
 		}
 
-		$email_from = $config->getValue('mailfrom');
+		$email_from = $config->get('mailfrom');
 		$cc = null;
 		$bcc = null;
 		$sent = 0;
 		$notsent = 0;
 		$updated = array();
-		foreach ($data as $group) {
-			foreach ($group as $row) {
-
-				if ($toType == 'list') {
+		foreach ($data as $group)
+		{
+			foreach ($group as $row)
+			{
+				if ($toType == 'list')
+				{
 					$process = isset($row->$to);
 					$mailto = $row->$to;
-				} else {
+				}
+				else
+				{
 					$process = true;
 					$mailto = $to;
 				}
-				if ($process) {
+				if ($process)
+				{
 					$mailtos = explode(',', $mailto);
-					foreach ($mailtos as $mailto) {
+					foreach ($mailtos as $mailto)
+					{
 						$mailto = $w->parseMessageForPlaceholder($mailto, $row);
-						if (JMailHelper::isEmailAddress($mailto)) {
+						if (JMailHelper::isEmailAddress($mailto))
+						{
 							$thissubject = $w->parseMessageForPlaceholder($subject, $row);
 							$thismessage = $w->parseMessageForPlaceholder($message, $row);
 							$res = JUtility::sendMail($email_from, $email_from, $mailto, $thissubject, $thismessage, 1, $cc, $bcc, $this->filepath);
-							if ($res) {
+							if ($res)
+							{
 								$sent ++;
-							} else {
+							}
+							else
+							{
 								$notsent ++;
 							}
-						} else {
+						}
+						else
+						{
 							$notsent ++;
 						}
 					}
-					if ($res) {
+					if ($res)
+					{
 						$updated[] = $row->__pk_val;
 					}
-				} else {
+				}
+				else
+				{
 					$notsent ++;
 				}
 			}
 		}
-		if (!empty($updated)) {
+		if (!empty($updated))
+		{
 			$updateField = $params->get('emailtable_update_field');
 			$updateVal = $params->get('emailtable_update_value');
 			$listModel->updateRows($updated, $updateField, $updateVal);
 		}
 		$app->enqueueMessage(JText::sprintf('PLG_LIST_EMAIL_N_SENT', $sent));
-		if ($notsent != 0) {
+		if ($notsent != 0)
+		{
 			JError::raiseWarning(E_NOTICE, JText::sprintf('PLG_LIST_EMAIL_N_NOT_SENT', $notsent));
 		}
 	}

@@ -67,9 +67,12 @@ class FabrikControllerElements extends FabControllerAdmin
 		$task 	= $this->getTask();
 		$value	= JArrayHelper::getValue($data, $task, 0, 'int');
 
-		if (empty($cid)) {
+		if (empty($cid))
+		{
 			JError::raiseWarning(500, JText::_($this->text_prefix.'_NO_ITEM_SELECTED'));
-		} else {
+		}
+		else
+		{
 			// Get the model.
 			$model = $this->getModel();
 
@@ -77,12 +80,18 @@ class FabrikControllerElements extends FabControllerAdmin
 			JArrayHelper::toInteger($cid);
 
 			// Publish the items.
-			if (!$model->addToListView($cid, $value)) {
+			if (!$model->addToListView($cid, $value))
+			{
 				JError::raiseWarning(500, $model->getError());
-			} else {
-				if ($value == 1) {
+			}
+			else
+			{
+				if ($value == 1)
+				{
 					$ntext = $this->text_prefix.'_N_ITEMS_ADDED_TO_LIST_VIEW';
-				} else {
+				}
+				else
+				{
 					$ntext = $this->text_prefix.'_N_ITEMS_REMOVED_FROM_LIST_VIEW';
 				}
 				$this->setMessage(JText::plural($ntext, count($cid)));
@@ -91,7 +100,7 @@ class FabrikControllerElements extends FabControllerAdmin
 		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_list, false));
 	}
 
-/**
+	/**
 	 * Set up page asking about what to delete
 	 *
 	 * @since	1.6
@@ -100,10 +109,11 @@ class FabrikControllerElements extends FabControllerAdmin
 	function delete()
 	{
 		$model = $this->getModel('Elements');
-		$viewType	= JFactory::getDocument()->getType();
-		$view = & $this->getView($this->view_item, $viewType);
+		$viewType = JFactory::getDocument()->getType();
+		$view = $this->getView($this->view_item, $viewType);
 		$view->setLayout('confirmdelete');
-		if (!JError::isError($model)) {
+		if (!JError::isError($model))
+		{
 			$view->setModel($model, true);
 		}
 		//used to load in the confirm form fields
@@ -129,7 +139,8 @@ class FabrikControllerElements extends FabControllerAdmin
 		$viewType	= JFactory::getDocument()->getType();
 		$view = & $this->getView($this->view_item, $viewType);
 		$view->setLayout('copyselectgroup');
-		if (!JError::isError($model)) {
+		if (!JError::isError($model))
+		{
 			$view->setModel($model, true);
 		}
 		//used to load in the confirm form fields

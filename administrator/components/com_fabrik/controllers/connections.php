@@ -64,26 +64,32 @@ class FabrikControllerConnections extends FabControllerAdmin
 		$data	= array('setDefault' => 1, 'unsetDefault' => 0);
 		$task 	= $this->getTask();
 		$value	= JArrayHelper::getValue($data, $task, 0, 'int');
-		if ($value == 0) {
+		if ($value == 0)
+		{
 			$this->setMessage(JText::_('COM_FABRIK_CONNECTION_CANT_UNSET_DEFAULT'));
 		}
-		if (empty($cid)) {
+		if (empty($cid))
+		{
 			JError::raiseWarning(500, JText::_($this->text_prefix.'_NO_ITEM_SELECTED'));
-		} else {
-			if ($value != 0) {
+		}
+		else
+		{
+			if ($value != 0)
+			{
 				$cid = $cid[0];
 				// Get the model.
 				$model = $this->getModel();
-
 				// Publish the items.
-				if (!$model->setDefault($cid, $value)) {
+				if (!$model->setDefault($cid, $value))
+				{
 					JError::raiseWarning(500, $model->getError());
-				} else {
+				}
+				else
+				{
 					$this->setMessage(JText::_('COM_FABRIK_CONNECTION_SET_DEFAULT'));
 				}
 			}
 		}
-
 		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_list, false));
 	}
 

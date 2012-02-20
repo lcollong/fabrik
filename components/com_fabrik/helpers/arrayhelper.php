@@ -13,12 +13,13 @@ class FArrayHelper extends JArrayHelper
 	function setValue(&$array, $key, $val)
 	{
 
-		if (strstr($key, '.')) {
-
+		if (strstr($key, '.'))
+		{
 			$nodes = explode('.', $key);
 			$count = count($nodes);
 			$pathNodes = $count - 1;
-			if ($pathNodes < 0) {
+			if ($pathNodes < 0)
+			{
 				$pathNodes = 0;
 			}
 			$ns = $array;
@@ -26,7 +27,8 @@ class FArrayHelper extends JArrayHelper
 			{
 				// If any node along the registry path does not exist, create it
 				//if (!isset($this->_formData[$nodes[$i]])) { //this messed up for joined data
-				if (!isset($ns[$nodes[$i]])) {
+				if (!isset($ns[$nodes[$i]]))
+				{
 					$ns[$nodes[$i]] = array();
 				}
 				$ns = $ns[$nodes[$i]];
@@ -38,13 +40,16 @@ class FArrayHelper extends JArrayHelper
 			{
 				// If any node along the registry path does not exist, create it
 				//if (!isset($this->_formData[$nodes[$i]])) { //this messed up for joined data
-				if (!isset($ns[$nodes[$i]])) {
+				if (!isset($ns[$nodes[$i]]))
+				{
 					$ns[$nodes[$i]] = array();
 				}
 				$ns = $ns[$nodes[$i]];
 			}
 			$ns = $val;
-		} else {
+		}
+		else
+		{
 			$array[$key] = $val;
 		}
 	}
@@ -67,9 +72,12 @@ class FArrayHelper extends JArrayHelper
 			$obj = new $class();
 			foreach ($array as $k => $v)
 			{
-				if (is_array($v) && $recurse) {
+				if (is_array($v) && $recurse)
+				{
 					$obj->$k = JArrayHelper::toObject($v, $class);
-				} else {
+				}
+				else
+				{
 					$obj->$k = $v;
 				}
 			}
@@ -100,7 +108,8 @@ class FArrayHelper extends JArrayHelper
 	{
 		for ($i = count($array) -1; $i >= 0; $i --)
 		{
-			if ($array[$i]->$key !== $value) {
+			if ($array[$i]->$key !== $value)
+			{
 				unset($array[$i]);
 			}
 		}
@@ -117,7 +126,8 @@ class FArrayHelper extends JArrayHelper
 	{
 		for ($i = count($array) -1; $i >= 0; $i --)
 		{
-			if ($array[$i]->$key == $value) {
+			if ($array[$i]->$key == $value)
+			{
 				return $array[$i];
 			}
 		}
@@ -127,7 +137,8 @@ class FArrayHelper extends JArrayHelper
 	function extract($array, $key)
 	{
 		$return = array();
-		foreach ($array as $object) {
+		foreach ($array as $object)
+		{
 			$return[] = $object->$key;
 		}
 		return $return;

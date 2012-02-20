@@ -86,24 +86,24 @@ class Com_FabrikInstallerScript
 
 		jimport('joomla.filesystem.file');
 
-		$componentFrontend  = 'components'.DS.'com_fabrik';
+		$componentFrontend  = 'components/com_fabrik';
 
-		$dest = 'libraries'.DS.'joomla'.DS.'document'.DS.'fabrikfeed';
+		$dest = 'libraries/joomla/document/fabrikfeed';
 		if (!JFolder::exists($dest)) {
 			JFolder::create($dest);
 		}
 
 		// $$$ hugh - have to use false as last arg (use_streams) on JFolder::copy(), otherwise
 		// it bypasses FTP layer, and will fail if web server does not have write access to J! folders
-		$moveRes = JFolder::copy($componentFrontend.DS.'fabrikfeed', $dest, JPATH_SITE, true, false);
+		$moveRes = JFolder::copy($componentFrontend . '/fabrikfeed', $dest, JPATH_SITE, true, false);
 		if ($moveRes !== true) {
-			echo "<p style=\"color:red\">failed to moved ".$componentFrontend.DS.'fabrikfeed'. ' to '.$dest.'</p>';
+			echo "<p style=\"color:red\">failed to moved ".$componentFrontend . '/fabrikfeed'. ' to '.$dest.'</p>';
 			return false;
 		}
 
-		$dest = 'libraries'.DS.'joomla'.DS.'database'.DS.'database';
+		$dest = 'libraries/joomla/database/database';
 
-		$driverInstallLoc = $componentFrontend.DS.'dbdriver'.DS;
+		$driverInstallLoc = $componentFrontend . '/dbdriver/';
 		$moveRes = JFolder::copy($driverInstallLoc, $dest, JPATH_SITE, true, false);
 		if ($moveRes !== true) {
 			echo "<p style=\"color:red\">failed to moved ".$driverInstallLoc. ' to '.$dest.'</p>';
@@ -122,17 +122,17 @@ class Com_FabrikInstallerScript
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.filesystem.file');
 
-		$dest = JPATH_SITE.DS.'libraries'.DS.'joomla'.DS.'document'.DS.'fabrikfeed';
+		$dest = JPATH_SITE . '/libraries/joomla/document/fabrikfeed';
 		if (JFolder::exists($dest)) {
 			if (!JFolder::delete($dest)) {
 				return false;
 			}
 		}
 
-		$dest = JPATH_SITE.DS.'libraries'.DS.'joomla'.DS.'database'.DS.'database';
+		$dest = JPATH_SITE . '/libraries/joomla/database/database';
 		foreach ($this->drivers as $driver) {
-			if (JFile::exists($dest.DS.$driver)) {
-				JFile::delete($dest.DS.$driver);
+			if (JFile::exists($dest . '/' . $driver)) {
+				JFile::delete($dest . '/' . $driver);
 			}
 		}
 	}

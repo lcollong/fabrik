@@ -48,8 +48,10 @@ class FabrikFEModelPluginmanager extends JModel{
 	function getElementTypeDd($default, $name='plugin', $extra='class="inputbox elementtype"  size="1"', $defaultlabel='')
 	{
 		$hash = $default.$name.$extra.$defaultlabel;
-		if (!array_key_exists($hash, $this->_elementLists)) {
-			if ($defaultlabel == '') {
+		if (!array_key_exists($hash, $this->_elementLists))
+		{
+			if ($defaultlabel == '')
+			{
 				$defaultlabel = JText::_('COM_FABRIK_PLEASE_SELECT');
 			}
 			$a = array(JHTML::_('select.option', '', $defaultlabel));
@@ -60,7 +62,7 @@ class FabrikFEModelPluginmanager extends JModel{
 		return $this->_elementLists[$hash];
 	}
 
-	function canUse()
+	public function canUse()
 	{
 		return true;
 	}
@@ -73,12 +75,13 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	function getList($group, $id)
 	{
-		$str = "<ul id='$id'>";
+		$str = '<ul id="'. $id . '">';
 		$elementstypes = $this->_getList();
-		foreach ($elementstypes as $plugin) {
-			$str .= "<li>" . $plugin->text . "</li>";
+		foreach ($elementstypes as $plugin)
+		{
+			$str .= '<li>' . $plugin->text . '</li>';
 		}
-		$str .= "</ul>";
+		$str .= '</ul>';
 		return $str;
 	}
 
@@ -91,7 +94,8 @@ class FabrikFEModelPluginmanager extends JModel{
 	protected function _getList($query, $limitstart = 0, $limit = 0)
 	{
 		$db = FabrikWorker::getDbo(true);
-		if (is_null($this->_group)) {
+		if (is_null($this->_group))
+		{
 			$this->_group = 'element';
 		}
 		$query = $db->getQuery(true);
@@ -113,7 +117,9 @@ class FabrikFEModelPluginmanager extends JModel{
 		if (array_key_exists($group, $this->_plugIns))
 		{
 			return $this->_plugIns[$group];
-		} else {
+		}
+		else
+		{
 			return $this->loadPlugInGroup($group);
 		}
 	}
@@ -129,11 +135,13 @@ class FabrikFEModelPluginmanager extends JModel{
 		JHtml::_('script', 'media/com_fabrik/js/head/head.min.js');
 		$plugins = JFolder::folders(JPATH_SITE . '/plugins/fabrik_element', '.', false, false);
 		$files = array();
-		foreach ($plugins as $plugin) {
-			$files[] =  JPATH_SITE . '/plugins/fabrik_element/'.$plugin.'/'.$plugin.'.js';
+		foreach ($plugins as $plugin)
+		{
+			$files[] =  JPATH_SITE . '/plugins/fabrik_element/' . $plugin . '/' . $plugin . '.js';
 		}
-		foreach ($files as $f) {
-			$f =  str_replace("\\", "/", str_replace(JPATH_SITE, '', $f));
+		foreach ($files as $f)
+		{
+			$f = str_replace("\\", "/", str_replace(JPATH_SITE, '', $f));
 			$file = basename($f);
 			$folder = dirname($f);
 			$folder = FabrikString::ltrimword($folder, '/') .'/';
@@ -150,10 +158,11 @@ class FabrikFEModelPluginmanager extends JModel{
 	{
 		// $$$ rob 16/12/2011 - this was setting $this->_plugIns, but if you had 2 lists as admin modules
 		// and the first list had plugins, then the second list would remove that plugin when this method was run
-		$folder = 'fabrik_'.$group;
+		$folder = 'fabrik_' . $group;
 		$this->_AbstractplugIns[$group] = array();
 		$plugins = JPluginHelper::getPlugin($folder);
-		foreach ($plugins as $plugin) {
+		foreach ($plugins as $plugin)
+		{
 			$this->_AbstractplugIns[$group][$plugin->name] = $plugin;
 		}
 		return $this->_AbstractplugIns[$group];
@@ -166,9 +175,12 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	function getPlugIn($className = '', $group)
 	{
-		if ($className != '' && (array_key_exists($group, $this->_plugIns) && array_key_exists($className, $this->_plugIns[$group]))) {
+		if ($className != '' && (array_key_exists($group, $this->_plugIns) && array_key_exists($className, $this->_plugIns[$group])))
+		{
 			return $this->_plugIns[$group][$className];
-		} else {
+		}
+		else
+		{
 			// $$$ rob 04/06/2011 hmm this was never caching the plugin so we were always loading it
 			//return $this->loadPlugIn($className, $group);
 			$this->_plugIns[$group][$className] = $this->loadPlugIn($className, $group);
@@ -180,17 +192,18 @@ class FabrikFEModelPluginmanager extends JModel{
 	 * load in the actual plugin objects for a given group
 	 * @param string $group
 	 */
-	
+
 	public function getPlugInGroupPlugins($group)
 	{
 		$plugins = $this->getPlugInGroup($group);
 		$r = array();
-		foreach ($plugins as $plugin) {
+		foreach ($plugins as $plugin)
+		{
 			$r[] = $this->loadPlugIn($plugin->name, $group);
 		}
 		return $r;
 	}
-	
+
 	/**
 	 * @param string plugin name e.g. fabrikfield
 	 * @param string plugin type element/ form or table
@@ -199,24 +212,34 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	public function loadPlugIn($className = '', $group)
 	{
-		if ($group == 'table'){
+		if ($group == 'table')
+		{
 			$group = 'list';
 		}
 		$ok = JPluginHelper::importPlugin('fabrik_'.strtolower($group));
 
 		$dispatcher = JDispatcher::getInstance();
-		if ($className != '') {
-			if (JFile::exists(JPATH_PLUGINS.DS.'fabrik_'.strtolower($group).DS.$className.DS.$className.'.php')) {
-				require_once(JPATH_PLUGINS.DS.'fabrik_'.strtolower($group).DS.$className.DS.$className.'.php');
-			} else {
-				if (JFile::exists((JPATH_PLUGINS.DS.'fabrik_'.strtolower($group).DS.$className.DS.'models'.DS.$className.'.php'))) {
-					require_once(JPATH_PLUGINS.DS.'fabrik_'.strtolower($group).DS.$className.DS.'models'.DS.$className.'.php');
-				} else {
+		if ($className != '')
+		{
+			$file = JPATH_PLUGINS . '/fabrik_' . strtolower($group) . '/' . $className . '/' . $className . '.php';
+			if (JFile::exists($file))
+			{
+				require_once($file);
+			}
+			else
+			{
+				$file = JPATH_PLUGINS . '/fabrik_' . strtolower($group) . '/' . $className . '/models/' . $className . '.php';
+				if (JFile::exists($file))
+				{
+					require_once($file);
+				}
+				else
+				{
 					return false;
 				}
 			}
 		}
-		$class = 'plgFabrik_'.JString::ucfirst($group).JString::ucfirst($className);
+		$class = 'plgFabrik_' . JString::ucfirst($group) . JString::ucfirst($className);
 		$conf = array();
 		$conf['name'] = strtolower($className);
 		$conf['type'] = strtolower('fabrik_'.$group);
@@ -227,7 +250,7 @@ class FabrikFEModelPluginmanager extends JModel{
 		$lang = JFactory::getLanguage();
 		$folder = 'fabrik_'.strtolower($group);
 		$lang->load('plg_'.$folder.'_'.$className, $client->path.'/plugins/'.$folder.'/'.$className, null, false, false)
-				 ||	$lang->load('plg_'.$folder.'_'.$className, $client->path.'/plugins/'.$folder.'/'.$className, $lang->getDefault(), false, false);
+		||	$lang->load('plg_'.$folder.'_'.$className, $client->path.'/plugins/'.$folder.'/'.$className, $lang->getDefault(), false, false);
 		return $plugIn;
 	}
 
@@ -241,18 +264,22 @@ class FabrikFEModelPluginmanager extends JModel{
 	function getFormPlugins(&$form)
 	{
 		$profiler = JProfiler::getInstance('Application');
-		if (!isset($this->formplugins)) {
+		if (!isset($this->formplugins))
+		{
 			$this->formplugins = array();
 		}
 		$sig = $form->get('id');
 		JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:start - '.$sig) : null;
-		if (!array_key_exists($sig, $this->formplugins)) {
+		if (!array_key_exists($sig, $this->formplugins))
+		{
 			$this->formplugins[$sig] = array();
 			$lang = JFactory::getLanguage();
 			$folder = 'fabrik_element';
 			$client	= JApplicationHelper::getClientInfo(0);
 			$groupIds = $form->getGroupIds();
-			if (empty($groupIds)) { //new form
+			if (empty($groupIds))
+			{
+				//new form
 				return array();
 			}
 			$db = FabrikWorker::getDbo(true);
@@ -266,8 +293,8 @@ class FabrikFEModelPluginmanager extends JModel{
 			$query->order("group_id, e.ordering");
 			$db->setQuery($query);
 			$elements = (array)$db->loadObjectList();
-
-			if ($db->getErrorNum()) {
+			if ($db->getErrorNum())
+			{
 				JError::raiseError(500, $db->getErrorMsg());
 			}
 
@@ -276,30 +303,32 @@ class FabrikFEModelPluginmanager extends JModel{
 			$dispatcher = new JDispatcher();
 			$groupModels = $form->getGroups();
 			$group = 'element';
-			foreach ($elements as $element) {
+			foreach ($elements as $element)
+			{
 				JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:'.$element->id . ''.$element->plugin) : null;
-					require_once(JPATH_PLUGINS.DS.'fabrik_element'.DS.$element->plugin.DS.$element->plugin.'.php');
-					$class = 'plgFabrik_Element'.$element->plugin;
-					$pluginModel = new $class($dispatcher, array());
-					if (!is_object($pluginModel)) {
-						continue;
-					}
+				require_once(JPATH_PLUGINS . '/fabrik_element/' . $element->plugin . '/' . $element->plugin.'.php');
+				$class = 'plgFabrik_Element'.$element->plugin;
+				$pluginModel = new $class($dispatcher, array());
+				if (!is_object($pluginModel))
+				{
+					continue;
+				}
 
-				 $pluginModel->_xmlPath = COM_FABRIK_FRONTEND.DS.'plugins'.DS.$group.DS.$element->plugin.DS.$element->plugin.'.xml';
+				$pluginModel->_xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $element->plugin . '/' . $element->plugin . '.xml';
 
-				 $pluginModel->setId($element->id);
-				 $groupModel = $groupModels[$element->group_id];
+				$pluginModel->setId($element->id);
+				$groupModel = $groupModels[$element->group_id];
 
-				 $lang->load('plg_'.$folder.'_'.$element->plugin, $client->path.'/plugins/'.$folder.'/'.$element->plugin, null, false, false)
-				 ||	$lang->load('plg_'.$folder.'_'.$element->plugin, $client->path.'/plugins/'.$folder.'/'.$element->plugin, $lang->getDefault(), false, false);
+				$lang->load('plg_' . $folder . '_' . $element->plugin, $client->path . '/plugins/' . $folder . '/' . $element->plugin, null, false, false)
+				||	$lang->load('plg_' . $folder . '_' . $element->plugin, $client->path . '/plugins/' . $folder . '/' . $element->plugin, $lang->getDefault(), false, false);
 
-				 $pluginModel->setContext($groupModel, $form, $form->_table);
-				 $pluginModel->bindToElement($element);
-				 $groupModel->elements[$pluginModel->_id] = $pluginModel;
+				$pluginModel->setContext($groupModel, $form, $form->_table);
+				$pluginModel->bindToElement($element);
+				$groupModel->elements[$pluginModel->_id] = $pluginModel;
 
 			}
-
-			foreach ($groupModels as $groupid => $g) {
+			foreach ($groupModels as $groupid => $g)
+			{
 				$this->formplugins[$sig][$groupid] = $g;
 			}
 		}
@@ -308,19 +337,20 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	function getElementPlugin($id)
 	{
-		return $this->getPluginFromId($id); 
+		return $this->getPluginFromId($id);
 	}
-	
-	public function getPluginFromId($id, $type = 'Element') 
+
+	public function getPluginFromId($id, $type = 'Element')
 	{
 		$el = FabTable::getInstance($type, 'FabrikTable');
 		$el->load($id);
 		$o = $this->loadPlugIn($el->plugin, $type);
 		$o->setId($id);
-		switch ($type) {
+		switch ($type)
+		{
 			default:
 				$o->getTable();
-				break;
+			break;
 			case 'Element':
 				$o->getElement();
 				break;
@@ -336,10 +366,12 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	function loadLists($group, $lists, &$elementModel)
 	{
-		if (empty($this->_plugIns)) {
+		if (empty($this->_plugIns))
+		{
 			$this->loadPlugInGroup($group);
 		}
-		foreach ($this->_plugIns[$group] as $plugIn) {
+		foreach ($this->_plugIns[$group] as $plugIn)
+		{
 			if (method_exists($plugIn->object, 'getAdminLists')) {
 				$lists = $plugIn->object->getAdminLists($lists, $elementModel, $plugIn->params);
 			}
@@ -357,7 +389,8 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	function runPlugins($method, &$oRequest, $type = 'form')
 	{
-		if ($type == 'form') {
+		if ($type == 'form')
+		{
 			// $$$ rob allow for table plugins to hook into form plugin calls - methods are mapped as:
 			//form method = 'onLoad' => table method => 'onFormLoad'
 			$tmethod = 'onForm'.FabrikString::ltrimword($method, 'on');
@@ -371,14 +404,18 @@ class FabrikFEModelPluginmanager extends JModel{
 		$states = (array)$params->get('plugin_state');
 		$this->_data = array();
 
-		if ($type != 'list') {
-
-			if (method_exists($oRequest, 'getGroupsHiarachy')) {
+		if ($type != 'list')
+		{
+			if (method_exists($oRequest, 'getGroupsHiarachy'))
+			{
 				$groups = $oRequest->getGroupsHiarachy();
-				foreach ($groups as $groupModel) {
+				foreach ($groups as $groupModel)
+				{
 					$elementModels = $groupModel->getPublishedElements();
-					foreach ($elementModels as $elementModel) {
-						if (method_exists($elementModel, $method)) {
+					foreach ($elementModels as $elementModel)
+					{
+						if (method_exists($elementModel, $method))
+						{
 							$elementModel->$method($oRequest);
 						}
 					}
@@ -391,54 +428,66 @@ class FabrikFEModelPluginmanager extends JModel{
 		// should not be run.
 		$runningAway = false;
 
-		foreach ($usedPlugins as $usedPlugin) {
-			if ($runningAway) {
+		foreach ($usedPlugins as $usedPlugin)
+		{
+			if ($runningAway)
+			{
 				// "I soiled my armour I was so scared!"
 				break;
 			}
 			$state = JArrayHelper::getValue($states, $c, 1);
-			if ($state == false) {
+			if ($state == false)
+			{
 				$c++;
 				continue;
 			}
-			if ($usedPlugin != '') {
+			if ($usedPlugin != '')
+			{
 				$plugin = $this->getPlugIn($usedPlugin, $type);
 				//testing this if statement as onLoad was being called on form email plugin when no method availbale
 				$plugin->renderOrder = $c;
-				if (method_exists($plugin, $method)) {
+				if (method_exists($plugin, $method))
+				{
 					$modelTable = $oRequest->getTable();
 					$pluginParams = $plugin->setParams($params, $c);
-
 					$location = JArrayHelper::getValue($usedLocations, $c);
 					$event = JArrayHelper::getValue($usedEvents, $c);
-					
-					if ($plugin->canUse($oRequest, $location, $event) && method_exists($plugin, $method)) {
+					if ($plugin->canUse($oRequest, $location, $event) && method_exists($plugin, $method))
+					{
 						$pluginArgs = array();
-						if (func_num_args() > 3) {
+						if (func_num_args() > 3)
+						{
 							$t = func_get_args();
 							$pluginArgs = array_splice($t, 3);
 						}
 						$preflightMethod = $method."_preflightCheck";
 						$preflightCheck = method_exists($plugin, $preflightMethod) ? $plugin->$preflightMethod($pluginParams, $oRequest, $pluginArgs) : true;
-						if ($preflightCheck) {
+						if ($preflightCheck)
+						{
 							$ok = $plugin->$method($pluginParams, $oRequest, $pluginArgs);
-							if ($ok === false) {
+							if ($ok === false)
+							{
 								$return[] = false;
-							} else {
+							}
+							else
+							{
 								$thisreturn = $plugin->customProcessResult($method, $oRequest);
 								$return[] = $thisreturn;
-								$m = $method.'_result';
-								if (method_exists($plugin, $m)) {
+								$m = $method . '_result';
+								if (method_exists($plugin, $m))
+								{
 									$this->_data[] = $plugin->$m($c);
 								}
 							}
 							$runPlugins ++;
 
-							if ($plugin->runAway($method)) {
+							if ($plugin->runAway($method))
+							{
 								$runningAway = true;
 							}
 							$mainData = $this->_data;
-							if ($type == 'list' && $method !== 'observe') {
+							if ($type == 'list' && $method !== 'observe')
+							{
 								$this->runPlugins('observe', $oRequest, 'list', $plugin, $method);
 							}
 							$this->_data = $mainData;
@@ -462,7 +511,8 @@ class FabrikFEModelPluginmanager extends JModel{
 	function pluginExists($group, $plugin)
 	{
 		$plugins = $this->loadPlugInGroup($group);
-		if (in_array($plugin, array_keys($plugins))) {
+		if (in_array($plugin, array_keys($plugins)))
+		{
 			return true;
 		}
 		return false;

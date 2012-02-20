@@ -19,7 +19,7 @@ class FabrikViewHome {
 	{
 		JHTML::stylesheet('media/com_fabrik/css/admin.css');
 		jimport('joomla.html.pane');
-		$pane	=& JPane::getInstance('Sliders');
+		$pane = JPane::getInstance('Sliders');
 		JToolBarHelper::title(JText::_('WELCOME'), 'fabrik.png');
 		?>
 

@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'plugin.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/plugin.php');
 
 //class plgFabrik_Visualization extends FabrikPlugin
 class FabrikFEModelVisualization extends JModel
@@ -22,7 +22,8 @@ class FabrikFEModelVisualization extends JModel
 
 	var $_row = null;
 
-	var $_params = null;
+	/** @var object params*/
+	protected $params = null;
 
 	//@var string url for filter form
 	var $getFilterFormURL = null;
@@ -33,7 +34,7 @@ class FabrikFEModelVisualization extends JModel
 
 	function __construct()
 	{
-		$this->pathBase = JPATH_SITE.DS.'plugins'.DS.'fabrik_visualization'.DS;
+		$this->pathBase = JPATH_SITE . '/plugins/fabrik_visualization/';
 		parent::__construct();
 	}
 
@@ -280,11 +281,12 @@ class FabrikFEModelVisualization extends JModel
 
 	function getParams()
 	{
-		if (is_null($this->_params)) {
+		if (is_null($this->params))
+		{
 			$v = $this->getVisualization();
-			$this->_params = new fabrikParams($v->params);
+			$this->params = new fabrikParams($v->params);
 		}
-		return $this->_params;
+		return $this->params;
 	}
 
 	function getId()

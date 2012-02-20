@@ -75,13 +75,13 @@ class fabrikViewForm extends JView
 		foreach ($elementids as $id) {
 			$elementModel = $model->getElement($id, true);
 			$elementModel->getElement();
-			$elementModel->_editable = true;
+			$elementModel->editable = true;
 			$elementModel->formJavascriptClass($srcs);
 			$onLoad[] = "var o = ".$elementModel->elementJavascript($repeatCounter).";";
 			if ($eCounter === 0) {
 				$onLoad[] = "o.select();";
 				$onLoad[] = "o.focus();";
-				$onLoad[] = "Fabrik.inlineedit_$elementid.token = '".JUtility::getToken()."';";
+				$onLoad[] = "Fabrik.inlineedit_$elementid.token = '" . JSession::getFormToken . "';";
 			}
 			$eCounter ++;
 			$onLoad[] = "Fabrik.inlineedit_$elementid.elements[$id] = o";
@@ -128,7 +128,7 @@ class fabrikViewForm extends JView
 
 		$view = JRequest::getVar('view', 'form');
 		if ($view == 'details') {
-			$model->_editable = false;
+			$model->editable = false;
 		}
 
 		$groups = $model->getGroupsHiarachy();
@@ -199,24 +199,28 @@ class fabrikViewForm extends JView
 				$elCount = 0;
 				$elementModels = $groupModel->getPublishedElements();
 				foreach ($elementModels as $elementModel) {
-					if (!$model->_editable) {
+					if (!$model->editable) {
 						// $$$ rob 22/03/2011 changes element keys by appending "_id" to the end, means that
 						// db join add append data doesn't work if for example the popup form is set to allow adding,
 						// but not editing records
 						//$elementModel->_inDetailedView = true;
-						$elementModel->_editable = false;
+						$elementModel->editable = false;
 					}
 
 					//force reload?
 					$elementModel->_HTMLids = null;
 					$elementHTMLId 	= $elementModel->getHTMLId($c);
-					if (!$model->_editable) {
+					if (!$model->editable)
+					{
 						$JSONarray[$elementHTMLId] = $elementModel->getROValue($model->_data, $c);
-					}else{
+					}
+					else
+					{
 						$JSONarray[$elementHTMLId] = $elementModel->getValue($model->_data, $c);
 					}
 					//test for paginate plugin
-					if (!$model->_editable) {
+					if (!$model->editable)
+					{
 						$elementModel->_HTMLids = null;
 						$elementModel->_inDetailedView = true;
 					}

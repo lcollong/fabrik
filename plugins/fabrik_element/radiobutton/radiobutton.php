@@ -28,11 +28,13 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	
 	/**
 	 * used to format the data when shown in the form's email
-	 * @param array radio button ids
-	 * @return string formatted value
+	 * @param	mixed	element's data
+	 * @param	array	form records data
+	 * @param	int		repeat group counter
+	 * @return	string	formatted value
 	 */
 
-	protected function _getEmailValue($value)
+	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		if (empty($value)) {
 			return '';
@@ -53,7 +55,7 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	{
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
-		$data = $this->_form->_data;
+		$data = $this->getFormModel()->_data;
 		$arVals = $this->getSubOptionValues();
 		$arTxt = $this->getSubOptionLabels();
 		$opts = $this->getElementJSOptions($repeatCounter);

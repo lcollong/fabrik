@@ -9,7 +9,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_ROOT.DS.'plugins'.DS.'fabrik_element'.DS.'fileupload'.DS.'adaptor.php');
+require_once(JPATH_ROOT. '/' .'plugins/fabrik_element/fileupload/adaptor.php');
 
 class amazons3storage extends storageAdaptor{
 
@@ -19,7 +19,7 @@ class amazons3storage extends storageAdaptor{
 
 	function __construct($params)
 	{
-		require_once(COM_FABRIK_FRONTEND.DS.'libs'.DS.'amazons3'.DS.'S3.php');
+		require_once(COM_FABRIK_FRONTEND . '/libs/amazons3/S3.php');
 		$this->ssl = $params->get('fileupload_ssl', false);
 		$this->s3 = new S3($params->get('fileupload_aws_accesskey'), $params->get('fileupload_aws_secretkey'), $this->ssl);
 		parent::__construct($params);

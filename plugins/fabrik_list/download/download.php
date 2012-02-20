@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-list.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-list.php');
 
 class plgFabrik_ListDownload extends plgFabrik_List {
 
@@ -77,7 +77,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 			foreach ($ids AS $id) {
 				$row = $model->getRow($id);
 				if (isset($row->$download_file)) {
-					$this_file = JPATH_SITE.DS.$row->$download_file;
+					$this_file = JPATH_SITE. '/' .$row->$download_file;
 					if (is_file($this_file)) {
 						$filelist[] = $this_file;
 					}
@@ -91,7 +91,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 			$db->setQuery($query);
 			$results = $db->loadObjectList();
 			foreach ($results AS $result) {
-				$this_file = JPATH_SITE.DS.$result->$download_file;
+				$this_file = JPATH_SITE. '/' .$result->$download_file;
 				if (is_file($this_file)) {
 					$filelist[] = $this_file;
 				}
@@ -100,7 +100,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 		if (!empty($filelist)) {
 			if ($download_resize) {
 				ini_set('max_execution_time', 300);
-				require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'image.php');
+				require_once(COM_FABRIK_FRONTEND . '/helpers/image.php');
 				$storage = $this->getStorage();
 				$download_image_library = $params->get('download_image_library');
 				$oImage = FabimageHelper::loadLib($download_image_library);
@@ -188,7 +188,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 			$params = $this->getParams();
 			//$storageType = $params->get('fileupload_storage_type', 'filesystemstorage');
 			$storageType = 'filesystemstorage';
-			require_once(JPATH_ROOT.DS.'plugins'.DS.'fabrik_element'.DS.'fileupload'.DS.'adaptors'.DS.$storageType.'.php');
+			require_once(JPATH_ROOT. '/' .'plugins/fabrik_element/fileupload/adaptors'. '/' .$storageType.'.php');
 			$this->storage = new $storageType($params);
 		}
 		return $this->storage;

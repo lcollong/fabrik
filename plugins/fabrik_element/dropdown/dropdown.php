@@ -73,7 +73,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 			}
 		}
 		$str = JHTML::_('select.genericlist', $opts, $name, $attribs, 'value', 'text', $selected, $id);
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			return implode(', ', $aRoValues);
 		}
 		$str .= $this->getAddOptionFields($repeatCounter);
@@ -89,7 +89,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 	{
 		$id = $this->getHTMLId($repeatCounter);
 		$element = $this->getElement();
-		$data = $this->_form->_data;
+		$data = $this->getFormModel()->_data;
 		$arSelected = $this->getValue($data, $repeatCounter);
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();

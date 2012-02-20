@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-list.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-list.php');
 
 class plgFabrik_ListCopy extends plgFabrik_List {
 
@@ -60,7 +60,7 @@ class plgFabrik_ListCopy extends plgFabrik_List {
 		$origPost = JRequest::get('post', 2);
 		JRequest::set(array(), 'post');
 		foreach ($ids as $id) {
-			$formModel->_rowId = $id;
+			$formModel->rowId = $id;
 			$row = $formModel->getData();
 			$row['Copy'] = '1';
 			$row['fabrik_copy_from_table'] = 1;

@@ -25,7 +25,8 @@ class FabrikModelConnections extends JModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields'])) {
+		if (empty($config['filter_fields']))
+		{
 			$config['filter_fields'] = array(
 				'c.id'
 				);
@@ -55,19 +56,22 @@ class FabrikModelConnections extends JModelList
 		$query->from('#__fabrik_connections AS c');
 
 		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
+		if (is_numeric($published))
+		{
 			$query->where('c.published = '.(int)$published);
-		} else if ($published === '') {
+		}
+		else if ($published === '')
+		{
 			$query->where('(c.published IN (0, 1))');
 		}
 
 		//Filter by search in title
 		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-			$query->where('(c.host LIKE '.$search.' OR c.database OR c.description LIKE '.$search.')');
+		if (!empty($search))
+		{
+			$search = $db->Quote('%' . $db->escape($search, true) . '%');
+			$query->where('(c.host LIKE ' . $search . ' OR c.database OR c.description LIKE ' . $search . ')');
 		}
-
 
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');
@@ -76,11 +80,11 @@ class FabrikModelConnections extends JModelList
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title') {
-			$orderCol = 'category_title '.$orderDirn.', ordering';
+		if ($orderCol == 'ordering' || $orderCol == 'category_title')
+		{
+			$orderCol = 'category_title ' . $orderDirn . ', ordering';
 		}
-		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
-
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		return $query;
 	}
 
@@ -127,8 +131,8 @@ class FabrikModelConnections extends JModelList
 
 	public function activeConnections()
 	{
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 		$query->select('*')->from('#__fabrik_connections')->where('published = 1');
 		$items	= $this->_getList($query);
 		return $items;

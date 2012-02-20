@@ -27,7 +27,7 @@ class fabrikViewCoverflow extends JView
 		$this->assign('filterFormURL', $this->get('FilterFormURL'));
 		$pluginParams = $model->getPluginParams();
 		$this->assignRef('params', $pluginParams);
-		$tmplpath = JPATH_ROOT.DS.'plugins'.DS.'fabrik_visualization'.DS.'coverflow'.DS.'views'.DS.'coverflow'.DS.'tmpl'.DS.$tmpl;
+		$tmplpath = JPATH_ROOT. '/' .'plugins/fabrik_visualization/coverflow/views/coverflow/tmpl'. '/' .$tmpl;
 		$this->_setPath('template', $tmplpath);
 		FabrikHelperHTML::script('media/com_fabrik/js/list.js');
 		//assign something to Fabrik.blocks to ensure we can clear filters

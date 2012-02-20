@@ -375,32 +375,40 @@ class FabrikFEModelListfilter extends FabModel {
 		//$condition =   $elementModel->getDefaultFilterCondition();
 		$condition = 'REGEXP';
 		$orig_search = $search;
-		foreach ($keys as $elid) {
+		foreach ($keys as $elid)
+		{
 			// $$$ hugh - need to reset $search each time round, in case getFilterValue has esacped something,
 			// like foo.exe to foo\\\.exe ... otherwise each time round we double the number of \s's
 			$search = $orig_search;
 			$elementModel = $elements[$elid];
-			if (!$elementModel->includeInSearchAll()) {
+			if (!$elementModel->includeInSearchAll())
+			{
 				continue;
 			}
 			$k = $elementModel->getFullName(false, false, false);
 			$k = FabrikString::safeColName($k);
 			//$eval = FABRIKFILTER_TEXT;
 			$eval = is_array($filters) ? JArrayHelper::getValue($filters, 'eval', FABRIKFILTER_TEXT) : FABRIKFILTER_TEXT;
-			if (!is_a($elementModel, 'plgFabrik_ElementDatabasejoin')) {
+			if (!is_a($elementModel, 'plgFabrik_ElementDatabasejoin'))
+			{
 				$fieldDesc = $elementModel->getFieldDescription();
-
-
-				if (JString::stristr($fieldDesc, 'INT')) {
-					if (is_numeric($search) && $condition == '=') {
+				if (JString::stristr($fieldDesc, 'INT'))
+				{
+					if (is_numeric($search) && $condition == '=')
+					{
 						$eval = FABRKFILTER_NOQUOTES;
 					}
 				}
 				$k2 = null;
-			} else {
-				if ($elementModel->isJoin()) {
+			}
+			else
+			{
+				if ($elementModel->isJoin())
+				{
 					$k2 = $elementModel->buildQueryElementConcat('', false);
-				} else {
+				}
+				else
+				{
 					$k2 = $elementModel->getJoinLabelColumn();
 				}
 			}
@@ -413,7 +421,8 @@ class FabrikFEModelListfilter extends FabModel {
 			// $$$ rob so search all on checkboxes/radio buttons etc will take the search value of 'one' and return '1'
 			$newsearch = $elementModel->getFilterValue($search, $condition, $eval);
 			$search = $newsearch[0];
-			if ($key !== false) {
+			if ($key !== false)
+			{
 				$filters['value'][$key] = $search;
 				$filters['condition'][$key] = $condition;
 				$filters['join'][$key] = 'OR';
@@ -433,7 +442,9 @@ class FabrikFEModelListfilter extends FabModel {
 				$filters['grouped_to_previous'][$key] = 1;
 				$filters['label'][$key] = $elparams->get('alt_list_heading') == '' ? $element->label : $elparams->get('alt_list_heading');
 				$filters['raw'][$key] = false;
-			} else {
+			}
+			else
+			{
 				$filters['value'][] = $search;
 				$filters['condition'][] = $condition;
 				$filters['join'][] = 'OR';
@@ -518,8 +529,8 @@ class FabrikFEModelListfilter extends FabModel {
 			$elements = $this->listModel->getElements('id');
 			$filter_elements = $this->listModel->getElements('filtername');
 			$key = 'com_fabrik.searchform.form'.$fromFormId.'.filters';
-			$tablename = $db->nameQuote($this->listModel->getTable()->db_table_name);
-			$searchfilters = $registry->getValue($key);
+			$tablename = $db->quoteName($this->listModel->getTable()->db_table_name);
+			$searchfilters = $registry->get($key);
 			for ($i = 0; $i < count($searchfilters['key']); $i++) {
 				$eval = FABRIKFILTER_TEXT;
 				$found = false;
@@ -542,7 +553,7 @@ class FabrikFEModelListfilter extends FabModel {
 						//$$$ rob - I've not actually tested this code
 						$joins = $this->listModel->getJoins();
 						foreach ($joins as $join) {
-							$key = $db->nameQuote($join->table_join) .'.'. array_pop(explode('.', $key));
+							$key = $db->quoteName($join->table_join) .'.'. array_pop(explode('.', $key));
 							if (array_key_exists($key, $filter_elements)) {
 								$found = true;
 								$elementModel = $filter_elements[$key];

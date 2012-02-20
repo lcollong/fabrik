@@ -12,10 +12,10 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 if (!class_exists('TwitterOAuth')) {
-	require_once(COM_FABRIK_FRONTEND.DS.'libs'.DS.'abraham-twitteroauth'.DS.'twitteroauth'.DS.'twitteroauth.php');
+	require_once(COM_FABRIK_FRONTEND . '/libs/abraham-twitteroauth/twitteroauth/twitteroauth.php');
 }
 
 class plgFabrik_FormTwitter extends plgFabrik_Form {
@@ -40,7 +40,7 @@ class plgFabrik_FormTwitter extends plgFabrik_Form {
 	 * @returns bol
 	 */
 
-	function onAfterProcess($params, &$formModel)
+	public function onAfterProcess($params, &$formModel)
 	{
 		$this->_process($params, $formModel);
 		//stop default redirect from occuring
@@ -228,7 +228,7 @@ class plgFabrik_FormTwitter extends plgFabrik_Form {
 			$bitly_login = $params->get('twitter_bitly_api_login', '');
 			$bitly_key = $params->get('twitter_bitly_api_key', '');
 			if (!empty($bitly_login) && !empty($bitly_key)) {
-				require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'libs'.DS.'bitly'.DS.'bitly.php');
+				require_once(JPATH_SITE . '/components/com_fabrik/libs/bitly/bitly.php');
 				$this->bitly = $bitly = new bitly( $bitly_login, $bitly_key);
 			}
 			else {

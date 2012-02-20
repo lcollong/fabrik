@@ -12,7 +12,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormReceipt extends plgFabrik_Form {
 
@@ -25,26 +25,18 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 	 * which calls this function has already done the work for you
 	 */
 
-	function getBottomContent(&$params)
+	function getBottomContent($params, $formModel)
 	{
-		if($params->get('ask-receipt')) {
+		if ($params->get('ask-receipt'))
+		{
 			$this->html = "
 			<label><input type=\"checkbox\" name=\"fabrik_email_copy\" class=\"contact_email_copy\" value=\"1\"  />
 			 ".JText::_('PLG_FORM_RECEIPT_EMAIL_ME_A_COPY') . "</label>";
-		}else{
+		}
+		else
+		{
 			$this->html = '';
 		}
-	}
-
-	/**
-	 * inject custom html into the bottom of the form
-	 * @param int plugin counter
-	 * @return string html
-	 */
-
-	function getBottomContent_result($c)
-	{
-		return $this->html;
 	}
 
 	/**
@@ -54,11 +46,13 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 	 * @param object form
 	 */
 
-	function onAfterProcess($params, &$formModel)
+	public function onAfterProcess($params, &$formModel)
 	{
-		if ($params->get('ask-receipt')) {
+		if ($params->get('ask-receipt'))
+		{
 			$post = JRequest::get('post');
-			if (!array_key_exists('fabrik_email_copy', $post)) {
+			if (!array_key_exists('fabrik_email_copy', $post))
+			{
 				return;
 			}
 		}
@@ -70,11 +64,11 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 
 		//getEmailData returns correctly formatted {tablename___elementname} keyed results
 		//_formData is there for legacy and may allow you to use {elementname} only placeholders for simple forms
-		$aData 		= array_merge($this->getEmailData(), $formModel->_formData);
+		$aData = array_merge($this->getEmailData(), $formModel->_formData);
 
 		$message = $params->get('receipt_message');
-		$editURL = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&amp;view=form&amp;fabrik=".$formModel->get('id')."&amp;rowid=".JRequest::getVar('rowid');
-		$viewURL = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&amp;view=details&amp;fabrik=".$formModel->get('id')."&amp;rowid=".JRequest::getVar('rowid');
+		$editURL = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&amp;view=form&amp;fabrik=" . $formModel->get('id') . "&amp;rowid=" . JRequest::getVar('rowid');
+		$viewURL = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&amp;view=details&amp;fabrik=" . $formModel->get('id') . "&amp;rowid=" . JRequest::getVar('rowid');
 		$editlink = "<a href=\"$editURL\">" . JText::_('EDIT') . "</a>";
 		$viewlink = "<a href=\"$viewURL\">" . JText::_('VIEW') . "</a>";
 		$message = str_replace('{fabrik_editlink}', $editlink, $message);
@@ -85,7 +79,8 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 		$message = $w->parseMessageForPlaceHolder($message, $aData, false);
 
 		$to = $w->parseMessageForPlaceHolder($params->get('receipt_to'), $aData, false);
-		if (empty($to)) {
+		if (empty($to))
+		{
 			// $$$ hugh - not much point trying to send if we don't have a To address
 			// (happens frequently if folk don't properly validate their form inputs and are using placeholders)
 			// @TODO - might want to add some feedback about email not being sent
@@ -106,18 +101,19 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 			}
 		}
 		*/
-		
 
 		$subject =  html_entity_decode($params->get('receipt_subject', ''));
 		$subject = $w->parseMessageForPlaceHolder($subject, null, false);
-		$from 		= $config->getValue('mailfrom');
-		$fromname = $config->getValue('fromname');
+		$from = $config->get('mailfrom');
+		$fromname = $config->get('fromname');
 		//darn silly hack for poor joomfish settings where lang parameters are set to overide joomla global config but not mail translations entered
 		$rawconfig = new JConfig();
-		if ($from === '') {
+		if ($from === '')
+		{
 			$from = $rawconfig->mailfrom;
 		}
-		if ($fromname === '') {
+		if ($fromname === '')
+		{
 			$fromname= $rawconfig->fromname;
 		}
 		$res = JUTility::sendMail( $from, $fromname, $to, $subject, $message, true);

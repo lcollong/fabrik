@@ -10,11 +10,11 @@
 defined('JPATH_BASE') or die();
 
 //required for menus
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'html.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'params.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'string.php');
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'parent.php');
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/helpers/html.php');
+require_once(JPATH_SITE . '/components/com_fabrik/helpers/params.php');
+require_once(JPATH_SITE . '/components/com_fabrik/helpers/string.php');
+require_once(JPATH_SITE . '/components/com_fabrik/helpers/parent.php');
+require_once(JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php');
 
 /**
  * Renders a list of fabrik or db tables

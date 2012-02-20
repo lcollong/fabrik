@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'visualization.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/visualization.php');
 
 class fabrikModelGooglemap extends FabrikFEModelVisualization {
 
@@ -271,7 +271,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 						}
 					} else {
 						//standard google map icon size
-						list($width, $height) = $this->markerSize(JPATH_SITE.DS.'images'.DS.'stories'.DS.$iconImg);
+						list($width, $height) = $this->markerSize(JPATH_SITE . '/images/stories'. '/' .$iconImg);
 					}
 					//just for moosehunt!
 					$radomize = ($_SERVER['HTTP_HOST'] == 'moosehunt.mobi') ? true :false;
@@ -307,7 +307,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 			//replace last icon?
 			$iconImg = JArrayHelper::getValue($aLastIcons, $c, '');
 			if ($iconImg != '') {
-				list($width, $height) = $this->markerSize(JPATH_SITE.DS.'images'.DS.'stories'.DS.$iconImg);
+				list($width, $height) = $this->markerSize(JPATH_SITE . '/images/stories'. '/' .$iconImg);
 				$icons[$v[0].$v[1]][3] = $iconImg;
 				$icons[$v[0].$v[1]][4] = $width;
 				$icons[$v[0].$v[1]][5] = $height;

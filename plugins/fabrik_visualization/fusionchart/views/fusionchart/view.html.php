@@ -13,21 +13,25 @@ class fabrikViewFusionchart extends JView
 		FabrikHelperHTML::framework();
 		FabrikHelperHTML::script('media/com_fabrik/js/list.js');
 		FabrikHelperHTML::script('media/com_fabrik/js/advanced-search.js');
-		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'html.php');
+		require_once(COM_FABRIK_FRONTEND . '/helpers/html.php');
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0) )));
 		$this->row = $model->getVisualization();
 		$model->setListIds();
 
-		if ($this->row->published == 0) {
+		if ($this->row->published == 0)
+		{
 			JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
 			return '';
 		}
 		$this->assign('requiredFiltersFound', $this->get('RequiredFiltersFound'));
-		if ($this->requiredFiltersFound) {
+		if ($this->requiredFiltersFound)
+		{
 			$this->assign('chart', $this->get('Fusionchart'));
-		} else {
+		}
+		else
+		{
 			$this->assign('chart', '');
 		}
 
@@ -41,16 +45,10 @@ class fabrikViewFusionchart extends JView
 		$this->assign('showTitle', JRequest::getInt('show-title', 1));
 		$pluginParams = $model->getPluginParams();
 		$tmpl = $pluginParams->get('fusionchart_layout', $tmpl);
-		$tmplpath = JPATH_ROOT.DS.'plugins'.DS.'fabrik_visualization'.DS.'fusionchart'.DS.'views'.DS.'fusionchart'.DS.'tmpl'.DS.$tmpl;
+		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' .$tmpl;
 		$this->_setPath('template', $tmplpath);
 
-		$ab_css_file = $tmplpath.DS."template.css";
-
-		if (JFile::exists($ab_css_file))
-		{
-			JHTML::stylesheet('template.css', 'plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/'.$tmpl.'/', true);
-		}
-
+		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' . $tmpl . '/template.css');
 		//assign something to Fabrik.blocks to ensure we can clear filters
 		$str = "head.ready(function() {
 			fabrikFusionChart{$this->row->id} = {};";

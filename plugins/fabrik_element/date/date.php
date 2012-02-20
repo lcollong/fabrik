@@ -41,7 +41,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	 * @return string formatted value
 	 */
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		if ($data == '') {
 			return '';
@@ -80,18 +80,18 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 			}
 		}
 		$data = json_encode($format);
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 
 	/**
 	 * shows the data formatted for the CSV export view
-	 * @param string data (should be in mySQL format already)
-	 * @param string element name
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
+	 * @param	string	data (should be in mySQL format already)
+	 * @param	string	element name
+	 * @param	object	all the data in the tables current row
+	 * @return	string	formatted value
 	 */
 
-	function renderListData_csv($data, $oAllRowsData)
+	function renderListData_csv($data, &$thisRow)
 	{
 		//@TODO: deal with time options (currently can be defined in date_table_format param).
 		$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
@@ -112,35 +112,49 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 		// $incRaw = JRequest::getVar('incraw', true);
 		$incRaw = false;
 
-		if ($f == 'Y-m-d') {
+		if ($f == 'Y-m-d')
+		{
 			$f = '%Y-%m-%d';
 		}
 		$format = array();
-		foreach ($data as $d) {
-			if (!in_array($d, $aNullDates)) {
-				if ($incRaw) {
+		foreach ($data as $d)
+		{
+			if (!in_array($d, $aNullDates))
+			{
+				if ($incRaw)
+				{
 					$format[] = $d;
 				}
-				else {
+				else
+				{
 					$date = JFactory::getDate($d);
 					// $$$ hugh - added the showtime test so we don't get the day offset issue,
 					// as per regular table render.
-					if ($params->get('date_showtime') && !$store_as_local) {
+					if ($params->get('date_showtime') && !$store_as_local)
+					{
 						$date->setTimeZone($timeZone);
 					}
-					if ($f == '{age}') {
+					if ($f == '{age}')
+					{
 						$format[] = date('Y') - $date->toFormat('%Y', true);
-					} else {
+					}
+					else
+					{
 						$format[] = $date->toFormat($f, true);
 					}
 				}
-			} else {
+			}
+			else
+			{
 				$format[] = '';
 			}
 		}
-		if (count($format) > 1) {
+		if (count($format) > 1)
+		{
 			return json_encode($format);
-		} else {
+		}
+		else
+		{
 			return implode('', $format);
 		}
 	}
@@ -207,7 +221,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 			$local = true;//$store_as_local;
 			$date = $oDate->toFormat($format, true);
 			$this->offsetDate = $oDate->toMySQL(true);
-			if (!$this->_editable) {
+			if (!$this->editable) {
 				$time = ($params->get('date_showtime', 0)) ? " " .$oDate->toFormat($timeformat, true) : '';
 				return $date.$time;
 			}
@@ -217,7 +231,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 				$time = $oDate->toFormat($timeformat, true);
 			}
 		} else {
-			if (!$this->_editable) {
+			if (!$this->editable) {
 				return '';
 			}
 			$date = '';
@@ -545,7 +559,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 			// $$$ rob 11/10/2011 if its hidden we dont want the defaultval as mysql
 			// format as its used by form.js duplcateGroup
 			// to set the value of the date element when its repeated.
-			$opts->defaultVal = $this->_editable ? $this->formattedDate : '';
+			$opts->defaultVal = $this->editable ? $this->formattedDate : '';
 		} */
 		$opts->defaultVal = $this->offsetDate;
 		$opts->showtime = $params->get('date_showtime', 0) ? true : false;
@@ -752,7 +766,8 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	 * Ensures submitted form data is converted back into the format
 	 * that the form would expect to get it in, if the data had been
 	 * draw from the database record
-	 * @param string submitted form value
+	 * @param   string   submitted form value
+	 * @param   int   group repeat counter
 	 * @return string formated value
 	 */
 
@@ -850,7 +865,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	 * @return string filter html
 	 */
 
-	function getFilter($counter, $normal = true)
+	public function getFilter($counter = 0, $normal = true)
 	{
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
@@ -1031,20 +1046,23 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	 * when importing csv data you can run this function on all the data to
 	 * format it into the format that the form would have submitted the date
 	 *
-	 * @param array data
-	 * @param string table column heading
-	 * @param bool data is raw
+	 * @param   array   data
+	 * @param   string  table column heading
+	 * @param   bool    data is raw
+	 * @return  array   data
 	 */
 
-	function prepareCSVData(&$data, $key, $is_raw = false)
+	public function prepareCSVData($data, $key, $is_raw = false)
 	{
-		if ($is_raw) {
+		if ($is_raw)
+		{
 			return;
 		}
 		$params = $this->getParams();
 		$format = $params->get('date_form_format', '%Y-%m-%d %H:%S:%I');
 		//go through data and turn any dates into unix timestamps
-		for ($j = 0; $j < count($data); $j++) {
+		for ($j = 0; $j < count($data); $j++)
+		{
 			$orig_data = $data[$j][$key];
 			$date = JFactory::getDate($data[$j][$key]);
 			$data[$j][$key] = $date->toFormat($format, true);
@@ -1053,10 +1071,12 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 			// like dates outside of UNIX timestamp range, so the previous line was zapping them. So I'm just restoring
 			// the date as found in the CSV file. This could have side effects if someone else tries to import invalid dates,
 			// but ... ah well.
-			if (empty($data[$j][$key]) && !empty($orig_data)) {
+			if (empty($data[$j][$key]) && !empty($orig_data)) 
+			{
 				$data[$j][$key] = $orig_data;
 			}
 		}
+		return $data;
 	}
 
 	/**
@@ -1085,7 +1105,8 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 		$value[1] = $this->tableDateToMySQL($value[1]);
 		// $$$ hugh - if the first date is later than the second, swap 'em round
 		// to keep 'BETWEEN' in the query happy
-		if (strtotime($value[0]) > strtotime($value[1])) {
+		if (strtotime($value[0]) > strtotime($value[1])) 
+		{
 			$tmp_value = $value[0];
 			$value[0] = $value[1];
 			$value[1] = $tmp_value;

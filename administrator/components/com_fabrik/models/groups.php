@@ -24,7 +24,8 @@ class FabrikModelGroups extends FabModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields'])) {
+		if (empty($config['filter_fields']))
+		{
 			$config['filter_fields'] = array(
 				'g.id', 'g.name', 'g.label', 'f.label', 'g.published'
 				);
@@ -42,8 +43,8 @@ class FabrikModelGroups extends FabModelList
 	protected function getListQuery()
 	{
 		// Initialise variables.
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select(
@@ -62,11 +63,11 @@ class FabrikModelGroups extends FabModelList
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering');
 		$orderDirn	= $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title') {
-			$orderCol = 'category_title '.$orderDirn.', ordering';
+		if ($orderCol == 'ordering' || $orderCol == 'category_title')
+		{
+			$orderCol = 'category_title ' . $orderDirn . ', ordering';
 		}
-		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
-
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		$this->filterByFormQuery($query, 'fg');
 		return $query;
 	}
@@ -86,23 +87,27 @@ class FabrikModelGroups extends FabModelList
 		$db = $this->getDbo();
 		// Filter by published state
 		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
-			$query->where('g.published = '.(int)$published);
-		} else if ($published === '') {
+		if (is_numeric($published))
+		{
+			$query->where('g.published = ' . (int)$published);
+		}
+		else if ($published === '')
+		{
 			$query->where('(g.published IN (0, 1))');
 		}
 
 		//Filter by search in title
 		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-			$query->where('(g.name LIKE '.$search.' OR g.label LIKE '.$search.')');
+		if (!empty($search))
+		{
+			$search = $db->Quote('%' . $db->escape($search, true) . '%');
+			$query->where('(g.name LIKE ' . $search . ' OR g.label LIKE ' . $search . ')');
 		}
 		$this->_db->setQuery($query, $limitstart, $limit);
 		$result = $this->_db->loadObjectList();
 
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
 		$query->select('COUNT(id) AS count, group_id');
 		$query->from('#__{package}_elements');
@@ -110,7 +115,8 @@ class FabrikModelGroups extends FabModelList
 
 		$db->setQuery($query);
 		$elementcount = $db->loadObjectList('group_id');
-		for ($i=0; $i < count($result); $i++) {
+		for ($i = 0; $i < count($result); $i++)
+		{
 			$k = $result[$i]->id;
 			$result[$i]->_elementCount = @$elementcount[$k]->count;
 		}

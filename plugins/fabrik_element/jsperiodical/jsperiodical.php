@@ -10,26 +10,28 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementJSPeriodical extends plgFabrik_Element
 {
-	/**
-	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
-	 */
 
-	function renderListData($data, $oAllRowsData)
+	/**
+	* shows the data formatted for the table view
+	* @param	string	data
+	* @param	object	all the data in the tables current row
+	* @return	string	formatted value
+	*/
+	
+	function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$format = $params->get('text_format_string');
-		if ($format  != '') {
+		if ($format  != '')
+		{
 			 $str = sprintf($format, $data);
 			 $data = eval($str);
 		}
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 
 	/**
@@ -41,53 +43,60 @@ class plgFabrik_ElementJSPeriodical extends plgFabrik_Element
 		return true;
 	}
 
-		/**
+	/**
 	 * draws the form element
-	 * @param array data to preopulate element with
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * @param	array	data to preopulate element with
+	 * @param	int		repeat group counter
+	 * @return	string	returns element html
 	 */
 
 	function render($data, $repeatCounter = 0)
 	{
-		$name 			= $this->getHTMLName($repeatCounter);
-		$id 				= $this->getHTMLId($repeatCounter);
-		$params 		=& $this->getParams();
-		$element 		= $this->getElement();
-		$size 			= $element->width;
+		$name = $this->getHTMLName($repeatCounter);
+		$id = $this->getHTMLId($repeatCounter);
+		$params = $this->getParams();
+		$element = $this->getElement();
+		$size = $element->width;
 		$maxlength  = $params->get('maxlength', 0);
-		if ((int)$maxlength === 0) {
+		if ((int)$maxlength === 0)
+		{
 			$maxlength = $size;
 		}
-
 		$value = $this->getValue($data, $repeatCounter);
 		$type = "text";
-		if (isset($this->_elementError) && $this->_elementError != '') {
+		if (isset($this->_elementError) && $this->_elementError != '')
+		{
 			$type .= " elementErrorHighlight";
 		}
-		if ($element->hidden == '1') {
+		if ($element->hidden == '1')
+		{
 			$type = "hidden";
 		}
 		$sizeInfo =  " size=\"$size\" maxlength=\"$maxlength\"";
-		if (!$this->_editable) {
+		if (!$this->editable)
+		{
 			$format = $params->get('text_format_string');
-			if ($format  != '') {
+			if ($format != '')
+			{
 				 $value =  eval(sprintf($format,$value));
 			}
-			if ($element->hidden == '1') {
+			if ($element->hidden == '1')
+			{
 				return "<!--" . $value . "-->";
-			} else {
+			}
+			else {
+				
 				return $value;
 			}
 		}
-
 		$str = "<input class=\"fabrikinput inputbox $type\" type=\"$type\" name=\"$name\" id=\"$id\" $sizeInfo value=\"$value\" />\n";
 		return $str;
 	}
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * @param	int		repeat group counter
+	 * @return	string	javascript to create instance. Instance name must be 'el'
 	 */
 
 	function elementJavascript($repeatCounter)
@@ -108,10 +117,12 @@ class plgFabrik_ElementJSPeriodical extends plgFabrik_Element
 	function getFieldDescription()
 	{
 		$p = $this->getParams();
-		if ($this->encryptMe()) {
+		if ($this->encryptMe())
+		{
 			return 'BLOB';
 		}
-		switch ( $p->get('text_format')) {
+		switch ( $p->get('text_format'))
+		{
 			case 'text':
 			default:
 				$objtype = "VARCHAR(255)";

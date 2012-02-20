@@ -25,7 +25,8 @@ class FabrikModelPackages extends JModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields'])) {
+		if (empty($config['filter_fields']))
+		{
 			$config['filter_fields'] = array(
 				'p.id', 'p.label', 'p.published'
 				);
@@ -42,8 +43,8 @@ class FabrikModelPackages extends JModelList
 	protected function getListQuery()
 	{
 		// Initialise variables.
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select(
@@ -61,26 +62,31 @@ class FabrikModelPackages extends JModelList
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
-			$query->where('p.published = '.(int)$published);
-		} else if ($published === '') {
+		if (is_numeric($published))
+		{
+			$query->where('p.published = ' . (int)$published);
+		}
+		else if ($published === '')
+		{
 			$query->where('(p.published IN (0, 1))');
 		}
 
 		$query->where('external_ref <> 1');
 		//Filter by search in title
 		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-			$query->where('(p.label LIKE '.$search.' OR p.component_name LIKE '.$search.')');
+		if (!empty($search))
+		{
+			$search = $db->Quote('%' . $db->escape($search, true) . '%');
+			$query->where('(p.label LIKE ' . $search . ' OR p.component_name LIKE ' . $search . ')');
 		}
 		// Add the list ordering clause.
-		$orderCol	= $this->state->get('list.ordering');
-		$orderDirn	= $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title') {
-			$orderCol = 'category_title '.$orderDirn.', ordering';
+		$orderCol = $this->state->get('list.ordering');
+		$orderDirn = $this->state->get('list.direction');
+		if ($orderCol == 'ordering' || $orderCol == 'category_title')
+		{
+			$orderCol = 'category_title ' . $orderDirn . ', ordering';
 		}
-		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
+		$query->order($db->escape($orderCol.' '.$orderDirn));
 
 		return $query;
 	}
@@ -132,13 +138,17 @@ class FabrikModelPackages extends JModelList
 	public function getItems()
 	{
 		$items = parent::getItems();
-		foreach ($items as &$i) {
-			$n = $i->component_name .'_'.$i->version;
-			$file = JPATH_ROOT.DS.'tmp'.DS.$n.DS.'pkg_'.$n.'.zip';
-			$url = COM_FABRIK_LIVESITE.'tmp/'.$n.'/pkg_'.$n.'.zip';
-			if (JFile::exists($file)) {
-			$i->file = "<a href=\"$url\">pkg_".$n.".zip</a>";
-			}else{
+		foreach ($items as &$i)
+		{
+			$n = $i->component_name . '_' . $i->version;
+			$file = JPATH_ROOT . '/tmp/' . $n . '/pkg_' . $n . '.zip';
+			$url = COM_FABRIK_LIVESITE.'tmp/' . $n . '/pkg_' . $n . '.zip';
+			if (JFile::exists($file))
+			{
+				$i->file = '<a href="' . $url . '">pkg_' . $n . '.zip</a>';
+			}
+			else
+			{
 				$i->file = JText::_('COM_FABRIK_EXPORT_PACKAGE_TO_CREATE_ZIP');
 			}
 		}

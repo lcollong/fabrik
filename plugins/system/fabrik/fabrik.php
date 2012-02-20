@@ -49,11 +49,21 @@ class plgSystemFabrik extends JPlugin
 	function onAfterInitialise()
 	{
 		jimport('joomla.filesystem.file');
-		$p = JPATH_SITE.DS.'plugins'.DS.'system'.DS.'fabrik'.DS;
-		$defines = JFile::exists($p.'user_defines.php') ? $p.'user_defines.php' : $p.'defines.php';
+		$p = JPATH_SITE . '/plugins/system/fabrik/';
+		$defines = JFile::exists($p.'user_defines.php') ? $p . 'user_defines.php' : $p . 'defines.php';
 		$doc = JFactory::getDocument();
 		//$doc->addCustomTag('<meta http-equiv="X-UA-Compatible" content="IE=9" />');
 		require_once($defines);
+		
+		$config = JComponentHelper::getParams('com_fabrik');
+		if ($config->get('use_fabrikdebug') == 1)
+		{
+			// Include the JLog class.
+			jimport('joomla.log.log');
+			
+			// Add the logger.
+			JLog::addLogger(array('text_file' => 'fabrik.log.php'));
+		}
 	}
 
 	/**
@@ -70,25 +80,27 @@ class plgSystemFabrik extends JPlugin
 
 	function onContentSearch($text, $phrase='', $ordering='', $areas=null)
 	{
-		if (defined('COM_FABRIK_SEARCH_RUN')) {
+		if (defined('COM_FABRIK_SEARCH_RUN'))
+		{
 			return;
 		}
 		define('COM_FABRIK_SEARCH_RUN', true);
-		JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models', 'FabrikFEModel');
+		JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
-		$user	= JFactory::getUser();
+		$user = JFactory::getUser();
 		$db	= FabrikWorker::getDbo(true);
 
-		require_once(JPATH_SITE.DS.'components'.DS.'com_content'.DS.'helpers'.DS.'route.php');
+		require_once(JPATH_SITE . '/components/com_content/helpers/route.php');
 
 		// load plugin params info
 		$limit = $this->params->def('search_limit', 50);
 		$text = trim($text);
-		if ($text == '') {
+		if ($text == '')
+		{
 			return array();
 		}
-
-		switch ($ordering) {
+		switch ($ordering)
+		{
 			case 'oldest':
 				$order = 'a.created ASC';
 				break;
@@ -119,7 +131,8 @@ class plgSystemFabrik extends JPlugin
 
 		$list = array();
 		$ids = $db->loadColumn();
-		if ($db->getErrorNum() != 0) {
+		if ($db->getErrorNum() != 0)
+		{
 			jexit('search:' . $db->getErrorMsg());
 		}
 		$section = $this->params->get('search_section_heading');
@@ -134,7 +147,8 @@ class plgSystemFabrik extends JPlugin
 
 		$listModel = JModel::getInstance('list', 'FabrikFEModel');
 		$app = JFactory::getApplication();
-		foreach ($ids as $id) {
+		foreach ($ids as $id)
+		{
 			//	unset enough stuff in the table model to allow for correct query to be run
 			$listModel->reset();
 
@@ -149,9 +163,11 @@ class plgSystemFabrik extends JPlugin
 			unset($allrows);
 			$used = memory_get_usage();
 			$usage[] = memory_get_usage();
-			if (count($usage) > 2) {
+			if (count($usage) > 2)
+			{
 				$diff = $usage[count($usage)-1] - $usage[count($usage)-2];
-				if ($diff + $usage[count($usage)-1] > $memory - $memSafety) {
+				if ($diff + $usage[count($usage)-1] > $memory - $memSafety)
+				{
 					JError::raiseNotice(500, 'Some records were not searched due to memory limitations');
 					break;
 				}
@@ -165,8 +181,8 @@ class plgSystemFabrik extends JPlugin
 			$requestKey = 'fabrik_list_filter_all.'.$listModel->getRenderContext();
 			//set the request variable that fabrik uses to search all records
 			JRequest::setVar($requestKey, $text, 'post');
-			
-			$table = $listModel->getTable(true);
+			$listModel->clearTable();
+			$table = $listModel->getTable();
 			$fabrikDb = $listModel->getDb();
 			$params = $listModel->getParams();
 
@@ -177,7 +193,8 @@ class plgSystemFabrik extends JPlugin
 
 			//the table shouldn't be included in the search results
 			//or we have reached the max number of records to show.
-			if (!$params->get('search_use') || $limit <= 0) {
+			if (!$params->get('search_use') || $limit <= 0)
+			{
 				continue;
 			}
 
@@ -191,27 +208,35 @@ class plgSystemFabrik extends JPlugin
 			$elementModel = $listModel->getFormModel()->getElement($params->get('search_description', $table->label), true);
 			$descname = is_object($elementModel) ? $elementModel->getFullName(false, true) : '';
 
-
-			$elementModel =& $listModel->getFormModel()->getElement($params->get('search_title', 0), true);
+			$elementModel = $listModel->getFormModel()->getElement($params->get('search_title', 0), true);
 			$title = is_object($elementModel) ? $elementModel->getFullName(false, true) : '';
 
 			$aAllowedList = array();
 			$pk = $table->db_primary_key;
-			foreach ($allrows as $group) {
-				foreach ($group as $oData) {
+			foreach ($allrows as $group)
+			{
+				foreach ($group as $oData)
+				{
 					$pkval = $oData->__pk_val;
-					if ($app->isAdmin()) {
+					if ($app->isAdmin())
+					{
 						$href = $oData->fabrik_edit_url;
-					} else {
+					}
+					else
+					{
 						$href = $oData->fabrik_view_url;
 					}
-					if (!in_array($href, $urls)) {
+					if (!in_array($href, $urls))
+					{
 						$limit --;
 						$urls[] = $href;
 						$o = new stdClass();
-						if (isset($oData->$title)) {
+						if (isset($oData->$title))
+						{
 							$o->title = $table->label .' : '. $oData->$title;
-						} else {
+						}
+						else
+						{
 							$o->title = $table->label;
 						}
 						$o->_pkey = $table->db_primary_key;
@@ -220,11 +245,7 @@ class plgSystemFabrik extends JPlugin
 						$o->href = $href;
 						$o->created = '';
 						$o->browsernav = 2;
-						if (isset($oData->$descname)) {
-							$o->text = $oData->$descname;
-						} else {
-							$o->text = '';
-						}
+						$o->text = isset($oData->$descname) ? $oData->$descname : '';
 						$o->title = strip_tags($o->title);
 						$aAllowedList[] = $o;
 					}
@@ -233,8 +254,10 @@ class plgSystemFabrik extends JPlugin
 			}
 		}
 		$allList = array();
-		foreach ($list as $li) {
-			if (is_array($li) && !empty($li)) {
+		foreach ($list as $li)
+		{
+			if (is_array($li) && !empty($li))
+			{
 				$allList = array_merge($allList, $li);
 			}
 		}

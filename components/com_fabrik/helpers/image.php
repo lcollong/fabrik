@@ -29,11 +29,13 @@ class FabimageHelper
 	{
 		$libs = array();
 		$gds = FabimageHelper::testGD();
-		foreach ($gds as $key => $val) {
+		foreach ($gds as $key => $val)
+		{
 			$libs[] = JHTML::_('select.option', $key, $val);
 		}
 		$im = FabimageHelper::testImagemagick();
-		foreach ($im as $key => $val) {
+		foreach ($im as $key => $val)
+		{
 			$libs[] = JHTML::_('select.option', $key, $val);
 		}
 		return $libs;
@@ -49,9 +51,12 @@ class FabimageHelper
 	public function loadLib($lib)
 	{
 		$class = "Fabimage" . $lib;
-		if (class_exists($class)) {
+		if (class_exists($class))
+		{
 			return new $class();
-		} else {
+		}
+		else
+		{
 			return JError::raiseError(500, "can't load class: $class");
 		}
 	}
@@ -65,17 +70,24 @@ class FabimageHelper
 		$output = ob_get_contents();
 		ob_end_clean();
 		$matches[1] = '';
-		if ($output !== '') {
-			if (preg_match("/GD Version[ \t]*(<[^>]+>[ \t]*)+([^<>]+)/s", $output, $matches)) {
+		if ($output !== '')
+		{
+			if (preg_match("/GD Version[ \t]*(<[^>]+>[ \t]*)+([^<>]+)/s", $output, $matches))
+			{
 				$gdversion = $matches[2];
-			} else {
+			}
+			else
+			{
 				return $gd;
 			}
 		}
-		if (function_exists('imagecreatetruecolor') && function_exists('imagecreatefromjpeg')) {
+		if (function_exists('imagecreatetruecolor') && function_exists('imagecreatefromjpeg'))
+		{
 			$gdversion = isset($gdversion) ? $gdversion : 2;
 			$gd['gd2'] = "GD: " . $gdversion;
-		} elseif (function_exists('imagecreatefromjpeg')) {
+		}
+		elseif (function_exists('imagecreatefromjpeg'))
+		{
 			$gdversion = isset($gdversion) ? $gdversion : 1;
 			$gd['gd1'] = "GD: " . $gdversion;
 		}
@@ -84,14 +96,18 @@ class FabimageHelper
 
 	protected static function testImagemagick()
 	{
-		if (function_exists("NewMagickWand")) {
+		if (function_exists("NewMagickWand"))
+		{
 			$im["IM"] = "Magick wand";
-		} else {
+		}
+		else
+		{
 			$status = '';
 			$output = array();
 			@exec('convert -version', $output, $status);
 			$im = array();
-			if (!$status && class_exists('Imagick')) {
+			if (!$status && class_exists('Imagick'))
+			{
 				if (preg_match("/imagemagick[ \t]+([0-9\.]+)/i",$output[0],$matches))
 				$im["IM"] = $matches[0];
 			}
@@ -121,7 +137,8 @@ class Fabimage
 	function GetImgType($filename)
 	{
 		$info = getimagesize( $filename);
-		switch ($info[2]) {
+		switch ($info[2])
+		{
 			case 1:
 				return "gif";
 				break;
@@ -148,18 +165,26 @@ class FabimageGD extends Fabimage
 	function imageFromFile($file)
 	{
 		$ext = strtolower(end(explode('.', $file)));
-		if ($ext == 'jpg' || $ext == 'jpeg') {
+		if ($ext == 'jpg' || $ext == 'jpeg')
+		{
 			$img = @imagecreatefromjpeg($file);
 			$header = "image/jpeg";
-		} else if ($ext == 'png') {
+		}
+		else if ($ext == 'png')
+		{
 			$img = @imagecreatefrompng($file);
 			$header = "image/png";
 			/* Only if your version of GD includes GIF support*/
-		} else if ($ext == 'gif') {
-			if (function_exists( imagecreatefromgif )) {
+		}
+		else if ($ext == 'gif')
+		{
+			if (function_exists( imagecreatefromgif ))
+			{
 				$img = @imagecreatefromgif( $file );
 				$header = "image/gif";
-			} else {
+			}
+			else
+			{
 				$img = JError::raiseWarning(21,"imagecreate from gif not available");
 			}
 		}
@@ -175,7 +200,8 @@ class FabimageGD extends Fabimage
 	protected function imageCreateFrom($source)
 	{
 		$ext = strtolower(JFile::getExt($source));
-		switch ($ext) {
+		switch ($ext)
+		{
 			case 'jpg':
 			case 'jpeg':
 				$source = imagecreatefromjpeg($source);
@@ -200,7 +226,8 @@ class FabimageGD extends Fabimage
 	{
 		$ext = strtolower(JFile::getExt($destCropFile));
 		ob_start();
-		switch ($ext) {
+		switch ($ext)
+		{
 			case 'jpg':
 			case 'jpeg':
 				$source = imagejpeg($image, null, 100);
@@ -231,10 +258,12 @@ class FabimageGD extends Fabimage
 
 		// Rotates the image
 		$rotate = imagerotate($source, $degrees, 0);
-		if ($rotate === false) {
+		if ($rotate === false)
+		{
 			JError::raiseNotice(500, 'Image rotation failed');
 		}
-		if ($dest != '') {
+		if ($dest != '')
+		{
 			$this->imageToFile($dest, $rotate);
 			list($width, $height) = getimagesize($dest);
 		}
@@ -263,7 +292,8 @@ class FabimageGD extends Fabimage
 		$image_p = imagecreatetruecolor($new_width, $new_height);
 		imagecopyresampled($image_p, $image, $destX, $destY, 0, 0, $new_width, $new_height, $width, $height);
 
-		if ($dest != '') {
+		if ($dest != '')
+		{
 			$this->imageToFile($dest, $image_p);
 		}
 		return $image_p;
@@ -282,19 +312,23 @@ class FabimageGD extends Fabimage
 	public function resize($maxWidth, $maxHeight, $origFile, $destFile)
 	{
 		/* check if the file exists*/
-		if (!$this->storage->exists($origFile)) {
+		if (!$this->storage->exists($origFile))
+		{
 			return JError::raiseError(500, "no file found for $origFile");
 		}
 		/* Load image*/
 		list($img, $header) = $this->imageFromFile($origFile);
-		if (JError::isError($img)){
+		if (JError::isError($img))
+		{
 			return $img;
 		}
 		$ext = strtolower(end(explode('.', $origFile)));
 		/* If an image was successfully loaded, test the image for size*/
-		if ($img) {
+		if ($img)
+		{
 			/* handle image transpacency for original image */
-			if (function_exists(imagealphablending)) {
+			if (function_exists(imagealphablending))
+			{
 				imagealphablending($img, false);
 				imagesavealpha($img, true);
 			}
@@ -303,13 +337,15 @@ class FabimageGD extends Fabimage
 			$height = imagesy($img);
 			$scale = min($maxWidth / $width, $maxHeight / $height);
 			/* If the image is larger than the max shrink it*/
-			if ($scale < 1) {
+			if ($scale < 1)
+			{
 				$new_width = floor($scale * $width);
 				$new_height = floor($scale * $height);
 				/* Create a new temporary image*/
 				$tmp_img = imagecreatetruecolor($new_width, $new_height);
 				/* handle image transparency for resized image */
-				if (function_exists(imagealphablending)) {
+				if (function_exists(imagealphablending))
+				{
 					imagealphablending($tmp_img, false);
 					imagesavealpha($tmp_img, true);
 				}
@@ -321,12 +357,12 @@ class FabimageGD extends Fabimage
 			}
 		}
 		/* Create error image if necessary*/
-		if (!$img) {
+		if (!$img)
+		{
 			return JError::raiseWarning(21, "resize: no image created for $origFile, extension = $ext, destination = $destFile  ");
 		}
 		/* save the file */
 		$this->writeImg($img, $destFile, $header);
-
 		$this->_thumbPath = $destFile;
 	}
 
@@ -371,7 +407,8 @@ class FabimageGD extends Fabimage
 		$origH = imagesy($origImg);
 
 		//if the orig image is smaller than the destination then increase its canvas and fill it with the bg
-		if ($origW < $srcW || $origH < $srcH) {
+		if ($origW < $srcW || $origH < $srcH)
+		{
 			$srcBg = imagecreatetruecolor($srcW, $srcH);
 			imagefilledrectangle($srcBg, 0 , 0 , (int)$srcW, (int)$srcH , $bg);
 			imagecopyresampled($srcBg, $origImg, 0, 0, 0, 0, $origW, $origH, $origW, $origH);
@@ -391,27 +428,36 @@ class FabimageGD extends Fabimage
 
 	function writeImg($img, $destFile, $header)
 	{
-		if ($header == "image/jpeg") {
+		if ($header == "image/jpeg")
+		{
 			ob_start();
 			imagejpeg( $img, "", 100);
 			$image = ob_get_contents();
 			ob_end_clean();
 			$this->storage->write($destFile, $image);
-		} else {
-			if ($header == "image/png") {
+		}
+		else
+		{
+			if ($header == "image/png")
+			{
 				ob_start();
 				imagepng($img, "", 0);
 				$image = ob_get_contents();
 				ob_end_clean();
 				$this->storage->write($destFile, $image);
-			} else {
-				if (function_exists("imagegif")) {
+			}
+			else
+			{
+				if (function_exists("imagegif"))
+				{
 					ob_start();
 					imagegif($img, "", 100);
 					$image = ob_get_contents();
 					ob_end_clean();
 					$this->storage->write($destFile, $image);
-				} else {
+				}
+				else
+				{
 					/* try using imagemagick to convert gif to png:*/
 					$image_file = imgkConvertImage($image_file,$baseDir,$destDir, ".png");
 				}
@@ -438,46 +484,58 @@ class FabimageGD2 extends FabimageGD
 	{
 
 		/* check if the file exists*/
-		if (!$this->storage->exists($origFile)) {
+		if (!$this->storage->exists($origFile))
+		{
 			return JError::raiseError(500, "no file found for $origFile");
 		}
-
 		/* Load image*/
 		$img = null;
 		$ext = $this->GetImgType($origFile);
-		if(!$ext) {
+		if (!$ext)
+		{
 			return;
 		}
 		ini_set('display_errors', true);
 		$memory = ini_get('memory_limit');
 		$intmemory = FabrikString::rtrimword($memory, 'M');
-		if ($intmemory < 50) {
+		if ($intmemory < 50)
+		{
 			ini_set('memory_limit', '50M');
 		}
-		if ($ext == 'jpg' || $ext == 'jpeg') {
+		if ($ext == 'jpg' || $ext == 'jpeg')
+		{
 			$img = imagecreatefromjpeg($origFile);
 			$header = "image/jpeg";
-		} else if ($ext == 'png') {
+		}
+		else if ($ext == 'png')
+		{
 			$img = imagecreatefrompng($origFile);
 			$header = "image/png";
 			/* Only if your version of GD includes GIF support*/
-		} else if ($ext == 'gif') {
-			if (function_exists(imagecreatefromgif)) {
+		}
+		else if ($ext == 'gif')
+		{
+			if (function_exists(imagecreatefromgif))
+			{
 				$img = imagecreatefromgif($origFile);
 				$header = "image/gif";
-			} else {
+			}
+			else
+			{
 				JError::raiseWarning(21, "imagecreate from gif not available");
 			}
 		}
 		/* If an image was successfully loaded, test the image for size*/
-		if ($img) {
+		if ($img)
+		{
 			/* Get image size and scale ratio*/
 			$width = imagesx($img);
 			$height = imagesy($img);
 
 			$scale = min($maxWidth / $width, $maxHeight / $height);
 			/* If the image is larger than the max shrink it*/
-			if ($scale < 1) {
+			if ($scale < 1)
+			{
 				$new_width = floor($scale * $width);
 				$new_height = floor($scale * $height);
 				/* Create a new temporary image*/
@@ -490,35 +548,44 @@ class FabimageGD2 extends FabimageGD
 			}
 
 		}
-		if (!$img) {
+		if (!$img)
+		{
 			JError::raiseWarning(21, "no image created for $origFile, extension = $ext , destination = $destFile ");
 		}
 
 		/* save the file
 		 * wite them out to output buffer first so that we can use JFile to write them
 		 to the server (potential using J ftp layer)  */
-		if ($header == "image/jpeg") {
-
+		if ($header == "image/jpeg")
+		{
 			ob_start();
 			imagejpeg($img, "", 100);
 			$image = ob_get_contents();
 			ob_end_clean();
 			$this->storage->write($destFile, $image);
-		} else {
-			if ($header == "image/png") {
+		}
+		else
+		{
+			if ($header == "image/png")
+			{
 				ob_start();
 				imagepng($img, "", 0);
 				$image = ob_get_contents();
 				ob_end_clean();
 				$this->storage->write($destFile, $image);
-			} else {
-				if (function_exists("imagegif")) {
+			}
+			else
+			{
+				if (function_exists("imagegif"))
+				{
 					ob_start();
 					imagegif($img, "", 100);
 					$image = ob_get_contents();
 					ob_end_clean();
 					$this->storage->write($destFile, $image);
-				} else {
+				}
+				else
+				{
 					/* try using imagemagick to convert gif to png:*/
 					$image_file = imgkConvertImage($image_file, $baseDir, $destDir, ".png");
 				}
@@ -527,8 +594,6 @@ class FabimageGD2 extends FabimageGD
 		$this->_thumbPath = $destFile;
 		ini_set('memory_limit', $memory);
 	}
-
-
 }
 
 class FabimageIM extends Fabimage
@@ -554,36 +619,41 @@ class FabimageIM extends Fabimage
 	function resize($maxWidth, $maxHeight, $origFile, $destFile)
 	{
 		$ext = $this->GetImgType($origFile);
-		if (!$ext) {
+		if (!$ext)
+		{
 			//false so not an image type so cant resize
 			// $$$ hugh - testing making thumbs for PDF's, so need a little tweak here
 			$originfo = pathinfo($origFile);
-			if (strtolower($originfo['extension']) != 'pdf') {
+			if (strtolower($originfo['extension']) != 'pdf')
+			{
 				return;
 			}
 		}
 		ini_set('display_errors', true);
 		//see if the imagick image lib is installed
-		if (class_exists('Imagick')) {
+		if (class_exists('Imagick'))
+		{
 
 			// $$$ hugh - having a go at handling PDF thumbnails, which should work as long as the server
 			// has ghostscript (GS) installed.  Don't have a generic test for GS being available, so
 			// it'll just fail if no GS.
 
 			$originfo = pathinfo($origFile);
-			if (strtolower($originfo['extension']) == 'pdf') {
+			if (strtolower($originfo['extension']) == 'pdf')
+			{
 				$pdf_thumb_type = 'png'; // could use jpg or whatever
 				// OK, it's a PDF, so first we need to add the page number we want to the source filename
 				$pdf_file = $origFile . '[0]';
 				// Now check to see if the destination filename needs changing - existing code will probably
 				// just have used the sourcefile extension for the thumb file.
 				$destinfo = pathinfo($destFile);
-				if (strtolower($destinfo['extension']) == 'pdf') {
+				if (strtolower($destinfo['extension']) == 'pdf')
+				{
 					// rebuild $destFile with valid image extension
 					// NOTE - changed $destFile arg to pass by reference OOOPS can't do that!
 
 					// $$$ rob 04/08/2011 wont work in php 5.1
-					//$destFile = $destinfo['dirname'] . DS . $destinfo['filename'] . '.' . $pdf_thumb_type;
+					//$destFile = $destinfo['dirname'] . '/' . $destinfo['filename'] . '.' . $pdf_thumb_type;
 					$thumb_file = JFile::stripExt($destFile).'.'.$pdf_thumb_type;
 
 				}
@@ -595,7 +665,8 @@ class FabimageIM extends Fabimage
 				$im->writeImage($destFile);
 				$im->destroy();
 			}
-			else {
+			else
+			{
 				$im = new Imagick();
 
 				/* Read the image file */
@@ -611,10 +682,12 @@ class FabimageIM extends Fabimage
 				$im->destroy();
 			}
 			$this->_thumbPath = $destFile;
-		} else {
+		}
+		else
+		{
 			$resource = NewMagickWand();
-
-			if (!MagickReadImage($resource, $origFile)) {
+			if (!MagickReadImage($resource, $origFile))
+			{
 				echo "ERROR!";
 				print_r(MagickGetException($resource));
 			}

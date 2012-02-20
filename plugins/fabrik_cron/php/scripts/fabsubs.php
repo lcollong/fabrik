@@ -3,8 +3,8 @@
 defined('_JEXEC') or die();
 
 jimport('joomla.mail.helper');
-JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabsubs'.DS.'tables');
-require_once(JPATH_ROOT.DS.'fabrik_plugins'.DS.'form'.DS.'paypal'.DS.'scripts'.DS.'fabrikar_subs.php');
+JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabsubs/tables');
+require_once(JPATH_ROOT . '/fabrik_plugins/form/paypal/scripts/fabrikar_subs.php');
 
 $db = FabrikWorker::getDbo();
 
@@ -33,9 +33,9 @@ $expiration_mails = $db->loadObjectList('emailday');
 
 
 $config = JFactory::getConfig();
-$sitename = $config->getValue('sitename');
-$mailfrom = $config->getValue('mailfrom');
-$fromname = $config->getValue('fromname');
+$sitename = $config->get('sitename');
+$mailfrom = $config->get('mailfrom');
+$fromname = $config->get('fromname');
 $url = str_replace('/administrator', '', JURI::base());
 
 

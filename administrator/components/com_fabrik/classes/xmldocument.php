@@ -41,7 +41,7 @@ class JDocumentXML extends JDocument {
 	function render($cache = false, $params = array())
 	{
 		// Instantiate feed renderer and set the mime encoding
-		require_once(dirname(__FILE__).DS.'renderer'.DS.'xml.php');
+		require_once(dirname(__FILE__) . '/renderer/xml.php');
 		$renderer =& $this->loadRenderer('xml');
 		if (!is_a($renderer, 'JDocumentRenderer')) {
 			JError::raiseError(404, JText::_('Resource Not Found'));

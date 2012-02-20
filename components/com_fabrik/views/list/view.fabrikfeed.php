@@ -95,7 +95,7 @@ class FabrikViewList extends JView{
 				} else {
 					$aTableHeadings[$heading]['label']	 = '';
 				}
-				$aTableHeadings[$heading]['colName'] = $element->db_table_name . "___" . $element->name;
+				$aTableHeadings[$heading]['colName'] = $element->db_table_name . '___' . $element->name;
 				$aTableHeadings[$heading]['dbField'] = $element->name;
 				$aTableHeadings[$heading]['key'] = $elParams->get('use_as_fake_key');
 				// $$$ hugh - adding enclosure stuff for podcasting
@@ -116,7 +116,7 @@ class FabrikViewList extends JView{
 
 		/* check for a custom css file and include it if it exists*/
 		$tmpl = JRequest::getVar('layout', $table->template);
-		$csspath = COM_FABRIK_FRONTEND.DS."views".DS."list".DS."tmpl".DS.$tmpl.DS.'feed.css';
+		$csspath = COM_FABRIK_FRONTEND . '/' . "views/list/tmpl" . '/' . $tmpl . '/feed.css';
 
 		if (file_exists($csspath)) {
 			$document->addStyleSheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/table/tmpl/$tmpl/feed.css");

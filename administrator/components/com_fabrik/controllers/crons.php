@@ -46,12 +46,12 @@ class FabrikControllerCrons extends FabControllerAdmin
 		$cid = implode(',', $cid);
 
 		$query = $db->getQuery(true);
-		$query->select('*')->from('#__{package}_cron')->where('id IN ('.$cid.')');
+		$query->select('*')->from('#__{package}_cron')->where('id IN (' . $cid . ')');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();
 
 		$adminListModel = JModel::getInstance('List', 'FabrikModel');
-		$pluginManager	 	= JModel::getInstance('Pluginmanager', 'FabrikFEModel');
+		$pluginManager = JModel::getInstance('Pluginmanager', 'FabrikFEModel');
 		$listModel = JModel::getInstance('list', 'FabrikFEModel');
 		$c = 0;
 		$log = FabTable::getInstance('Log', 'FabrikTable');

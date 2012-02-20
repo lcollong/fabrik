@@ -228,7 +228,7 @@ section for dropdowns radio buttons etc**/
 clear:left;
 }
 
-/** bump calendar above mocha window in mootools 1.2**/
+/** bump calendar above window in mootools 1.2**/
 #{$view}_$c div.calendar{
 	z-index:115 !important;
 }

@@ -48,7 +48,7 @@ class FabrikControllerElement extends JControllerForm
 		$listModel->setId(JRequest::getInt('listid'));
 		$rowId = JRequest::getVar('rowid');
 		$key = JRequest::getVar('element');
-		$key = array_pop(explode("___", $key));
+		$key = array_pop(explode('___', $key));
 		$value = JRequest::getVar('value');
 		$listModel->storeCell($rowId, $key, $value);
 		$this->mode = 'readonly';

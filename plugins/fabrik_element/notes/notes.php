@@ -10,7 +10,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'plugins'.DS.'fabrik_element'.DS.'databasejoin'.DS.'databasejoin.php');
+require_once(JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php');
 
 class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 {
@@ -35,26 +35,11 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		return "new FbNotes('$id', $opts)";
 	}
 
-	/**
-	 * child classes can then call this function with
-	 * return parent::renderListData($data, $oAllRowsData);
-	 * to perform rendering that is applicable to all plugins
-	 *
-	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
-	 */
-
-	function renderListData($data, $oAllRowsData )
-	{
-		return parent::renderListData($data, $oAllRowsData);
-	}
-
 	protected function getNotes()
 	{
 		$db = $this->getDb();
 	}
+	
 	/**
 	 * draws the form element
 	 * @param array data to preopulate element with
@@ -72,7 +57,8 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$str[] = '<div id="'.$id.'">';
 		$str[] = '<div style="overflow:auto;height:150px;" class=""><ul>';
 		$i = 0;
-		foreach ($tmp as $row) {
+		foreach ($tmp as $row)
+		{
 			$txt = $this->getDisplayLabel($row);
 			$str[] = '<li class="oddRow' . $i . '">' . $txt . '</li>';
 			$i = 1 - $i;
@@ -80,10 +66,13 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$str[] = '</ul></div>';
 		$str[] = '<div class="noteHandle" style="height:3px;"></div>';
 		
-		if ($params->get('fieldType', 'textarea') == 'field') {
-			$str[] = '<input class="fabrikinput inputbox text" name="'.$name.'"  />';
-		} else {
-			$str[] = '<textarea class="fabrikinput inputbox text" name="'.$name.'" cols="50" rows="3" /></textarea>';
+		if ($params->get('fieldType', 'textarea') == 'field')
+		{
+			$str[] = '<input class="fabrikinput inputbox text" name="' . $name . '"  />';
+		}
+		else
+		{
+			$str[] = '<textarea class="fabrikinput inputbox text" name="' . $name . '" cols="50" rows="3" /></textarea>';
 		}
 		$str[] = '<input type="button" class="button" value="' . JText::_('PLG_ELEMENT_NOTES_ADD') . '"></input>';
 		$str[] = '</div>';
@@ -93,9 +82,12 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 	protected function getDisplayLabel($row)
 	{
 		$params = $this->getParams();
-		if ($params->get('showuser', true)) {
+		if ($params->get('showuser', true))
+		{
 			$txt = $this->getUserNameLinked($row) . ' '  .$row->text;
-		} else {
+		}
+		else
+		{
 			$txt = $row->text;
 		}
 		return $txt;
@@ -103,9 +95,11 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 	
 	protected function getUserNameLinked($row)
 	{
-		if ($this->hasComponent('com_uddeim')) {
-			if (isset($row->username)) {
- 			return '<a href="index.php?option=com_uddeim&task=new&recip=' . $row->userid . '">' . $row->username . '</a> ';
+		if ($this->hasComponent('com_uddeim'))
+		{
+			if (isset($row->username))
+			{
+ 				return '<a href="index.php?option=com_uddeim&task=new&recip=' . $row->userid . '">' . $row->username . '</a> ';
 			}
 		}
 		return '';
@@ -113,10 +107,12 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 	
 	protected function hasComponent($c)
 	{
-		if (!isset($this->components)) {
+		if (!isset($this->components))
+		{
 			$this->components = array();
 		}
-		if (!array_key_exists($c, $this->components)) {
+		if (!array_key_exists($c, $this->components))
+		{
 			$db = JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$query->select('COUNT(id)')->from('#__extensions')->where('name = ' . $db->Quote($c));
@@ -132,35 +128,39 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$params = $this->getParams();
 		$db = $this->getDb();
 		$field = $params->get('notes_where_element');
-		if ($field == '') {
+		if ($field == '')
+		{
 			return '';
 		}
-		
 		$value = $params->get('notes_where_value');
 		$where = array();
-		$where[] = $db->nameQuote($field) . ' = ' . $db->Quote($value);
-		
+		$where[] = $db->quoteName($field) . ' = ' . $db->Quote($value);
 		$fk = $params->get('join_fk_column', '');
 		$rowid = $this->getFormModel()->getRowId();
-		if ($fk !== '' && $rowid != '') {
-			$where[] = $db->nameQuote($fk) . ' = ' . $rowid;
+		if ($fk !== '' && $rowid != '')
+		{
+			$where[] = $db->quoteName($fk) . ' = ' . $rowid;
 		}
-		if ($this->loadRow != '') {
-			$pk = $db->nameQuote($this->getJoin()->table_join_alias) . '.' .  $db->nameQuote($params->get('join_key_column')) ; 
+		if ($this->loadRow != '')
+		{
+			$pk = $db->quoteName($this->getJoin()->table_join_alias) . '.' .  $db->quoteName($params->get('join_key_column')) ; 
 			$where[] = $pk . ' = ' . $this->loadRow;
 		}
 		return 'WHERE ' . implode(" AND ", $where);
 	}
 	
-	protected function getOrderBy()
+	protected function getOrderBy($view = '')
 	{
 		$params = $this->getParams();
 		$db = $this->getDb();
 		$orderBy = $params->get('notes_order_element');
-		if ($orderBy == '') {
+		if ($orderBy == '')
+		{
 			return '';
-		} else {
-			return " ORDER BY " . $db->nameQuote($orderBy) . ' ' . $params->get('notes_order_dir', 'ASC');
+		}
+		else
+		{
+			return " ORDER BY " . $db->quoteName($orderBy) . ' ' . $params->get('notes_order_dir', 'ASC');
 		}
 	}
 	
@@ -175,11 +175,13 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$fields = '';
 		$db = $this->getDb();
 		$params = $this->getParams();
-		if ($params->get('showuser', true)) {
+		if ($params->get('showuser', true))
+		{
 			$user = $params->get('userid', '');
-			if ($user !== '') {
-				$tbl = $db->nameQuote($this->getJoin()->table_join_alias);
-				$fields .= ',' . $tbl . '.' . $db->nameQuote($user) . 'AS userid, u.name AS username';
+			if ($user !== '')
+			{
+				$tbl = $db->quoteName($this->getJoin()->table_join_alias);
+				$fields .= ',' . $tbl . '.' . $db->quoteName($user) . 'AS userid, u.name AS username';
 			}
 		}
 		return $fields;
@@ -196,13 +198,13 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$join= '';
 		$db = $this->getDb();
 		$params = $this->getParams();
-		if ($params->get('showuser', true)) {
+		if ($params->get('showuser', true))
+		{
 			$user = $params->get('userid', '');
-			if ($user !== '') {
-				$tbl = $db->nameQuote($this->getJoin()->table_join_alias);
-				$join .= ' LEFT JOIN #__users AS u ON u.id = ' . $tbl . '.' . $db->nameQuote($user);
-			} else {
-				
+			if ($user !== '')
+			{
+				$tbl = $db->quoteName($this->getJoin()->table_join_alias);
+				$join .= ' LEFT JOIN #__users AS u ON u.id = ' . $tbl . '.' . $db->quoteName($user);
 			}
 		}
 		return $join;
@@ -226,34 +228,36 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$db = $this->getDb();
 		$query = $db->getQuery(true);
 		$params = $this->getParams();
-		$table = $db->nameQuote($params->get('join_db_name'));
+		$table = $db->quoteName($params->get('join_db_name'));
 		$col = $params->get('join_val_column');
-		$key = $db->nameQuote($params->get('join_key_column'));
+		$key = $db->quoteName($params->get('join_key_column'));
 		$v = $db->Quote(JRequest::getVar('v'));
 		
 		$query->insert($table)
 		->set($col . ' = ' . $v);
 		
 		$field = $params->get('notes_where_element', '');
-		if ($field !== '') {
-			$query->set($db->nameQuote($field) . ' = ' . $db->Quote($params->get('notes_where_value')));
+		if ($field !== '')
+		{
+			$query->set($db->quoteName($field) . ' = ' . $db->Quote($params->get('notes_where_value')));
 		}
-		
 		$user = $params->get('userid', '');
-		if ($user !== '') {
-			$query->set($db->nameQuote($user) . ' = ' . (int)JFactory::getUser()->get('id'));
+		if ($user !== '')
+		{
+			$query->set($db->quoteName($user) . ' = ' . (int)JFactory::getUser()->get('id'));
 		}
-		
 		$fk = $params->get('join_fk_column', '');
-		if ($fk !== '') {
-			$query->set($db->nameQuote($fk) . ' = ' . $db->Quote(JRequest::getVar('rowid')));
+		if ($fk !== '')
+		{
+			$query->set($db->quoteName($fk) . ' = ' . $db->Quote(JRequest::getVar('rowid')));
 		}
-		
 		$db->setQuery($query);
-		
-		if (!$db->query()) {
+		if (!$db->query())
+		{
 			JError::raiseError(500, 'db insert failed');
-		} else {
+		}
+		else
+		{
 			$this->loadRow = $db->Quote($db->insertid());
 			$opts = $this->_getOptions();
 			$row = $opts[0];
@@ -267,9 +271,6 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 			$return->label = $this->getDisplayLabel($row);
 			echo json_encode($return);
 		}
-		
 	}
-	
-
 }
 ?>

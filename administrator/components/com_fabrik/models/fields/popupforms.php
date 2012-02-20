@@ -9,7 +9,7 @@
 // Check to ensure this file is within the rest of the framework
 defined('JPATH_BASE') or die();
 
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'element.php');
+require_once(JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php');
 
 /**
  * Renders a list releated forms that a db join element can be populated from
@@ -46,7 +46,7 @@ class JFormFieldPopupforms extends JFormFieldList
 		$query->select('f.id AS value, f.label AS text, l.id AS listid')
 		->from('#__{package}_forms AS f')
 		->join('LEFT', '#__{package}_lists As l ON f.id = l.form_id')
-		->where('f.published = 1 AND l.db_table_name = '.$db->Quote($this->form->getValue('params.join_db_name')))
+		->where('f.published = 1 AND l.db_table_name = ' . $db->Quote($this->form->getValue('params.join_db_name')))
 		->order('f.label');
 
 		// Get the options.

@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'visualization.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/visualization.php');
 
 class fabrikModelApprovals extends FabrikFEModelVisualization {
 
@@ -54,7 +54,7 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 			}
 
 
-			$query->select("'$item->label' AS type, ".$item->db_primary_key.' AS pk, '.implode(',', $asfields))->from($db->nameQuote($item->db_table_name));
+			$query->select("'$item->label' AS type, ".$item->db_primary_key.' AS pk, '.implode(',', $asfields))->from($db->quoteName($item->db_table_name));
 			$query = $listModel->_buildQueryJoin($query);
 			$query->where(str_replace('___', '.', $approveEls[$x]) .' = 0');
 			$db->setQuery($query, 0, 5);
@@ -99,7 +99,7 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 				$query = $db->getQuery(true);
 				$el = FabrikString::safeColName($approveEls[$key]);
 				try{
-					$query->update($db->nameQuote($item->db_table_name))->set($el.' = '.$db->quote($v))->where($item->db_primary_key.' = '.$db->quote(JRequest::getVar('rowid')));
+					$query->update($db->quoteName($item->db_table_name))->set($el.' = '.$db->quote($v))->where($item->db_primary_key.' = '.$db->quote(JRequest::getVar('rowid')));
 					$db->setQuery($query);
 					$db->query();
 				}catch (JException $e)

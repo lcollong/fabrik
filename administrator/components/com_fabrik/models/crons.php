@@ -25,7 +25,8 @@ class FabrikModelCrons extends JModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields'])) {
+		if (empty($config['filter_fields']))
+		{
 			$config['filter_fields'] = array(
 				'c.id', 'c.label', 'p.published'
 				);
@@ -43,8 +44,8 @@ class FabrikModelCrons extends JModelList
 	protected function getListQuery()
 	{
 		// Initialise variables.
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
+		$db = $this->getDbo();
+		$query = $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select(
@@ -55,34 +56,36 @@ class FabrikModelCrons extends JModelList
 		);
 		$query->from('#__{package}_cron AS c');
 
-
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
+		if (is_numeric($published))
+		{
 			$query->where('c.published = '.(int)$published);
-		} else if ($published === '') {
+		}
+		else if ($published === '')
+		{
 			$query->where('(c.published IN (0, 1))');
 		}
 
 		//Filter by search in title
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
-			$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-			$query->where('(c.label LIKE '.$search.')');
+			$search = $db->Quote('%' . $db->escape($search, true) . '%');
+			$query->where('(c.label LIKE ' . $search . ')');
 		}
 
 		// Add the list ordering clause.
-		$orderCol	= $this->state->get('list.ordering');
-		$orderDirn	= $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title') {
+		$orderCol = $this->state->get('list.ordering');
+		$orderDirn = $this->state->get('list.direction');
+		if ($orderCol == 'ordering' || $orderCol == 'category_title')
+		{
 			$orderCol = 'category_title '.$orderDirn.', ordering';
 		}
-		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
-
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
 		return $query;
 	}
 

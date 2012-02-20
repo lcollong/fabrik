@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'visualization.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/visualization.php');
 
 class fabrikModelCalendar extends FabrikFEModelVisualization {
 	var $_eventLists = null;
@@ -31,7 +31,6 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 	/** @var bol can add to tables **/
 	var $canAdd = null;
 
-	var $_params = null;
 
 	function setListIds()
 	{
@@ -73,7 +72,7 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 	function getAddStandardEventFormId()
 	{
 		$config = JFactory::getConfig();
-		$prefix = $config->getValue('config.dbprefix');
+		$prefix = $config->get('dbprefix');
 		$db = FabrikWorker::getDbo();
 		$db->setQuery("SELECT form_id FROM #__{package}_tables WHERE db_table_name = '{$prefix}fabrik_calendar_events' AND private = '1'");
 		return $db->loadResult();
@@ -82,7 +81,7 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 	function getAddStandardEventFormInfo()
 	{
 		$config = JFactory::getConfig();
-		$prefix = $config->getValue('config.dbprefix');
+		$prefix = $config->get('dbprefix');
 		$params = $this->getParams();
 		$db = FabrikWorker::getDbo();
 		$db->setQuery("SELECT form_id, id FROM #__{package}_tables WHERE db_table_name = '{$prefix}fabrik_calendar_events' AND private = '1'");
@@ -278,7 +277,7 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 		$app = JFactory::getApplication();
 		$Itemid	= @(int)$app->getMenu('site')->getActive()->id;
 		$config = JFactory::getConfig();
-		$tzoffset = (int)$config->getValue('config.offset');
+		$tzoffset = $config->get('offset');
 
 		$this->setupEvents();
 

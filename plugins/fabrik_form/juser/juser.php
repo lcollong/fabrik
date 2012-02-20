@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormJUser extends plgFabrik_Form {
 
@@ -72,7 +72,7 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 
 			if (!$notempty) {
 				// Load the list of users from #__users
-				$old_users = "SELECT * FROM ".$fabrikDb->nameQuote('#__users')." ORDER BY id ASC";
+				$old_users = "SELECT * FROM ".$fabrikDb->quoteName('#__users')." ORDER BY id ASC";
 				$fabrikDb->setQuery($old_users);
 				$o_users = $fabrikDb->loadObjectList();
 				$count = 0;
@@ -142,19 +142,26 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 	 * @return bol
 	 */
 
-	function onDeleteRowsForm(&$params, &$formModel, &$groups)
+	public function onDeleteRowsForm($params, &$formModel, &$groups)
 	{
-		if ($params->get('juser_field_userid') != '' && $params->get('juser_delete_user', false)) {
-			$useridfield 		= $this->getFieldName($params, 'juser_field_userid');
+		if ($params->get('juser_field_userid') != '' && $params->get('juser_delete_user', false))
+		{
+			$useridfield = $this->getFieldName($params, 'juser_field_userid');
 			$useridfield .= '_raw';
-			foreach ($groups as $group) {
-				foreach ($group as $rows) {
-					foreach ($rows as $row) {
-						if (isset($row->$useridfield)) {
-							if (!empty($row->$useridfield)) {
+			foreach ($groups as $group)
+			{
+				foreach ($group as $rows)
+				{
+					foreach ($rows as $row)
+					{
+						if (isset($row->$useridfield))
+						{
+							if (!empty($row->$useridfield))
+							{
 								$user = new JUser((int)$row->$useridfield);
 								// Bail out now and return false, or just carry on?
-								if (!$user->delete()) {
+								if (!$user->delete())
+								{
 									JError::raiseWarning(500, 'Unable to delete user id ' . $row->$useridfield);
 								}
 							}
@@ -217,7 +224,8 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 		$original_id = 0;
 		if ($params->get('juser_field_userid') != '') {
 			$this->useridfield = $this->getFieldName($params, 'juser_field_userid');
-			if (!empty($formModel->_rowId)) {
+			if (!empty($formModel->rowId))
+			{
 				$original_id = (int)$formModel->_formData[$this->useridfield];
 			}
 		}
@@ -240,17 +248,17 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 		//new
 		$data = array();
 
-		$this->passwordfield 	= $this->getFieldName($params, 'juser_field_password');
-		$this->passwordvalue  = $this->getFieldValue($params, 'juser_field_password', $formModel->_formData);
+		$this->passwordfield = $this->getFieldName($params, 'juser_field_password');
+		$this->passwordvalue = $this->getFieldValue($params, 'juser_field_password', $formModel->_formData);
 
-		$this->namefield 			= $this->getFieldName($params, 'juser_field_name');
-		$this->namevalue  		= $this->getFieldValue($params, 'juser_field_name', $formModel->_formData);
+		$this->namefield = $this->getFieldName($params, 'juser_field_name');
+		$this->namevalue = $this->getFieldValue($params, 'juser_field_name', $formModel->_formData);
 
-		$this->usernamefield 	= $this->getFieldName($params, 'juser_field_username');
-		$this->usernamevalue  = $this->getFieldValue($params, 'juser_field_username', $formModel->_formData);
+		$this->usernamefield = $this->getFieldName($params, 'juser_field_username');
+		$this->usernamevalue = $this->getFieldValue($params, 'juser_field_username', $formModel->_formData);
 
-		$this->emailfield 		= $this->getFieldName($params, 'juser_field_email');
-		$this->emailvalue  		= $this->getFieldValue($params, 'juser_field_email', $formModel->_formData);
+		$this->emailfield = $this->getFieldName($params, 'juser_field_email');
+		$this->emailvalue = $this->getFieldValue($params, 'juser_field_email', $formModel->_formData);
 
 		$data['id'] = $original_id;
 
@@ -328,7 +336,7 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 			if ($useractivation == '1' && !$bypassActivation)
 			{
 				jimport('joomla.user.helper');
-				$data['activation'] = JUtility::getHash(JUserHelper::genRandomPassword());
+				$data['activation'] = JApplication::getHash(JUserHelper::genRandomPassword());
 				$data['block'] = 1;
 			}
 		}
@@ -503,8 +511,9 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 		if (!empty($this->useridfield)) {
 			$formModel->updateFormData($this->useridfield, $user->get('id'), true);
 		}
-		if ($ftable == $jos_users) {
-			$formModel->_rowId = $user->get('id');
+		if ($ftable == $jos_users)
+		{
+			$formModel->rowId = $user->get('id');
 		}
 	}
 
@@ -516,7 +525,7 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 	 * @return null
 	 */
 
-	function onAfterProcess($params, $formModel)
+	public function onAfterProcess($params, &$formModel)
 	{
 		$user = JFactory::getUser();
 		if ((int)$user->get('id') !== 0) {

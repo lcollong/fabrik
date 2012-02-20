@@ -12,7 +12,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormSMS extends plgFabrik_Form {
 
@@ -36,7 +36,7 @@ class plgFabrik_FormSMS extends plgFabrik_Form {
  	  if (!isset($this->gateway)) {
  	    $params = $this->getParams();
  	    $gateway = JFilterInput::clean($params->get('sms-gateway', 'Kapow'), 'CMD');
-      require_once(JPATH_ROOT.DS.'plugins'.DS.'fabrik_form'.DS.'sms'.DS.'gateway'.DS.strtolower($gateway));
+      require_once(JPATH_ROOT. '/' .'plugins/fabrik_form/sms/gateway'. '/' .strtolower($gateway));
  	    $this->gateway = new $gateway();
  	    $this->gateway->params = $params;
  	  }
@@ -118,7 +118,7 @@ class plgFabrik_FormSMS extends plgFabrik_Form {
  	      }
  	    }
  	  }
- 	  $message = JText::_('PLG_FORM_SMS_FROM') . $config->getValue('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
+ 	  $message = JText::_('PLG_FORM_SMS_FROM') . $config->get('sitename') . "\r \n \r \nMessage:\r \n" . stripslashes($message);
  	  return $message;
  	}
 

@@ -37,7 +37,7 @@ class FabrikControllerVisualization extends JControllerForm
 		$id = JRequest::getInt('visualizationid');
 		$viz = FabTable::getInstance('Visualization', 'FabrikTable');
 		$viz->load($id);
-		$modelpaths = JModel::addIncludePath(JPATH_SITE.DS.'plugins'.DS.'fabrik_visualization'.DS.$viz->plugin.DS.'models');
+		$modelpaths = JModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viz->plugin . '/models');
 		$model = $this->getModel($viz->plugin);
 		$model->setId($id);
 		$pluginTask = JRequest::getVar('plugintask', '', 'request');

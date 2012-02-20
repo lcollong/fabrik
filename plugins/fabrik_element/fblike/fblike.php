@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementFblike extends plgFabrik_Element {
 
@@ -24,12 +24,12 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 
 	/**
 	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
+	 * @param	string	data
+	 * @param	object	all the data in the tables current row
+	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$meta = array();
@@ -42,16 +42,16 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 		$meta['fb:admins'] = $params->get('fblike_opengraph_applicationid');
 		$str = FabrikHelperHTML::facebookGraphAPI($params->get('opengraph_applicationid'), $params->get('fblike_locale', 'en_US'), $meta);
 		//in table view we like the detailed record not the table view itself
-		$url = $this->getListModel()->linkHref($this, $oAllRowsData);
+		$url = $this->getListModel()->linkHref($this, $thisRow);
 		return $str.$this->_render($url);
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 
 	/**
 	 * draws the form element
-	 * @param array data to pre-populate element with
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * @param	array	data to pre-populate element with
+	 * @param	int		repeat group counter
+	 * @return	string	returns element html
 	 */
 
 	function render($data, $repeatCounter = 0)
@@ -76,15 +76,19 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 			'og:fax_number' => 'fblike_fax_number'
 		);
 
-		foreach ($map as $k => $v) {
+		foreach ($map as $k => $v)
+		{
 			$elid = $params->get($v);
-			if ($elid != '') {
+			if ($elid != '')
+			{
 				$el = $formModel->getElement($elid, true);
-				if (is_object($el)) {
+				if (is_object($el))
+				{
 					$name = $el->getFullName(false, true, false);
 					$v = JArrayHelper::getValue($data, $name);
 					if ($k == 'og:image') { $v = $ex.$_SERVER['SERVER_NAME'].$v; }
-					if ($v !== '') {
+					if ($v !== '')
+					{
 						$meta[$k] = $v;
 					}
 				}
@@ -92,11 +96,13 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 		}
 
 		$locEl = $formModel->getElement($params->get('fblike_location'), true);
-		if ($locEl != '') {
+		if ($locEl != '')
+		{
 			$loc = JArrayHelper::getValue($data, $locEl->getFullName(false, true, false));
 			$loc = array_shift(explode(':', $loc));
 			$loc = explode(",", $loc);
-			if (count($loc) == 2) {
+			if (count($loc) == 2)
+			{
 				$meta['og:latitude'] = $loc[0];
 				$meta['og:longitude'] = $loc[1];
 			}
@@ -115,18 +121,21 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 	protected function _render($url)
 	{
 		$params = $this->getParams();
-		if ($url !== '') {
-			if (!strstr($url, COM_FABRIK_LIVESITE)) {
+		if ($url !== '')
+		{
+			if (!strstr($url, COM_FABRIK_LIVESITE))
+			{
 				// $$$ rob doesnt work with sef urls as $url already contains site folder.
 				//$url = COM_FABRIK_LIVESITE.$url;
 				$ex = $_SERVER['SERVER_PORT'] == 80 ? 'http://' : 'https://';
 				$url = $ex.$_SERVER['SERVER_NAME'].$url;
 			}
 			$href = "href=\"$url\"";
-		} else {
+		}
+		else
+		{
 			$href = '';
 		}
-
 		$layout= $params->get('fblike_layout', 'standard');
 		$showfaces = $params->get('fblike_showfaces', 0) == 1 ? 'true' : 'false';
 		$width = $params->get('fblike_width', 300);
@@ -139,7 +148,7 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * @return	string	javascript to create instance. Instance name must be 'el'
 	 */
 
 	function elementJavascript($repeatCounter)

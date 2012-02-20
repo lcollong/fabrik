@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-list.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-list.php');
 
 class plgFabrik_ListUpdate_col extends plgFabrik_List
 {
@@ -73,10 +73,10 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 		$db = $model->getDb();
 		$user = JFactory::getUser();
 		$update = json_decode($params->get('update_col_updates'));
-		if (!$update) {
+		if (!$update)
+		{
 			return false;
 		}
-
 		// $$$ rob moved here from bottom of func see http://fabrikar.com/forums/showthread.php?t=15920&page=7
 
 		$dateCol = $params->get('update_date_element');
@@ -87,21 +87,22 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 		$ids = array_unique(JRequest::getVar('ids', array(), 'method', 'array'));
 		JArrayHelper::toInteger($ids);
 		$this->_row_count = count($ids);
-		$ids	= implode(',', $ids);
+		$ids = implode(',', $ids);
 		$model->_pluginQueryWhere[] = $item->db_primary_key . ' IN ( '.$ids.')';
 		$data = $model->getData();
 
 		//$$$servantek reordered the update process in case the email routine wants to kill the updates
 		$emailColID = $params->get('update_email_element', '');
-		if (!empty($emailColID)) {
+		if (!empty($emailColID))
+		{
 			$w = new FabrikWorker();
 			jimport('joomla.mail.helper');
 			$message = $params->get('update_email_msg');
 			$subject = $params->get('update_email_subject');
 			$eval = $params->get('eval', 0);
 			$config = JFactory::getConfig();
-			$from = $config->getValue('mailfrom');
-			$fromname = $config->getValue('fromname');
+			$from = $config->get('mailfrom');
+			$fromname = $config->get('fromname');
 			$elementModel = FabrikWorker::getPluginManager()->getElementPlugin($emailColID);
 			$emailElement = $elementModel->getElement(true);
 			$emailField = $elementModel->getFullName(false, true, false);
@@ -113,62 +114,80 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 			$aids = explode(',', $ids);
 			// if using a user element, build a lookup list of emails from jos_users,
 			// so we're only doing one query to grab all involved emails.
-			if ($emailWhich == 'user') {
+			if ($emailWhich == 'user')
+			{
 				$userids_emails = array();
 				$query = 'SELECT #__users.id AS id, #__users.email AS email FROM #__users LEFT JOIN ' . $tbl . ' ON #__users.id = ' . $emailColumn . ' WHERE ' . $item->db_primary_key . ' IN ('.$ids.')';
 				$db->setQuery($query);
 				$results = $db->loadObjectList();
-				foreach ($results as $result) {
+				foreach ($results as $result)
+				{
 					$userids_emails[(int)$result->id] = $result->email;
 				}
 			}
-			foreach ($aids as $id) {
+			foreach ($aids as $id)
+			{
 				$row = $model->getRow($id);
-				if ($emailWhich == 'user') {
+				if ($emailWhich == 'user')
+				{
 					$userid = (int)$row->$emailFieldRaw;
 					$to = JArrayHelper::getValue($userids_emails, $userid);
 				}
-				else {
+				else
+				{
 					$to = $row->$emailField;
 				}
 
-				if (JMailHelper::cleanAddress($to) && JMailHelper::isEmailAddress($to)) {
+				if (JMailHelper::cleanAddress($to) && JMailHelper::isEmailAddress($to))
+				{
 					//$tofull = '"' . JMailHelper::cleanLine($toname) . '" <' . $to . '>';
 					//$$$servantek added an eval option and rearranged placeholder call
 					$thissubject = $w->parseMessageForPlaceholder($subject, $row);
 					$thismessage = $w->parseMessageForPlaceholder($message, $row);
-					if ($eval) {
+					if ($eval)
+					{
 						$thismessage = @eval($thismessage);
 						FabrikWorker::logEval($thismessage, 'Caught exception on eval in updatecol::process() : %s');
 					}
 					$res = JUtility::sendMail($from, $fromname, $to, $thissubject, $thismessage, true);
-					if ($res) {
+					if ($res)
+					{
 						$this->_sent ++;
-					} else {
+					}
+					else
+					{
 						$$this->_notsent ++;
 					}
-				} else {
+				}
+				else
+				{
 					$this->_notsent ++;
 				}
 			}
 		}
 		//$$$servantek reordered the update process in case the email routine wants to kill the updates
-		if (!empty($dateCol)) {
+		if (!empty($dateCol))
+		{
 			$date = JFactory::getDate();
 			$this->_process($model, $dateCol, $date->toMySQL());
 		}
 
-		if (!empty($userCol)) {
+		if (!empty($userCol))
+		{
 			$this->_process($model, $userCol, (int)$user->get('id'));
 		}
-		foreach ($update->coltoupdate as $i => $col) {
+		foreach ($update->coltoupdate as $i => $col)
+		{
 			$this->_process($model, $col, $update->update_value[$i]);
 		}
 		$this->msg = $params->get('update_message', '');
 
-		if (empty($this->msg)) {
+		if (empty($this->msg))
+		{
 			$this->msg = JText::sprintf('PLG_LIST_UPDATE_COL_UPDATE_MESSAGE', $this->_row_count, $this->_sent);
-		} else {
+		}
+		else
+		{
 			$this->msg = JText::sprintf($this->msg, $this->_row_count, $this->_sent);
 		}
 		
@@ -224,7 +243,7 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 	{
 		$params = $this->getParams();
 		$col = $params->get('coltoupdate');
-		return $col.'-'.$this->renderOrder;
+		return $col . '-' . $this->renderOrder;
 	}
 
 }

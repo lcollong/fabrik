@@ -13,7 +13,7 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'plugin-form.php');
+require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormPaypal extends plgFabrik_Form {
 
@@ -26,7 +26,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 	 * @param object form model
 	 */
 
-	function onAfterProcess(&$params, &$formModel)
+	public function onAfterProcess($params, &$formModel)
 	{
 		$app = JFactory::getApplication();
 		$data = $formModel->_fullFormData;
@@ -325,7 +325,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		$session->set($context.'url', $surl);
 
 		/// log the info
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR. '/' .'components/com_fabrik/tables');
 		$log = FabTable::getInstance('log', 'FabrikTable');
 		$log->message_type = 'fabrik.paypal.onAfterProcess';
 		$msg = new stdClass();
@@ -343,7 +343,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		// and just grab it from params directly.
 		$formid = JRequest::getInt('formid');
 		$rowid = JRequest::getInt('rowid');
-		JModel::addIncludePath( COM_FABRIK_FRONTEND.DS.'models');
+		JModel::addIncludePath( COM_FABRIK_FRONTEND . '/models');
 		$formModel = JModel::getInstance('Form', 'FabrikFEModel');
 		$formModel->setId($formid);
 		$params = $formModel->getParams();
@@ -379,7 +379,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 	function onIpn()
 	{
 		$config = JFactory::getConfig();
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR. '/' .'components/com_fabrik/tables');
 		$log = FabTable::getInstance('log', 'FabrikTable');
 		$log->referring_url = $_SERVER['REQUEST_URI'];
 		$log->message_type = 'fabrik.ipn.start';
@@ -391,7 +391,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		list($formid, $rowid, $ipn_value) = explode(":", $custom);
 
 		//pretty sure they are added but double add
-		JModel::addIncludePath(COM_FABRIK_FRONTEND.DS.'models');
+		JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 		$formModel = JModel::getInstance('Form', 'FabrikFEModel');
 		$formModel->setId($formid);
 		$listModel = $formModel->getlistModel();
@@ -401,7 +401,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 
 		// $$$ hugh
 		// @TODO shortColName won't handle joined data, need to fix this to use safeColName
-		// (don't forget to change nameQuote stuff later on as well)
+		// (don't forget to change quoteName stuff later on as well)
 		$renderOrder = JRequest::getInt('renderOrder');
 		$ipn_txn_field = (array)$params->get('paypal_ipn_txn_id_element', array());
 		$ipn_txn_field = FabrikString::shortColName($ipn_txn_field[$renderOrder]);
@@ -424,7 +424,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		$ipn_value = str_replace(']','}',$ipn_value);
 		$ipn_value = $w->parseMessageForPlaceHolder($ipn_value, $_POST);
 
-		$email_from = $admin_email = $config->getValue('mailfrom');
+		$email_from = $admin_email = $config->get('mailfrom');
 
 
 
@@ -495,7 +495,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 						//$$tom This block Paypal from updating the IPN field if the payment status evolves (e.g. from Pending to Completed)
 						// $$$ hugh - added check of status, so only barf if there is a status field, and it is Completed for this txn_id
 						if (!empty($ipn_txn_field) && !empty($ipn_status_field)) {
-							$db->setQuery("SELECT $ipn_status_field FROM $table->db_table_name WHERE ".$db->nameQuote($ipn_txn_field)." = ".$db->Quote($txn_id));
+							$db->setQuery("SELECT $ipn_status_field FROM $table->db_table_name WHERE ".$db->quoteName($ipn_txn_field)." = ".$db->Quote($txn_id));
 							$txn_result = $db->loadResult();
 							if (!empty($txn_result)) {
 								if ($txn_result == 'Completed') {
@@ -535,7 +535,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 							$ipn = $this->getIPNHandler($params, $renderOrder);
 							/*$php_file = $params->get('paypal_run_php_file', array(), '_default', 'array');
 							 $php_file = JFilterInput::clean($php_file[$renderOrder], 'CMD');
-							 $php_file = empty($php_file) ? '' : COM_FABRIK_FRONTEND.DS.'plugins'.DS.'form'.DS.'fabrikpaypal'.DS.'scripts'.DS.$php_file;
+							 $php_file = empty($php_file) ? '' : COM_FABRIK_FRONTEND . '/plugins/form/fabrikpaypal/scripts'. '/' .$php_file;
 							 if (!empty($php_file) && file_exists($php_file)) {*/
 							if ($ipn !== false) {
 								$request = $_REQUEST;
@@ -561,7 +561,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 								$set_array = array();
 								foreach ($set_list as $set_field => $set_value) {
 									$set_value = $db->Quote($set_value);
-									$set_field = $db->nameQuote($set_field);
+									$set_field = $db->quoteName($set_field);
 									$set_array[] = "$set_field = $set_value";
 								}
 								$db->setQuery("UPDATE $table->db_table_name SET " . implode(',', $set_array) . " WHERE $table->db_primary_key = ".$db->Quote($rowid));
@@ -637,7 +637,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 	{
 		$php_file = $params->get('paypal_run_php_file', array(), '_default', 'array');
 		$php_file = JFilterInput::clean($php_file[$renderOrder], 'CMD');
-		$php_file = empty($php_file) ? '' : 'plugins'.DS.'fabrik_form'.DS.'paypal'.DS.'scripts'.DS.$php_file;
+		$php_file = empty($php_file) ? '' : 'plugins/fabrik_form/paypal/scripts'. '/' .$php_file;
 		if (!empty($php_file) && file_exists($php_file)) {
 			$request = $_REQUEST;
 			require_once($php_file);

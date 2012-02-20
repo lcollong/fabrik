@@ -30,7 +30,7 @@ class plgFabrik_ElementInternalid extends plgFabrik_Element
 		if (isset($this->_elementError) && $this->_elementError != '') {
 			$type .= " elementErrorHighlight";
 		}
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			//as per http://fabrikar.com/forums/showthread.php?t=12867
 			//return "<!--" . stripslashes($value) . "-->";
 			return($element->hidden == '1') ? "<!-- " . stripslashes($value) . " -->" : stripslashes($value);

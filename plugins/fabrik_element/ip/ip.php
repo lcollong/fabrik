@@ -43,7 +43,7 @@ class plgFabrik_elementIp extends plgFabrik_Element
 
 		$str = '';
 		if ($this->canView()) {
-			if (!$this->_editable) {
+			if (!$this->editable) {
 				$str = $ip;
 			}
 			else {
@@ -90,18 +90,6 @@ class plgFabrik_elementIp extends plgFabrik_Element
 				$data[$element->name . '_raw'] = $_SERVER['REMOTE_ADDR'];
 			}
 		}
-	}
-
-	/**
-	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
-	 */
-
-	function renderListData($data, $oAllRowsData)
-	{
-		return parent::renderListData($data, $oAllRowsData);
 	}
 
 	/**

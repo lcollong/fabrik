@@ -122,12 +122,12 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 
 	/**
 	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
+	 * @param	string	data
+	 * @param	object	all the data in the tables current row
+	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		$data = FabrikWorker::JSONtoData($data, true);
 		$params = $this->getParams();
@@ -170,7 +170,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 			}
 		}
 		$data = json_encode($data);
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 
 	/**
@@ -225,16 +225,16 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 
 	/**
 	 * shows the data formatted for RSS export
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
+	 * @param	string	data
+	 * @param	object	all the data in the tables current row
+	 * @return	string	formatted value
 	 */
 
-	function renderListData_rss($data, $oAllRowsData)
+	function renderListData_rss($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$selectImage_root_folder = $params->get('selectImage_root_folder', '');
-		return '<img src="'.COM_FABRIK_LIVESITE.$selectImage_root_folder.'/'.$data.'" />';
+		return '<img src="'.COM_FABRIK_LIVESITE . $selectImage_root_folder . '/' . $data . '" />';
 	}
 
 	/**
@@ -263,7 +263,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 		$str[] = '<div class="fabrikSubElementContainer" id="'.$id.'">';
 
 		$rootFolder = str_replace('/', DS, $rootFolder);
-		if ($canSelect && $this->_editable) {
+		if ($canSelect && $this->editable) {
 			$str[] = '<img src="' . $defaultImage . '" alt="'. $value .'" '.$float.' class="imagedisplayor"/>';
 			if (array_key_exists($name, $data)) {
 				if (trim($value) == '') {
@@ -282,7 +282,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 				$path = $rootFolder;
 			}
 			$images = array();
-			$imagenames = (array)JFolder::files(JPATH_SITE.DS.$path);
+			$imagenames = (array)JFolder::files(JPATH_SITE. '/' .$path);
 			foreach ($imagenames as $n) {
 				$images[] = JHTML::_('select.option', $n, $n);
 			}
@@ -291,7 +291,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 			$image = array_pop( explode('/', $value));
 			// $$$ hugh - append $rootFolder to JPATH_SITE, otherwise we're showing folders
 			// they aren't supposed to be able to see.
-			$folders = JFolder::folders(JPATH_SITE.DS.$rootFolder);
+			$folders = JFolder::folders(JPATH_SITE. '/' .$rootFolder);
 			// @TODO - if $folders is empty, hide the button/widget?  All they can do is select
 			// from the initial image dropdown list, so no point having the widget for changing folder?
 			$str[] =	'<br/>'.JHTML::_('select.genericlist', $images, $imageName, 'class="inputbox imageselector" ', 'value', 'text', $image);
@@ -313,7 +313,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 	function onAjax_files()
 	{
 		$folder = JRequest::getVar('folder');
-		$pathA = JPath::clean(JPATH_SITE.DS.$folder);
+		$pathA = JPath::clean(JPATH_SITE. '/' .$folder);
 		$folder = array();
 		$files = array();
 		$images = array();
@@ -340,7 +340,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 		$opts->canSelect = (bool)$params->get('image_front_end_select', false);
 		$opts->id = $element->id;
 		$opts->ds = DS;
-		$opts->dir = JPATH_SITE.DS.str_replace('/', DS, $opts->rootPath);
+		$opts->dir = JPATH_SITE. '/' .str_replace('/', DS, $opts->rootPath);
 		$opts = json_encode($opts);
 		return "new FbImage('$id', $opts)";
 	}

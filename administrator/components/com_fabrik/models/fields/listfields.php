@@ -13,7 +13,7 @@ jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'helpers'.DS.'element.php');
+require_once(JPATH_ADMINISTRATOR . '/components/com_fabrik/helpers/element.php');
 
 /**
  * Renders a list of elements found in a fabrik table
@@ -38,7 +38,8 @@ class JFormFieldListfields extends JFormFieldList
 
 	function getInput()
 	{
-		if (is_null($this->results)) {
+		if (is_null($this->results))
+		{
 			$this->results = array();
 		}
 
@@ -57,19 +58,26 @@ class JFormFieldListfields extends JFormFieldList
 			case 'element':
 				//@TODO this seems like we could refractor it to use the formModel class as per the table and form switches below?
 				$connectionDd = ($c === false) ? $connection :  $connection . '-' . $c;
-				if ($connection == '') {
+				if ($connection == '')
+				{
 					$groupModel = JModel::getInstance('Group', 'FabrikFEModel');
 					$groupId = isset($this->form->rawData) ? JArrayHelper::getValue($this->form->rawData, 'group_id', 0) : $this->form->getValue('group_id');
 					$groupModel->setId($groupId);
 					$optskey = $valueformat == 'tableelement' ? 'name' : 'id';
-					$res = $groupModel->getForm()->getElementOptions(false, $optskey, $onlylistfields, false, $pluginFilters);
+					$res = $groupModel->getFormModel()->getElementOptions(false, $optskey, $onlylistfields, false, $pluginFilters);
+					
 					$hash = "$controller.".implode('.', $bits);
-					if (array_key_exists($hash, $this->results)) {
+					if (array_key_exists($hash, $this->results))
+					{
 						$res = $this->results[$hash];
-					} else {
+					}
+					else
+					{
 						$this->results[$hash] =& $res;
 					}
-				} else {
+				}
+				else
+				{
 
 					//****************************//
 					$repeat 	= ElementHelper::getRepeat($this);
@@ -101,14 +109,18 @@ class JFormFieldListfields extends JFormFieldList
 			case 'list':
 			case 'module':
 			case 'item': //menu item
-				if ($controller === 'item') {
+				if ($controller === 'item')
+				{
 					$id = $this->form->getValue('request.listid');
-				} else {
+				}
+				else
+				{
 					$id = $this->form->getValue('id');
 				}
-				if (!isset($this->form->model)) {
-					echo "not set ";;
-					if (!in_array($controller, array('item', 'module'))) {
+				if (!isset($this->form->model))
+				{
+					if (!in_array($controller, array('item', 'module')))
+					{
 						//seems to work anyway in the admin module page - so lets not raise notice
 						JError::raiseNotice(500, 'Model not set in listfields field '. $this->id);
 					}
@@ -116,11 +128,14 @@ class JFormFieldListfields extends JFormFieldList
 					return;
 				}
 				$listModel = $this->form->model;
-				if ($id !== 0) {
+				if ($id !== 0)
+				{
 					$formModel = $listModel->getFormModel();
 					$valfield = $valueformat == 'tableelement' ? 'name' : 'id';
 					$res = $formModel->getElementOptions(false, $valfield, $onlylistfields, false, $pluginFilters);
-				} else {
+				}
+				else
+				{
 					$res = array();
 				}
 				break;

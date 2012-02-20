@@ -10,7 +10,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementSugarid extends plgFabrik_Element
 {
@@ -36,7 +36,7 @@ class plgFabrik_ElementSugarid extends plgFabrik_Element
 		if (isset($this->_elementError) && $this->_elementError != '') {
 			$type .= " elementErrorHighlight";
 		}
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			return "<!--" . stripslashes($value) . "-->";
 		}
 		$hidden = 'hidden';

@@ -22,19 +22,19 @@ jimport('joomla.application.component.controller');
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
 
-$defines = JFile::exists(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'user_defines.php') ? 'user_defines.php' : 'defines.php';
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.$defines);
+$defines = JFile::exists(JPATH_SITE . '/components/com_fabrik/user_defines.php') ? 'user_defines.php' : 'defines.php';
+require_once(JPATH_SITE . '/components/com_fabrik/' . $defines);
 
 //set the user state to load the package db tables
 $app = JFactory::getApplication();
 $app->setUserState('com_fabrik.package', $option);
 
 //echo $app->getUserState('com_fabrik.package');exit;
-JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
-JModel::addIncludePath(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models');
+JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
+JModel::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 JRequest::setVar('task', 'package.view');
 $config = array();
-$config['base_path'] = JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS;
+$config['base_path'] = JPATH_SITE . '/components/com_fabrik/';
 
 $controller = JController::getInstance('Fabrik', $config);
 $controller->execute(JRequest::getCmd('task'));

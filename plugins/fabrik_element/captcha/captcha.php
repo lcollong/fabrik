@@ -10,7 +10,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'plugins'.DS.'fabrik_element'.DS.'captcha'.DS.'recaptcha1.10'.DS.'recaptchalib.php');
+require_once(JPATH_SITE . '/plugins/fabrik_element/captcha/recaptcha1.10/recaptchalib.php');
 
 class plgFabrik_ElementCaptcha extends plgFabrik_Element
 {
@@ -88,7 +88,7 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	 * @return bol can view or not
 	 */
 
-	function canUse()
+	public function canUse(&$model, $location, $event)
 	{
 		$user = JFactory::getUser();
 		$params = $this->getParams();
@@ -176,7 +176,7 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 				$type = "hidden";
 			}
 			$sizeInfo = ' size="'.$size.'"';
-			if (!$this->_editable) {
+			if (!$this->editable) {
 				if ($element->hidden == '1') {
 					return '<!-- '.stripslashes($value).' -->';
 				} else {

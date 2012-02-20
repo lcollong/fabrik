@@ -57,7 +57,7 @@ height:2.5em;
 	vertical-align:top;
 }
 
-/** bump calendar above mocha window in mootools 1.2**/
+/** bump calendar above window in mootools 1.2**/
 div.calendar{
 	z-index:115 !important;
 }

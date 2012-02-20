@@ -86,7 +86,7 @@ class FabrikControllerList extends JControllerForm
 		$model->setState('list.id', $cid);
 		$viewType	= JFactory::getDocument()->getType();
 		//use the front end renderer to show the table
-		$this->setPath('view', COM_FABRIK_FRONTEND.DS.'views');
+		$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 	
 		$viewLayout	= JRequest::getCmd('layout', 'default');
 		$view = $this->getView($this->view_item, $viewType, '');

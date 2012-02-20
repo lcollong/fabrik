@@ -10,7 +10,7 @@
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementFolder extends plgFabrik_Element {
 
@@ -34,7 +34,7 @@ class plgFabrik_ElementFolder extends plgFabrik_Element {
 
 
 		$aRoValues 	= array();
-		$path		= JPATH_ROOT.DS.$params->get('fbfolder_path');
+		$path		= JPATH_ROOT. '/' .$params->get('fbfolder_path');
 		$opts = array();
 		if ($params->get('folder_allownone', true)) {
 			$opts[] = JHTML::_('select.option', '', JText::_('NONE'));
@@ -61,7 +61,7 @@ class plgFabrik_ElementFolder extends plgFabrik_Element {
 		}
 
 		$str = JHTML::_('select.genericlist', $opts, $name, $attribs, 'value', 'text', $selected, $id);
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			return implode(', ', $aRoValues);
 		}
 		return $str;
@@ -74,17 +74,17 @@ class plgFabrik_ElementFolder extends plgFabrik_Element {
 
 	function elementJavascript($repeatCounter)
 	{
-		$id 				= $this->getHTMLId($repeatCounter);
-		$params     = $this->getParams();
-		$element 		= $this->getElement();
-		$data 			=& $this->_form->_data;
+		$id = $this->getHTMLId($repeatCounter);
+		$params = $this->getParams();
+		$element = $this->getElement();
+		$data = $this->getFormModel()->_data;
 		$arSelected = $this->getValue($data, $repeatCounter);
-		$path		= JPATH_ROOT.DS.$params->get('fbfbfolder_path');
-		$folders	= JFolder::folders($path);
+		$path = JPATH_ROOT . '/' . $params->get('fbfbfolder_path');
+		$folders = JFolder::folders($path);
 		$params = $this->getParams();
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->defaultVal = $element->default;
-		$opts->data 			= $folders;
+		$opts->data = $folders;
 		$opts = json_encode($opts);
 		return "new FbFolder('$id', $opts)";
 	}

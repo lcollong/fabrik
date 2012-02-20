@@ -12,23 +12,23 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 {
 
 	/**
 	 * shows the data formatted for the table view
-	 * @param string data
-	 * @param object all the data in the tables current row
-	 * @return string formatted value
+	 * @param	string	data
+	 * @param	object	all the data in the tables current row
+	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$data = $this->format($data);
-		return parent::renderListData($data, $oAllRowsData);
+		return parent::renderListData($data, $thisRow);
 	}
 
 	/**
@@ -42,7 +42,7 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 			return '';
 		}
 
-		require_once(COM_FABRIK_FRONTEND.DS.'libs'.DS.'twitter'.DS.'class.twitter.php');
+		require_once(COM_FABRIK_FRONTEND . '/libs/twitter/class.twitter.php');
 		$twitter = new twitter();
 		$params = $this->getParams();
 		static $error;
@@ -91,12 +91,13 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 			$maxlength = $size;
 		}
 		$bits = array();
+		$formModel = $this->getFormModel();
 		// $$$ rob - not sure why we are setting $data to the form's data
 		//but in table view when getting read only filter value from url filter this
 		// _form_data was not set to no readonly value was returned
 		// added little test to see if the data was actually an array before using it
-		if (is_array($this->_form->_data)) {
-			$data 	=& $this->_form->_data;
+		if (is_array($formModel->_data)) {
+			$data = $formModel->_data;
 		}
 		$value 	= $this->getValue($data, $repeatCounter);
 		$type = "text";
@@ -106,7 +107,7 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 		if ($element->hidden == '1') {
 			$type = "hidden";
 		}
-		if (!$this->_editable) {
+		if (!$this->editable) {
 			$value = $this->format($value);
 			return($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
 		}
