@@ -312,7 +312,7 @@ class FabrikModelForm extends FabModelAdmin
 				$item->published = $data['published'];
 				$item->created = $data['created'];
 				$item->created_by = $data['created_by'];
-				$item->access = $data['published'];
+				$item->access = 1;
 				$item->params = $listModel->getDefaultParams();
 				$res = $item->store();
 			}

@@ -1,5 +1,5 @@
 <?php
-defined('_JEXEC') or die( 'Restricted access');
+defined('_JEXEC') or die('Restricted access');
 ?>
 
 <?php
@@ -8,14 +8,14 @@ defined('_JEXEC') or die( 'Restricted access');
  * @subpackage Fabrik
  * @copyright Copyright (C) 2005 Rob Clayburn. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU/GPL, see LICENSE.php
- * 
+ *
  * NOTE - as we can only have one addpath file specified for the params group, this file has to be located
- * in the main ./administrator/components/com_fabrik/elements folder.  So until we work out how to do the install
+ * in the main ./administrator/components/com_fabrik/models/fields folder.  So until we work out how to do the install
  * XML magic to relocate this file on install, we have simply made a copy of it in the admin location in SVN.
  * If you edit the copy in the plugin folder, please be sure to also modify the copy in the admin folder.
  */
 
-require_once(JPATH_ADMINISTRATOR. '/' .'components/com_fabrik/helpers/element.php');
+require_once(JPATH_ADMINISTRATOR. '/components/com_fabrik/helpers/element.php');
 
 // Check to ensure this file is within the rest of the framework
 defined('JPATH_BASE') or die();
@@ -27,7 +27,7 @@ defined('JPATH_BASE') or die();
  * @since		1.5
  */
 
-class JElementTwittersignin extends JElement
+class JFormFieldTwittersignin extends JFormField
 {
 	/**
 	 * Element name
@@ -39,11 +39,11 @@ class JElementTwittersignin extends JElement
 
 	var $_array_counter = null;
 
-	function fetchElement($name, $value, &$node, $control_name)
+	function getInput()
 	{
-		$id 			= ElementHelper::getId($this, $control_name, $name);
-		$fullName = ElementHelper::getFullName($this, $control_name, $name);
-		$iframeid = $id.'_iframe';
+		//$id 			= ElementHelper::getId($this, $control_name, $name);
+		//$fullName = ElementHelper::getFullName($this, $control_name, $name);
+		$iframeid = $this->id.'_iframe';
 		$cid = JRequest::getVar('cid', array(), 'array');
 		// $$$ hugh - when creating a new form, no 'cid' ... not sure what to do, so just set it to 0.  Should
 		// prolly just return something like 'available after save' ?
@@ -53,19 +53,23 @@ class JElementTwittersignin extends JElement
 		else {
 			$cid = 0;
 		}
-		$c = (int)$this->getRepeatCounter();
+		//$c = (int)$this->getRepeatCounter();
+		$c = isset($this->form->repeatCounter) ? (int)$this->form->repeatCounter : 0;
 
-		$href = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&controller=plugin&task=pluginAjax&plugin=fabriktwitter&g=form&method=authenticateAdmin&tmpl=component&formid='.$cid.'&repeatCounter='.$c;
 
-		$clearjs = '$(\'paramstwitter_oauth_token-'.$c.'\').value = \'\';';
-		$clearjs .= '$(\'paramstwitter_oauth_token_secret-'.$c.'\').value = \'\';';
-		$clearjs .= '$(\'paramstwitter_oauth_user-'.$c.'\').value = \'\';';
+		//$href = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&controller=plugin&task=pluginAjax&plugin=fabriktwitter&g=form&method=authenticateAdmin&tmpl=component&formid='.$cid.'&repeatCounter='.$c;
+		$href = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=twitter&g=form&method=authenticateAdmin&tmpl=component&formid='.$cid.'&repeatCounter='.$c;
+
+		$clearjs = '$(\'jform_params_twitter_oauth_token-'.$c.'\').value = \'\';';
+		$clearjs .= '$(\'jform_params_twitter_oauth_token_secret-'.$c.'\').value = \'\';';
+		$clearjs .= '$(\'jform_params_twitter_oauth_user-'.$c.'\').value = \'\';';
 		$clearjs .= "return false;";
 
 		$js = "window.open('$href', 'twitterwins', 'width=800,height=460,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes');return false;";
 		$str =  '<a href="#" onclick="'.$js.'"><img src="'.COM_FABRIK_LIVESITE.'components/com_fabrik/libs/abraham-twitteroauth/images/lighter.png" alt="Sign in with Twitter"/></a>';
 		$str .= " | <a href=\"#\" onclick=\"$clearjs\">" .    JText::_('PLG_FORM_TWITTER_CLEAR_CREDENTIALS') . "</a><br/>";
-		$str .= "<br /><input type=\"text\" readonly=\"readonly\" name=\"$fullName\" id=\"$id\" value=\"$value\" />";
+		$str .= "<br /><input type=\"text\" readonly=\"readonly\" name=\"". $this->name . "\" id=\"" .$this->id . "\" value=\"" . $this->value . "\" />";
 		return $str;
 	}
 }
+?>

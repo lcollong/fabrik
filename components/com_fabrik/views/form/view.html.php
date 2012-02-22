@@ -521,14 +521,16 @@ class fabrikViewForm extends JView
 			$script[] = "new FloatingTips('#".$bkey." .fabrikTip', {html: true});";
 		}
 
-		$res = FabrikWorker::getPluginManager()->runPlugins('onJSReady', $model);
+		$pluginManager = FabrikWorker::getPluginManager();
+		$res = $pluginManager->runPlugins('onJSReady', $model);
 		if (in_array(false, $res))
 		{
 			return false;
 		}
+		
 		$str = implode("\n", $script);
 		FabrikHelperHTML::script($srcs, $str);
-		$pluginManager = FabrikWorker::getPluginManager();
+		
 		$pluginManager->runPlugins('onAfterJSLoad', $model);
 	}
 
@@ -635,8 +637,8 @@ class fabrikViewForm extends JView
 			$fields[] = '<input type="hidden" name="fabrik_repeat_group['.$group->id.']" value="'.$c.'" id="fabrik_repeat_group_'.$group->id.'_counter" />';
 		}
 
-		$this->_cryptQueryString($aHiddenFields);
-		$this->_cryptViewOnlyElements($aHiddenFields);
+		$this->_cryptQueryString($fields);
+		$this->_cryptViewOnlyElements($fields);
 		$this->hiddenFields = implode("\n", $fields);
 	}
 
@@ -647,7 +649,7 @@ class fabrikViewForm extends JView
 	 * if you are filtering from an url?
 	 */
 
-	protected function _cryptQueryString(&$aHiddenFields)
+	protected function _cryptQueryString(&$fields)
 	{
 		jimport('joomla.utilities.simplecrypt');
 		jimport('joomla.utilities.utility');
@@ -690,7 +692,8 @@ class fabrikViewForm extends JView
 		}
 	}
 
-	protected function _cryptViewOnlyElements(&$fields)
+
+	protected function _cryptViewOnlyElements(&$aHiddenFields)
 	{
 		jimport('joomla.utilities.simplecrypt');
 		jimport('joomla.utilities.utility');
@@ -776,6 +779,7 @@ class fabrikViewForm extends JView
 				$fields[$key] = '<input type="hidden" name="fabrik_vars[querystring]['.$key.']" value="'.$input.'" />';
 			}
 		}
+		$aHiddenFields = array_merge($aHiddenFields, array_values($fields));
 	}
 
 	/**

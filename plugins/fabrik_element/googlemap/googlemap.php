@@ -571,7 +571,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 
 			$table = $listModel->getTable();
 			if ($groupModel->canRepeat() == '1') {
-				$fullName = $table->db_table_name . $formModel->_joinTableElementStep . $element->name;
+				$fullName = $table->db_table_name . $formModel->joinTableElementStep . $element->name;
 				if (isset($data[$fullName]))
 				{
 					if (is_array($data[$fullName]))
@@ -622,7 +622,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 			}
 			else
 			{
-				$fullName = $table->db_table_name . $formModel->_joinTableElementStep . $element->name;
+				$fullName = $table->db_table_name . $formModel->joinTableElementStep . $element->name;
 				if (isset($data[$fullName]))
 				{
 					/* drop down  */
