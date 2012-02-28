@@ -187,7 +187,7 @@ class FabrikWorker {
 		if (!empty($matches))
 		{
 			$d = JFactory::getDate($date);
-			//$date = $d->toMySQL();
+			//$date = $d->toSql();
 			//$$$rob set to $format as we expect $date to already be in $format
 			$date = $d->toFormat($format);
 		}
@@ -377,8 +377,12 @@ class FabrikWorker {
 		// was set to post for a good reason, but I can't see why now.
 		// $$$ hugh - for reasons I don't understand, merging request just doesn't seem to work
 		// in some situations, so I'm adding a replaceRequest call here as a bandaid.
-		FabrikWorker::replaceRequest($msg);
-		$post	= JRequest::get('request');
+		
+		// @TODO $$$ rob can you remember what those situations where? Because doing this is messing up form plugins (e.g redirect) when they do replace on getEmailData()
+		// as having the line below commented in causes the request to be used before searchData. 
+		// FabrikWorker::replaceRequest($msg);
+		
+		$post = JRequest::get('request');
 		$this->_searchData = is_null($searchData) ?  $post : array_merge($post, $searchData);
 		$this->_searchData['JSession::getFormToken'] = JSession::getFormToken();
 		$msg = FabrikWorker::replaceWithUserData($msg);
@@ -746,15 +750,25 @@ class FabrikWorker {
 	public function getContentFilter()
 	{
 		$dofilter = false;
-		$filter= false;
+		$filter = false;
 
 		// Filter settings
 		jimport('joomla.application.component.helper');
-		$config = JComponentHelper::getParams('com_content');
+		
+		// Get Config and Filters in Joomla 2.5
+		$config = JComponentHelper::getParams('com_config');
+		$filters = $config->get('filters');
+
+		// If no filter data found, get from com_content (Joomla 1.6/1.7 sites)
+		if (empty($filters))
+		{
+			$contentParams = JComponentHelper::getParams('com_content');
+			$filters = $contentParams->get('filters');
+		}
+
 		$user = JFactory::getUser();
 		$userGroups	= JAccess::getGroupsByUser($user->get('id'));
 
-		$filters = $config->get('filters');
 		$blackListTags			= array();
 		$blackListAttributes	= array();
 		$whiteListTags			= array();

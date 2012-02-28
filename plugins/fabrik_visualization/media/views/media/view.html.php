@@ -18,7 +18,8 @@ class fabrikViewMedia extends JView
 		$this->row = $model->getVisualization();
 		$model->setListIds();
 
-		if ($this->row->published == 0) {
+		if ($this->row->published == 0)
+		{
 			JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
 			return '';
 		}
@@ -33,7 +34,7 @@ class fabrikViewMedia extends JView
 		$this->assignRef('filters', $this->get('Filters'));
 		$pluginParams = $model->getPluginParams();
 		$tmpl = $pluginParams->get('media_layout', $tmpl);
-		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/media/views/media/tmpl/' .$tmpl;
+		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/media/views/media/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/media/views/media/tmpl/' . $tmpl . '/template.css');
 		echo parent::display();

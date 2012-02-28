@@ -181,8 +181,8 @@ class FabrikModelLists extends FabModelList
 		JArrayHelper::toInteger($cid);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('db_table_name')->from('#__{package}_lists')->where('id IN('.implode(',', $cid).')');
+		$query->select('db_table_name')->from('#__{package}_lists')->where('id IN(' . implode(',', $cid) . ')');
 		$db->setQuery($query);
-		return $db->loadResultArray();
+		return $db->loadColumn();
 	}
 }

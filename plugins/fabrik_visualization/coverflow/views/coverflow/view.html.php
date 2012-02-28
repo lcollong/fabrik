@@ -17,7 +17,8 @@ class fabrikViewCoverflow extends JView
 		$model->setId($id);
 		$row = $model->getVisualization();
 		$model->setListIds();
-		if ($this->get('RequiredFiltersFound')) {
+		if ($this->get('RequiredFiltersFound'))
+		{
 			$model->render();
 		}
 		$this->assign('containerId', $this->get('ContainerId'));

@@ -24,10 +24,9 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 		$titles = (array)$params->get('approvals_title_element');
 		$users = (array)$params->get('approvals_user_element');
 		$contents = (array)$params->get('approvals_content_element');
-
-
 		$this->rows = array();
-		for ($x = 0; $x < count($ids); $x++) {
+		for ($x = 0; $x < count($ids); $x++)
+		{
 			$asfields = array();
 			$fields= array();
 			$listModel = JModel::getInstance('List', 'FabrikFEModel');
@@ -48,22 +47,26 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 			$userEl->getAsField_html($asfields, $fields, array('alias'=>'user'));
 			//$asfields[] = str_replace('___', '.', $users[$x]) . ' AS user';
 			
-			if (JArrayHelper::getValue($contents, $x, '') !== '') {
+			if (JArrayHelper::getValue($contents, $x, '') !== '')
+			{
 				$contentEl = $formModel->getElement($contents[$x]);
 				$contentEl->getAsField_html($asfields, $fields, array('alias'=>'content'));
 			}
-
 
 			$query->select("'$item->label' AS type, ".$item->db_primary_key.' AS pk, '.implode(',', $asfields))->from($db->quoteName($item->db_table_name));
 			$query = $listModel->_buildQueryJoin($query);
 			$query->where(str_replace('___', '.', $approveEls[$x]) .' = 0');
 			$db->setQuery($query, 0, 5);
 			$rows = $db->loadObjectList();
-			if ($rows === null) {
+			if ($rows === null)
+			{
 				JError::raiseNotice(400, $db->getErrorMsg());
-			} else {
-				foreach ($rows as &$row) {
-					$row->view = 'index.php?option=com_fabrik&task=form.view&formid='.$formModel->getId().'&rowid='.$row->pk;
+			}
+			else
+			{
+				foreach ($rows as &$row)
+				{
+					$row->view = 'index.php?option=com_fabrik&task=form.view&formid=' . $formModel->getId() . '&rowid=' . $row->pk;
 					$row->rowid = $row->pk;
 					$row->listid = $ids[$x];
 				}
@@ -90,19 +93,21 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 		$params = $this->getParams();
 		$ids = (array)$params->get('approvals_table');
 		$approveEls = (array)$params->get('approvals_approve_element');
-		foreach ($ids as $key => $listid) {
-			if ($listid == JRequest::getInt('listid')) {
+		foreach ($ids as $key => $listid)
+		{
+			if ($listid == JRequest::getInt('listid'))
+			{
 				$listModel = JModel::getInstance('List', 'FabrikFEModel');
 				$listModel->setId(JRequest::getInt('listid'));
 				$item = $listModel->getTable();
 				$db = $listModel->getDbo();
 				$query = $db->getQuery(true);
 				$el = FabrikString::safeColName($approveEls[$key]);
-				try{
+				try {
 					$query->update($db->quoteName($item->db_table_name))->set($el.' = '.$db->quote($v))->where($item->db_primary_key.' = '.$db->quote(JRequest::getVar('rowid')));
 					$db->setQuery($query);
 					$db->query();
-				}catch (JException $e)
+				} catch (JException $e)
 				{
 						JError::raiseError(500, $e->getMessage());
 				}

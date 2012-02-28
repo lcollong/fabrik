@@ -1417,7 +1417,7 @@ class FabrikFEModelList extends JModelForm {
 			$query['select'] = 'SELECT  '. implode(', ', $this->selectedOrderFields) . ' FROM ' . $db->quoteName($table->db_table_name);
 			$query['join'] = $this->_buildQueryJoin();
 			$query['where'] = $this->_buildQueryWhere(JRequest::getVar('incfilters', 1));
-			$query['grouby'] = $this->_buildQueryGroupBy();
+			$query['groupby'] = $this->_buildQueryGroupBy();
 			$query['order'] = $order;
 
 			//check that the order by fields are in the select statement
@@ -4648,11 +4648,8 @@ class FabrikFEModelList extends JModelForm {
 				}
 				$aTableHeadings[$compsitKey] = $heading;
 
-				$headingClass[$compsitKey] = array('class' => 'fabrik_ordercell ' . $key . ' ' . $element->id . '_order ' . $elementParams->get('tablecss_header_class'),
-				'style' => $elementParams->get('tablecss_header'));
-
-				$cellClass[$compsitKey] = array('class' => "{$key} fabrik_element " . $elementParams->get('tablecss_cell_class'),
-				'style' => $elementParams->get('tablecss_cell'));
+				$headingClass[$compsitKey] = array('class' => $elementModel->getHeadingClass(),	'style' => $elementParams->get('tablecss_header'));
+				$cellClass[$compsitKey] = array('class' => $elementModel->getCellClass(), 'style' => $elementParams->get('tablecss_cell'));
 
 			}
 			if ($groupHeadings[$groupHeadingKey] == 0)

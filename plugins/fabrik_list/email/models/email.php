@@ -259,7 +259,7 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 						{
 							$thissubject = $w->parseMessageForPlaceholder($subject, $row);
 							$thismessage = $w->parseMessageForPlaceholder($message, $row);
-							$res = JUtility::sendMail($email_from, $email_from, $mailto, $thissubject, $thismessage, 1, $cc, $bcc, $this->filepath);
+							$res =  JFactory::getMailer()->sendMail($email_from, $email_from, $mailto, $thissubject, $thismessage, 1, $cc, $bcc, $this->filepath);
 							if ($res)
 							{
 								$sent ++;

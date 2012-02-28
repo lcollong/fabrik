@@ -26,7 +26,7 @@ class FabrikFEModelVisualization extends JModel
 	protected $params = null;
 
 	//@var string url for filter form
-	var $getFilterFormURL = null;
+	protected $getFilterFormURL = null;
 
 	public $srcBase = "plugins/fabrik_visualization/";
 
@@ -40,8 +40,8 @@ class FabrikFEModelVisualization extends JModel
 
 	function getPluginParams()
 	{
-		if (!isset($this->_pluginParams)) {
-			$cache = & JFactory::getCache();
+		if (!isset($this->_pluginParams))
+		{
 			$this->_pluginParams = $this->_loadPluginParams();
 		}
 		return $this->_pluginParams;
@@ -63,7 +63,8 @@ class FabrikFEModelVisualization extends JModel
 
 	function getVisualization()
 	{
-		if (!isset($this->_row)) {
+		if (!isset($this->_row))
+		{
 			$this->_row = FabTable::getInstance('Visualization', 'FabrikTable');
 			$this->_row->load($this->getState('id'));
 		}
@@ -84,11 +85,14 @@ class FabrikFEModelVisualization extends JModel
 
 	function getlistModels()
 	{
-		if (!isset($this->tables)) {
+		if (!isset($this->tables))
+		{
 			$this->tables = array();
 		}
-		foreach ($this->listids as $id) {
-			if (!array_key_exists($id, $this->tables)) {
+		foreach ($this->listids as $id)
+		{
+			if (!array_key_exists($id, $this->tables))
+			{
 				$listModel = JModel::getInstance('List', 'FabrikFEModel');
 				$listModel->setId($id);
 				$listModel->getTable();
@@ -119,7 +123,7 @@ class FabrikFEModelVisualization extends JModel
 	function getContainerId()
 	{
 		$viz = $this->getVisualization();
-		return $viz->plugin."_".$viz->id;
+		return $viz->plugin . '_' . $viz->id;
 	}
 	/**
 	 * get all table models filters
@@ -131,12 +135,14 @@ class FabrikFEModelVisualization extends JModel
 		$params = $this->getParams();
 		$name = strtolower(str_replace('fabrikModel', '', get_class($this)));
 		$filters = array();
-		$showFilters = $params->get($name.'_show_filters', array());
+		$showFilters = $params->get($name . '_show_filters', array());
 		$listModels = $this->getlistModels();
 		$i = 0;
-		foreach ($listModels as $listModel) {
+		foreach ($listModels as $listModel)
+		{
 			$show = (bool)JArrayHelper::getValue($showFilters, $i, true);
-			if ($show) {
+			if ($show)
+			{
 				$filters[$listModel->getTable()->label] = $listModel->getFilters($this->getContainerId(), 'vizualization', $this->getVisualization()->id);
 			}
 			$i ++;
@@ -152,27 +158,30 @@ class FabrikFEModelVisualization extends JModel
 
 	public function getFilterFormURL()
 	{
-		if (isset($this->getFilterFormURL)) {
+		if (isset($this->getFilterFormURL))
+		{
 			return $this->getFilterFormURL;
 		}
 		$option = JRequest::getCmd('option');
 		// Get the router
-		$app	= &JFactory::getApplication();
-		$router = &$app->getRouter();
+		$app = JFactory::getApplication();
+		$router = $app->getRouter();
 
 		$uri = clone(JURI::getInstance());
 		// $$$ rob force these to be 0 once the menu item has been loaded for the first time
 		//subsequent loads of the link should have this set to 0. When the menu item is re-clicked
 		//rest filters is set to 1 again
 		$router->setVar('resetfilters', 0);
-		if ($option !== 'com_fabrik') {
+		if ($option !== 'com_fabrik')
+		{
 			// $$$ rob these can't be set by the menu item, but can be set in {fabrik....}
 			$router->setVar('clearordering', 0);
 			$router->setVar('clearfilters', 0);
 		}
 		$queryvars = $router->getVars();
 		$page = "index.php?";
-		foreach ($queryvars as $k => $v) {
+		foreach ($queryvars as $k => $v)
+		{
 			$qs[] = "$k=$v";
 		}
 		$action = $page . implode("&amp;", $qs);
@@ -186,22 +195,26 @@ class FabrikFEModelVisualization extends JModel
 	function getRequireFilterMsg()
 	{
 		$listModels = $this->getlistModels();
-		foreach ($listModels as $model) {
+		foreach ($listModels as $model)
+		{
 			$params = $model->getParams();
 			$filters = $model->getFilterArray();
 			$ftypes = JArrayHelper::getValue($filters, 'search_type', array());
-			//for ($i = count($ftypes) - 1; $i >= 0; $i--) {
-			foreach ($ftypes as $i => $v) {
-				if ($ftypes[$i] == 'prefilter') {
+			foreach ($ftypes as $i => $v)
+			{
+				if ($ftypes[$i] == 'prefilter')
+				{
 					unset($ftypes[$i]);
 				}
 			}
 
-			if ($params->get('require-filter', true) && empty($ftypes)) {
+			if ($params->get('require-filter', true) && empty($ftypes))
+			{
 				JError::raiseNotice(500, JText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS'));
 			}
 		}
-		if (!$this->getRequiredFiltersFound()) {
+		if (!$this->getRequiredFiltersFound())
+		{
 			JError::raiseNotice(500, JText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS'));
 		}
 	}
@@ -215,8 +228,10 @@ class FabrikFEModelVisualization extends JModel
 	{
 		$listModels = $this->getListModels();
 		$filters = array();
-		foreach ($listModels as $listModel) {
-			if (!$listModel->getRequiredFiltersFound()) {
+		foreach ($listModels as $listModel)
+		{
+			if (!$listModel->getRequiredFiltersFound())
+			{
 				return false;
 			}
 		}
@@ -233,12 +248,17 @@ class FabrikFEModelVisualization extends JModel
 	{
 		$srcs = array();
 		$listModels = $this->getListModels();
-		foreach ($listModels as $model) {
+		foreach ($listModels as $model)
+		{
 			$paths = $model->getPluginJsClasses();
-			if (!empty($paths)) {
-				if (is_array($paths)) {
+			if (!empty($paths))
+			{
+				if (is_array($paths))
+				{
 					$srcs = array_merge($srcs, $paths);
-				} else {
+				}
+				else
+				{
 					$srcs[] = $paths;
 				}
 			}
@@ -255,9 +275,11 @@ class FabrikFEModelVisualization extends JModel
 	{
 		$str = array();
 		$listModels = $this->getListModels();
-		foreach ($listModels as $model) {
+		foreach ($listModels as $model)
+		{
 			$tmp = $model->getPluginJsObjects($this->getContainerId());
-			foreach ($tmp as $t) {
+			foreach ($tmp as $t)
+			{
 				$str[] = $t;
 			}
 		}

@@ -26,8 +26,8 @@ class FabrikControllerImport extends JController
 		$listModel->setId($this->listid);
 		$this->table = $listModel->getTable();
 		$document = JFactory::getDocument();
-		$viewName	= JRequest::getVar('view', 'form', 'default', 'cmd');
-		$viewType	= $document->getType();
+		$viewName = JRequest::getVar('view', 'form', 'default', 'cmd');
+		$viewType = $document->getType();
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 		$model = $this->getModel('Importcsv', 'FabrikFEModel');

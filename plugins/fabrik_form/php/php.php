@@ -44,9 +44,11 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 	function getTopContent($params, $formModel)
 	{
 		$this->html = '';
-		if ($params->get('only_process_curl') == 'getTopContent') {
+		if ($params->get('only_process_curl') == 'getTopContent')
+		{
 			$this->html = $this->_runPHP($params, $formModel);
- 			if ($this->html === false) {
+ 			if ($this->html === false)
+ 			{
 				return false;
 			}
  		}
@@ -71,9 +73,11 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 	function getEndContent(&$params, &$formModel)
 	{
 		$this->html = '';
-		if ($params->get('only_process_curl') == 'getEndContent') {
+		if ($params->get('only_process_curl') == 'getEndContent')
+		{
 			$this->html = $this->_runPHP($params, $formModel);
- 			if ($this->html === false) {
+ 			if ($this->html === false)
+ 			{
 				return false;
 			}
  		}
@@ -125,8 +129,10 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 
  	public function onAfterProcess($params, &$formModel)
  	{
- 	 	if ($params->get('only_process_curl') == 'onAfterProcess') {
- 			if ($this->_runPHP($params, $formModel) === false) {
+ 	 	if ($params->get('only_process_curl') == 'onAfterProcess')
+ 	 	{
+ 			if ($this->_runPHP($params, $formModel) === false)
+ 			{
 				return false;
 			}
  		}
@@ -143,7 +149,8 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 
  	function onLoad( &$params, &$formModel)
  	{
- 	 	if ($params->get('only_process_curl') == 'onLoad') {
+ 	 	if ($params->get('only_process_curl') == 'onLoad')
+ 	 	{
  			return $this->_runPHP($params, $formModel);
  		}
  		return true;
@@ -159,7 +166,8 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 
  	function onBeforeLoad( &$params, &$formModel)
  	{
- 		if ($params->get('only_process_curl') == 'onBeforeLoad') {
+ 		if ($params->get('only_process_curl') == 'onBeforeLoad')
+ 		{
  			return $this->_runPHP($params, $formModel);
  		}
  		return true;
@@ -199,35 +207,43 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 		// $$$ rob this is poor when submitting the form the data is stored in _formData, when editing its stored in _data -
 		// as this method can run on render or on submit we have to do a little check to see which one we should use.
 		// really we should use the same form property to store the data regardless of form state
-		if (!empty($formModel->_formData)) {
+		if (!empty($formModel->_formData))
+		{
 			$this->html = $formModel->_formData;
-		} else {
+		}
+		else
+		{
 			$this->html = $formModel->_data;
 		}
-		if ($params->get('form_php_file') == -1) {
+		if ($params->get('form_php_file') == -1)
+		{
 			$w = new FabrikWorker();
 			$code = $w->parseMessageForPlaceHolder($params->get('curl_code', ''), $this->html, true, true);
 			return eval($code);
-		} else {
-
+		}
+		else
+		{
 			// $$$ hugh - give them some way of getting at form data
 			// (I'm never sure if $_REQUEST is 'safe', i.e. if it has post-validation data)
 			global $fabrikFormData, $fabrikFormDataWithTableName;
 			// for some reason, = wasn't working??
 			$fabrikFormData = $this->html;
 			// $$$ hugh - doesn't exist for tableless forms
-			if (isset($formModel->_formDataWithtableName)) {
+			if (isset($formModel->_formDataWithtableName))
+			{
 				$fabrikFormDataWithTableName = $formModel->_formDataWithtableName;
 			}
 			$php_file = JFilterInput::clean($params->get('form_php_file'), 'CMD');
-			$php_file = JPATH_ROOT. '/' .'plugins/fabrik_form/php/scripts'. '/' .$php_file;
+			$php_file = JPATH_ROOT. '/plugins/fabrik_form/php/scripts/' .$php_file;
 
-			if (!JFile::exists($php_file)) {
+			if (!JFile::exists($php_file))
+			{
 				JError::raiseNotice(500, 'Mssing PHP form plugin file');
 				return;
 			}
 			$method = $params->get('only_process_curl');
-			if ($method == 'getBottomContent' || $method == 'getTopContent' || $method == 'getEndContent') {
+			if ($method == 'getBottomContent' || $method == 'getTopContent' || $method == 'getEndContent')
+			{
 				//for these types of scripts any out put you want to inject into the form should be echo'd out
 				// @TODO - shouldn't we apply this logic above as well (direct eval)?
 				ob_start();
@@ -235,10 +251,13 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 				$output = ob_get_contents();
 				ob_end_clean();
 				return $output;
-			} else {
+			}
+			else
+			{
 				$php_result = require($php_file);
 			}
-			if ($php_result === false) {
+			if ($php_result === false)
+			{
 				return false;
 			}
 		}

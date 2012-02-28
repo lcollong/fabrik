@@ -67,10 +67,10 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 		$aData = array_merge($this->getEmailData(), $formModel->_formData);
 
 		$message = $params->get('receipt_message');
-		$editURL = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&amp;view=form&amp;fabrik=" . $formModel->get('id') . "&amp;rowid=" . JRequest::getVar('rowid');
-		$viewURL = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&amp;view=details&amp;fabrik=" . $formModel->get('id') . "&amp;rowid=" . JRequest::getVar('rowid');
-		$editlink = "<a href=\"$editURL\">" . JText::_('EDIT') . "</a>";
-		$viewlink = "<a href=\"$viewURL\">" . JText::_('VIEW') . "</a>";
+		$editURL = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&amp;view=form&amp;fabrik=' . $formModel->get('id') . '&amp;rowid=' . JRequest::getVar('rowid');
+		$viewURL = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&amp;view=details&amp;fabrik=' . $formModel->get('id') . '&amp;rowid=' . JRequest::getVar('rowid');
+		$editlink = '<a href="' . $editURL . '">' . JText::_('EDIT') . '</a>';
+		$viewlink = '<a href="' . $viewURL . '">' . JText::_('VIEW') . '</a>';
 		$message = str_replace('{fabrik_editlink}', $editlink, $message);
 		$message = str_replace('{fabrik_viewlink}', $viewlink, $message);
 		$message = str_replace('{fabrik_editurl}', $editURL, $message);
@@ -116,7 +116,7 @@ class plgFabrik_FormReceipt extends plgFabrik_Form {
 		{
 			$fromname= $rawconfig->fromname;
 		}
-		$res = JUTility::sendMail( $from, $fromname, $to, $subject, $message, true);
+		$res = JFactory::getMailer()->sendMail( $from, $fromname, $to, $subject, $message, true);
 	}
 }
 ?>

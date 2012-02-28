@@ -33,7 +33,8 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 		$possible = '23456789bcdfghjkmnpqrstvwxyz';
 		$code = '';
 		$i = 0;
-		while ($i < $characters) {
+		while ($i < $characters)
+		{
 			$code .= substr($possible, mt_rand(0, strlen($possible)-1), 1);
 			$i++;
 		}
@@ -44,8 +45,10 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	{
 		$user = JFactory::getUser();
 		$params = $this->getParams();
-		if ($user->id != 0) {
-			if ($params->get('captcha-showloggedin', 0) == 0) {
+		if ($user->id != 0)
+		{
+			if ($params->get('captcha-showloggedin', 0) == 0)
+			{
 				return '';
 			}
 		}
@@ -56,8 +59,10 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	{
 		$user = JFactory::getUser();
 		$params = $this->getParams();
-		if ($user->id != 0) {
-			if ($params->get('captcha-showloggedin', 0) == 0) {
+		if ($user->id != 0)
+		{
+			if ($params->get('captcha-showloggedin', 0) == 0)
+			{
 				return true;
 			}
 		}
@@ -67,15 +72,17 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	/**
 	 * check user can view the read only element & view in table view
 	 * If user logged in return false
-	 * @return bol can view or not
+	 * @return	bool	can view or not
 	 */
 
 	function canView()
 	{
 		$user = JFactory::getUser();
 		$params = $this->getParams();
-		if ($user->id != 0) {
-			if ($params->get('captcha-showloggedin', 0) == 0) {
+		if ($user->id != 0)
+		{
+			if ($params->get('captcha-showloggedin', 0) == 0)
+			{
 				return false;
 			}
 		}
@@ -83,17 +90,19 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	}
 
 	/**
-	 * check user can view the active element
+	 * check user can use the active element
 	 * If user logged in return false
-	 * @return bol can view or not
+	 * @return	bool	can use or not
 	 */
 
 	public function canUse(&$model, $location, $event)
 	{
 		$user = JFactory::getUser();
 		$params = $this->getParams();
-		if ($user->id != 0) {
-			if ($params->get('captcha-showloggedin', 0) == 0) {
+		if ($user->id != 0)
+		{
+			if ($params->get('captcha-showloggedin', 0) == 0)
+			{
 				return false;
 			}
 		}
@@ -102,11 +111,12 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 
 	/**
 	 * draws the form element
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * @param	int		repeat group counter
+	 * @return	string	returns element html
 	 */
 
-	function render($data, $repeatCounter = 0) {
+	function render($data, $repeatCounter = 0)
+	{
 		$session = JFactory::getSession();
 		$name = $this->getHTMLName($repeatCounter);
 		$id	= $this->getHTMLId($repeatCounter);
@@ -114,20 +124,24 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 		$params = $this->getParams();
 		$user = JFactory::getUser();
 
-		if ($params->get('captcha-method') == 'recaptcha') {
-
+		if ($params->get('captcha-method') == 'recaptcha')
+		{
 			$publickey = $params->get('recaptcha_publickey');
-
 			//$$$tom added lang & theme options
 			$theme = $params->get('recaptcha_theme', 'red');
 			$lang = strtolower($params->get('recaptcha_lang', 'en'));
 			$error = null;
-			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false) {
-				return '<input class="inputbox text" type="hidden" name="'.$name.'" id="'.$id.'" value="" />';
-			} else {
+			if ($user->id != 0 && $params->get('captcha-showloggedin', 0) == false)
+			{
+				return '<input class="inputbox text" type="hidden" name="' . $name . '" id="' . $id . '" value="" />';
+			}
+			else
+			{
 				return recaptcha_get_html($id, $publickey, $theme, $lang, $error);
 			}
-		} else {
+		}
+		else
+		{
 			$str = array();
 			$size = $element->width;
 			$height = $params->get('captcha-height', 40);
@@ -138,8 +152,8 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 			// $$$ hugh - code that generates image now in image.php
 			$session->set('com_fabrik.element.captach.security_code', $code);
 
-// ***** e-kinst
-//	additional plugin params with validation
+			// ***** e-kinst
+			//	additional plugin params with validation
 			$noise_color = $params->get('captcha-noise-color', '0000FF');
 			// '0000FF' again if we have param value but it's invalid
 			$noise_color = $this->_getRGBcolor($noise_color, '0000FF');
@@ -148,42 +162,48 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 			$bg_color = $params->get('captcha-bg', 'FFFFFF');
 			$bg_color = $this->_getRGBcolor($bg_color, 'FFFFFF');
 
-//	let's keep all params in relatively safe place not only captcha value
+			//	let's keep all params in relatively safe place not only captcha value
 			$session->set('com_fabrik.element.captach.height', $height);
 			$session->set('com_fabrik.element.captach.width', $width);
 			$session->set('com_fabrik.element.captach.noise_color', $noise_color);
 			$session->set('com_fabrik.element.captach.text_color', $text_color);
 			$session->set('com_fabrik.element.captach.bg_color', $bg_color);
 			$session->set('com_fabrik.element.captach.font', $this->_font);
-// * /e-kinst
+			// * /e-kinst
 
 			// $$$ hugh - changed from static image path to using simple image.php script, to get round IE caching images
 
-//***** e-kinst 
-//	It seems too dangerous to set all parameters here,
-//	because everybody can enlarge image size and set noise color to
-//	background color to OCR captcha values without problems
-			$str[] = '<img src="'.COM_FABRIK_LIVESITE.'plugins/fabrik_element/captcha/image.php?foo='.rand().'" alt="'.JText::_('security image').'" />';
-// *  /e-kinst
+			//***** e-kinst
+			//	It seems too dangerous to set all parameters here,
+			//	because everybody can enlarge image size and set noise color to
+			//	background color to OCR captcha values without problems
+			$str[] = '<img src="' . COM_FABRIK_LIVESITE . 'plugins/fabrik_element/captcha/image.php?foo=' . rand() . '" alt="' . JText::_('security image') . '" />';
+			// *  /e-kinst
 			$str[] = '<br />';
 
 			$value = $this->getValue($data, $repeatCounter);
 			$type = ($params->get('password') == "1") ? "password" : "text";
-			if (isset($this->_elementError) && $this->_elementError != '') {
+			if (isset($this->_elementError) && $this->_elementError != '')
+			{
 				$type .= " elementErrorHighlight";
 			}
-			if ($element->hidden == '1') {
+			if ($element->hidden == '1')
+			{
 				$type = "hidden";
 			}
-			$sizeInfo = ' size="'.$size.'"';
-			if (!$this->editable) {
-				if ($element->hidden == '1') {
+			$sizeInfo = ' size="' . $size . '"';
+			if (!$this->editable)
+			{
+				if ($element->hidden == '1')
+				{
 					return '<!-- '.stripslashes($value).' -->';
-				} else {
+				}
+				else
+				{
 					return stripslashes($value);
 				}
 			}
-			$str[] = '<input class="inputbox '.$type.'" type="'.$type.'" name="'.$name.'" id="'.$id.'" '.$sizeInfo.' value="" />';
+			$str[] = '<input class="inputbox ' . $type . '" type="' . $type . '" name="' . $name . '" id="' . $id . '" ' . $sizeInfo . ' value="" />';
 			return implode("\n", $str);
 		}
 	}
@@ -200,12 +220,15 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	function validate($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
-		if (!$this->canUse()) {
+		if (!$this->canUse())
+		{
 			return true;
 		}
-		if ($params->get('captcha-method') == 'recaptcha') {
+		if ($params->get('captcha-method') == 'recaptcha')
+		{
 			$privatekey = $params->get('recaptcha_privatekey');
-			if (JRequest::getVar('recaptcha_response_field')) {
+			if (JRequest::getVar('recaptcha_response_field'))
+			{
 				$resp = recaptcha_check_answer ($privatekey,
 				$_SERVER["REMOTE_ADDR"],
 				JRequest::getVar('recaptcha_challenge_field'),
@@ -214,12 +237,14 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 			}
 
 			return false;
-		} else {
-
+		}
+		else
+		{
 			$this->getParams();
 			$elName = $this->getFullName( true, true, false);
 			$session = JFactory::getSession();
-			if ($session->get('com_fabrik.element.captach.security_code', null) != $data) {
+			if ($session->get('com_fabrik.element.captach.security_code', null) != $data)
+			{
 				return false;
 			}
 			return true;
@@ -238,7 +263,8 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	function mustValidate()
 	{
 		$params = $this->getParams();
-		if (!$this->canUse() && !$this->canView()) {
+		if (!$this->canUse() && !$this->canView())
+		{
 			return false;
 		}
 		return parent::mustValidate();
@@ -253,7 +279,8 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	function elementJavascript($repeatCounter)
 	{
 		$user = JFactory::getUser();
-		if ($user->id == 0) {
+		if ($user->id == 0)
+		{
 			$id = $this->getHTMLId($repeatCounter);
 			$opts = $this->getElementJSOptions($repeatCounter);
 			$opts = json_encode($opts);
@@ -273,33 +300,39 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	{
 		return "";
 	}
-	
-// ****** e-kinst
-// return rgb color from hex color
-// @param 3- or 6-digits hex color with optional leading '#'
-// @param default hex color if first param invalid
-// @return string as 'R+G+B' where R,G,B are decimal 
+
+	/**
+	 *  ****** e-kinst
+	 * @param 3- or 6-digits hex color with optional leading '#'
+	 * @param default hex color if first param invalid
+	 * @return string as 'R+G+B' where R,G,B are decimal
+	 */
+
 	private function _getRGBcolor($hexColor, $default='FF0000' )
 	{
 		$regex = '/^#?(([\da-f])([\da-f])([\da-f])|([\da-f]{2})([\da-f]{2})([\da-f]{2}))$/i';
 		$rgb = array();
-		if( !preg_match($regex, $hexColor, $rgb) )
-					{	if( !preg_match($regex, $default, $rgb) )
-								// in case where $default invalid also (call error)
-								$rgb = array('FF0000', 'FF0000', 'FF', '00', '00');
-					}
+		if (!preg_match($regex, $hexColor, $rgb))
+		{
+			if(!preg_match($regex, $default, $rgb))
+			// in case where $default invalid also (call error)
+			$rgb = array('FF0000', 'FF0000', 'FF', '00', '00');
+		}
 		array_shift($rgb);
 		array_shift($rgb);
-		
-		if( count($rgb) > 3 )
-					$rgb = array_slice($rgb, 3, 3);
-		for( $i=0; $i<3; $i++ )
-				{	if( strlen($rgb[$i]) == 1 )  $rgb[$i] .= $rgb[$i];
-				 	$rgb[$i] = intval($rgb[$i], 16);
-				}
-		
+
+		if (count($rgb) > 3)
+		{
+			$rgb = array_slice($rgb, 3, 3);
+		}
+		for ($i = 0; $i < 3; $i++)
+		{
+			if (strlen($rgb[$i]) == 1)  $rgb[$i] .= $rgb[$i];
+			$rgb[$i] = intval($rgb[$i], 16);
+		}
+
 		return implode('+', $rgb);
 	}
-//* /e-kinst
+	//* /e-kinst
 }
 ?>

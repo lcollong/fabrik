@@ -97,7 +97,7 @@ class FabrikFEModelCSVExport {
 				{
 					foreach ($a as $key=>$val)
 					{
-						if (substr($key, strlen($key) - 4, strlen($key)) == "_raw")
+						if (substr($key, strlen($key) - 4, strlen($key)) == '_raw')
 						{
 							unset($a[$key]);
 						}
@@ -107,7 +107,7 @@ class FabrikFEModelCSVExport {
 				{
 					foreach ($a as $key=>$val)
 					{
-						if (substr($key, strlen($key) - 4, strlen($key)) != "_raw")
+						if (substr($key, strlen($key) - 4, strlen($key)) != '_raw')
 						{
 							unset($a[$key]);
 						}
@@ -364,7 +364,7 @@ class FabrikFEModelCSVExport {
 					$element = $elementModel->getElement();
 					$fullname = $elementModel->getFullName(false, true, false);
 
-					if ($fullname == $heading || $fullname . "_raw" == $heading)
+					if ($fullname == $heading || $fullname . '_raw' == $heading)
 					{
 						$found = true;
 						switch ($hformat)
@@ -382,9 +382,9 @@ class FabrikFEModelCSVExport {
 								break;
 						}
 
-						if ($fullname . "_raw" == $heading)
+						if ($fullname . '_raw' == $heading)
 						{
-							$n .= "_raw";
+							$n .= '_raw';
 						}
 
 						if ($incData && substr($n, strlen($n)-4, strlen($n)) !== '_raw')
@@ -399,7 +399,7 @@ class FabrikFEModelCSVExport {
 							}
 						}
 
-						if ($incRaw && substr($n, strlen($n)-4, strlen($n)) == "_raw")
+						if ($incRaw && substr($n, strlen($n)-4, strlen($n)) == '_raw')
 						{
 							if (!in_array($n, $h))
 							{
@@ -417,7 +417,7 @@ class FabrikFEModelCSVExport {
 
 			if (!$found)
 			 {
-				if (!(substr($heading, strlen($heading)-4, strlen($heading)) == "_raw" && !$incRaw))
+				if (!(substr($heading, strlen($heading)-4, strlen($heading)) == '_raw' && !$incRaw))
 				{
 					//stop id getting added to tables when exported wiht fullelname key
 					if ($hformat != 1 && $heading != $shortkey)

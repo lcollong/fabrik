@@ -178,7 +178,7 @@ class FabrikModelList extends FabModelAdmin
 		$aConditions = array();
 		$aConditions[] = JHTML::_('select.option', 'AND');
 		$aConditions[] = JHTML::_('select.option', 'OR');
-		$dd = str_replace("\n", "", JHTML::_('select.genericlist', $aConditions, $name, "class=\"inputbox\"  size=\"1\" ", 'value', 'text', ''));
+		$dd = str_replace("\n", "", JHTML::_('select.genericlist', $aConditions, $name, 'class="inputbox"  size="1" ', 'value', 'text', ''));
 		if ($addslashes)
 		{
 			$dd = addslashes($dd);
@@ -228,7 +228,7 @@ class FabrikModelList extends FabModelAdmin
 				$aConditions[] = JHTML::_('select.option', 'laterthisyear', JText::_('COM_FABRIK_LATER_THIS_YEAR'));
 				break;
 		}
-		$dd = str_replace("\n", "", JHTML::_('select.genericlist',  $aConditions, $name, "class=\"inputbox\"  size=\"1\" ", 'value', 'text', ''));
+		$dd = str_replace("\n", "", JHTML::_('select.genericlist',  $aConditions, $name, 'class="inputbox"  size="1" ', 'value', 'text', ''));
 		if ($addslashes)
 		{
 			$dd = addslashes( $dd);
@@ -591,7 +591,7 @@ class FabrikModelList extends FabModelAdmin
 		{
 			if ($row->created == '')
 			{
-				$row->created = $date->toMySQL();
+				$row->created = $date->toSql();
 			}
 			//save the row now
 			$row->store();
@@ -648,7 +648,7 @@ class FabrikModelList extends FabModelAdmin
 		if ($row->id != 0)
 		{
 			$datenow = JFactory::getDate();
-			$row->modified = $datenow->toMySQL();
+			$row->modified = $datenow->toSql();
 			$row->modified_by = $user->get('id');
 		}
 		FabrikHelper::prepareSaveDate($row->publish_down);
@@ -976,7 +976,7 @@ class FabrikModelList extends FabModelAdmin
 		$user = JFactory::getUser();
 		$config	= JFactory::getConfig();
 		$createdate = JFactory::getDate();
-		$createdate = $createdate->toMySQL();
+		$createdate = $createdate->toSql();
 		$post = JRequest::get('post');
 		$tableName = $post['jform']['db_table_name'];
 		$formModel = $this->getFormModel();
@@ -1062,7 +1062,7 @@ class FabrikModelList extends FabModelAdmin
 		$elementTypes = JRequest::getVar('elementtype', array());
 		$fields = $fabrikDb->getTableFields(array($tableName));
 		$fields = $fields[$tableName];
-		$createdate = JFactory::getDate()->toMySQL();
+		$createdate = JFactory::getDate()->toSql();
 		$key = $this->getFEModel()->getPrimaryKeyAndExtra($tableName);
 		$ordering = 0;
 		// no existing fabrik table so we take a guess at the most
@@ -1135,7 +1135,7 @@ class FabrikModelList extends FabModelAdmin
 			$element->height = '6';
 			$element->ordering = $ordering;
 			$element->params = $elementModel->getDefaultAttribs();
-			$element->label = JArrayHelper::getValue($elementLabels, $ordering, str_replace("_", " ", $label));
+			$element->label = JArrayHelper::getValue($elementLabels, $ordering, str_replace('_', ' ', $label));
 
 			if (!$element->store())
 			{
@@ -1178,7 +1178,7 @@ class FabrikModelList extends FabModelAdmin
 			$this->formModel->getForm();
 			jimport('joomla.utilities.date');
 			$createdate = JFactory::getDate();
-			$createdate = $createdate->toMySQL();
+			$createdate = $createdate->toSql();
 
 			$form = $this->getTable('Form');
 			$item = $this->getTable('List');
@@ -1236,7 +1236,7 @@ class FabrikModelList extends FabModelAdmin
 		$group = $this->getTable('Group');
 		$group->bind($data);
 		$group->id = null;
-		$group->created = $createdate->toMySQL();
+		$group->created = $createdate->toSql();
 		$group->created_by = $user->get('id');
 		$group->created_by_alias = $user->get('username');
 		$group->published = 1;
@@ -1345,7 +1345,7 @@ class FabrikModelList extends FabModelAdmin
 
 			$item->form_id = $formModel->getTable()->id;
 			$createdate = JFactory::getDate();
-			$createdate = $createdate->toMySQL();
+			$createdate = $createdate->toSql();
 			$item->label = $post['names'][$pk]['listLabel'];
 			$item->created = $createdate;
 			$item->modified = $db->getNullDate();
@@ -1794,7 +1794,7 @@ class FabrikModelList extends FabModelAdmin
 		}
 		$query->select('group_id')->from('#__{package}_formgroup')->where('form_id = '.(int)$form->id);
 		$db->setQuery($query);
-		$groupids = (array)$db->loadResultArray();
+		$groupids = (array)$db->loadColumn();
 
 		//delete groups
 		$groupModel = JModel::getInstance('Group', 'FabrikModel');
@@ -1859,7 +1859,7 @@ class FabrikModelList extends FabModelAdmin
 		$query = $db->getQuery(true);
 		$query->select($key)->from($name);
 		$db->setQuery($query);
-		$existingids = $db->loadResultArray();
+		$existingids = $db->loadColumn();
 		//build the row object to insert/update
 		foreach ($xml as $row)
 		{
@@ -1932,7 +1932,7 @@ class FabrikModelList extends FabModelAdmin
 			$formid = (int)$this->get('form.id', $this->getFormModel()->id);
 			$query->select('group_id')->from('#__{package}_formgroup')->where('form_id = '.$formid);
 			$db->setQuery($query);
-			$groupIds = $db->loadResultArray();
+			$groupIds = $db->loadColumn();
 		}
 		$i = 0;
 		foreach ($fields as $name => $plugin)
@@ -2084,7 +2084,7 @@ class FabrikModelList extends FabModelAdmin
 		// $existingfields = array_map('strtolower', array_keys($fabrikDb->getTableColumns($tableName)));
 		$existingfields = array_keys($fabrikDb->getTableColumns($tableName));
 		$lastfield = $existingfields[count($existingfields)-1];
-		$sql = "ALTER TABLE ".$db->quoteName($tableName)." ";
+		$sql = "ALTER TABLE ".$db->quoteName($tableName) . ' ';
 		$sql_add = array();
 		// $$$ hugh - looks like this is now an array in jform
 		$post = JRequest::get('post');

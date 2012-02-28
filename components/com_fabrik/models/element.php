@@ -55,7 +55,7 @@ class plgFabrik_Element extends FabrikPlugin
 	var $_element = null;
 
 	/** @var bol does the element have a label */
-	var $hasLabel = true;
+	protected $hasLabel = true;
 
 	/** @var bol does the element contain sub elements e.g checkboxes radiobuttons */
 	public $hasSubElements = false;
@@ -68,9 +68,6 @@ class plgFabrik_Element extends FabrikPlugin
 	public $defaults = null;
 
 	var $_HTMLids = null;
-
-	/** @var bol is a join element */
-	var $_isJoin = false;
 
 	var $_inRepeatGroup = null;
 
@@ -350,7 +347,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$dbtable = $this->actualTableName();
 		$db = JFactory::getDbo();
 		$table = $this->getListModel()->getTable();
-		$fullElName = $db->quoteName($jointable.'___' . $this->_element->name . "_raw");
+		$fullElName = $db->quoteName($jointable.'___' . $this->_element->name . '_raw');
 		return "(SELECT GROUP_CONCAT(id SEPARATOR '".GROUPSPLITTER."') FROM $jointable WHERE parent_id = " . $table->db_primary_key . ") AS $fullElName";
 	}
 
@@ -366,7 +363,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$group = $this->getGroup()->getGroup();
 		$name = $this->getFullName(false, true, false);
 		$fv_name = 'join['.$group->join_id.']['.$name.']';
-		$rawname = $name."_raw";
+		$rawname = $name.'_raw';
 		$fv_rawname = 'join['.$group->join_id.']['.$rawname.']';
 		return array(
 		array($name, $fv_name),
@@ -438,7 +435,7 @@ class plgFabrik_Element extends FabrikPlugin
 			}
 			else
 			{
-				$fullElName = $db->quoteName($dbtable.'___'.$this->_element->name."_raw");
+				$fullElName = $db->quoteName($dbtable.'___'.$this->_element->name.'_raw');
 				$str = "$k AS $fullElName";
 			}
 			if (!in_array($str, $aFields))
@@ -767,7 +764,7 @@ class plgFabrik_Element extends FabrikPlugin
 			$value = JArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
 
 			$name = $this->getFullName(false, true, false);
-			$rawname = $name . "_raw";
+			$rawname = $name . '_raw';
 			if ($groupModel->isJoin() || $this->isJoin())
 			{
 				// $$$ rob 22/02/2011 this test barfed on fileuploads which weren't repeating
@@ -1199,7 +1196,7 @@ class plgFabrik_Element extends FabrikPlugin
 			}
 			$date = JFactory::getDate();
 			$date->setOffset($app->getCfg('offset'));
-			$rule->created = $date->toMySQL();
+			$rule->created = $date->toSql();
 			$params = $rule->params == '' ? new stdClass() : json_decode($rule->params);
 			$params->parent_linked = 1;
 			$rule->params = json_encode($params);
@@ -1351,9 +1348,9 @@ class plgFabrik_Element extends FabrikPlugin
 
 		$element->value = $this->getValue($model->_data, $c);
 
-		if (array_key_exists($elHTMLName . "_raw", $model->_data))
+		if (array_key_exists($elHTMLName . '_raw', $model->_data))
 		{
-			$element->element_raw = $model->_data[$elHTMLName . "_raw"];
+			$element->element_raw = $model->_data[$elHTMLName . '_raw'];
 		}
 		else
 		{
@@ -2272,7 +2269,7 @@ class plgFabrik_Element extends FabrikPlugin
 	 * @return string required join text to ensure exact filter list code produces a valid query.
 	 */
 
-	protected function _buildFilterJoin()
+	protected function buildFilterJoin()
 	{
 		return '';
 	}
@@ -2321,8 +2318,8 @@ class plgFabrik_Element extends FabrikPlugin
 
 		// check if the elements group id is on of the table join groups if it is then we swap over the table name
 		$fromTable = $this->isJoin() ? $this->getJoinModel()->getJoin()->table_join : $origTable;
-		$joinStr = $incjoin ? $listModel->_buildQueryJoin() : $this->_buildFilterJoin();
-		$groupBy = "GROUP BY ".$params->get('filter_groupby', 'text')." ASC";
+		$joinStr = $incjoin ? $listModel->_buildQueryJoin() : $this->buildFilterJoin();
+		$groupBy = "GROUP BY " . $params->get('filter_groupby', 'text') . " ASC";
 		foreach ($listModel->getJoins() as $aJoin)
 		{
 			// not sure why the group id key wasnt found - but put here to remove error
@@ -2662,15 +2659,15 @@ class plgFabrik_Element extends FabrikPlugin
 	/**
 	 * build the filter query for the given element.
 	 * Can be overwritten in plugin - e.g. see checkbox element which checks for partial matches
-	 * @param $key element name in format `tablename`.`elementname`
-	 * @param $condition =/like etc
-	 * @param $value search string - already quoted if specified in filter array options
-	 * @param $originalValue - original filter value without quotes or %'s applied
-	 * @param string filter type advanced/normal/prefilter/search/querystring/searchall
-	 * @return string sql query part e,g, "key = value"
+	 * @param	string	$key element name in format `tablename`.`elementname`
+	 * @param	string	$condition =/like etc
+	 * @param	string	$value search string - already quoted if specified in filter array options
+	 * @param	string	$originalValue - original filter value without quotes or %'s applied
+	 * @param	string filter type advanced/normal/prefilter/search/querystring/searchall
+	 * @return	string	sql query part e,g, "key = value"
 	 */
 
-	function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		$this->encryptFieldName($key);
 		switch ($condition)
@@ -3955,7 +3952,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	public function getDefaultProperties()
 	{
 		$user = JFactory::getUser();
-		$now = JFactory::getDate()->toMySQL();
+		$now = JFactory::getDate()->toSql();
 		$this->setId(0);
 		$item = $this->getElement();
 		$item->plugin = $this->_name;
@@ -4710,6 +4707,58 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$this->form->setId(JRequest::getVar('formid'));
 		$this->setId(JRequest::getInt('element_id'));
 		$this->getElement();
+	}
+	
+	/**
+	 * @since 3.0.4
+	 * get the element's cell class
+	 * @return	string	css classes
+	 */
+	
+	public function getCellClass() 
+	{
+		$params = $this->getParams();
+		$classes = array();
+		$classes[] = $this->getFullName(false, true, false);
+		$classes[] = 'fabrik_element';
+		$c = $params->get('tablecss_cell_class', '');
+		if ($c !== '')
+		{
+			$classes[] = $c;
+		}
+		return implode(' ', $classes);
+	}
+	
+	/**
+	 * @since 3.0.4
+	 * get the elements list heading class
+	 * @return	string	css classes
+	 */
+	
+	public function getHeadingClass()
+	{
+		$params = $this->getParams();
+		$classes = array();
+		$classes[] = 'fabrik_ordercell';
+		$classes[] = $this->getFullName(false, true, false);
+		$classes[] = $this->getElement()->id . '_order';
+		$classes[] = $this->getParams()->get('tablecss_header_class');
+		return implode(' ', $classes);
+	}
+	
+	
+	/**
+	* get element's hidden field
+	*
+	* @param	string	$name
+	* @param	string	$value
+	* @param	string	$id
+	* @return	string
+	*/
+	
+	protected function _getHiddenField($name, $value, $id)
+	{
+		return '<input class="fabrikinput inputbox" type="hidden" name="' . $name . '" value="' . $value . '" id="' . $id . '" />';
 	}
 }
 ?>

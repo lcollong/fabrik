@@ -486,7 +486,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			$aclEl = str_replace('.', '___', $params->get('fu_download_acl', ''));
 			if (!empty($aclEl))
 			{
-				$aclElraw = $aclEl . "_raw";
+				$aclElraw = $aclEl . '_raw';
 				$canDownload = FabrikWorker::getACL($thisRow->$aclElraw, 'filedownload');
 				if (!$canDownload)
 				{
@@ -800,7 +800,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			else
 			{
 				$strfiles = json_encode($files);
-				$formModel->updateFormData($name . "_raw", $strfiles);
+				$formModel->updateFormData($name . '_raw', $strfiles);
 				$formModel->updateFormData($name, $strfiles);
 			}
 			return true;
@@ -825,7 +825,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		if ($params->get('fileupload_crop') == true && JRequest::getCmd('task') !== 'pluginAjax')
 		{
 			$post = JRequest::get('post');
-			$raw = JArrayHelper::getValue($post, $name."_raw", array());
+			$raw = JArrayHelper::getValue($post, $name.'_raw', array());
 			if ($this->getValue($post) != 'Array,Array')
 			{
 				$raw = $this->getValue($post);
@@ -962,7 +962,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 				}
 				$store = json_encode($store);
 				//$strfiles = implode(GROUPSPLITTER, $store);
-				$formModel->updateFormData($name . "_raw", $store);
+				$formModel->updateFormData($name . '_raw', $store);
 				$formModel->updateFormData($name, $store);
 
 			}
@@ -1281,7 +1281,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		else
 		{
 			$strfiles = implode(GROUPSPLITTER, $files);
-			$formModel->updateFormData($name . "_raw", $strfiles);
+			$formModel->updateFormData($name . '_raw', $strfiles);
 			$formModel->updateFormData($name, $strfiles);
 		}
 	}
@@ -2084,7 +2084,7 @@ zoom:
 						}
 						else
 						{
-							$files = explode(GROUPSPLITTER, $row->{$elName."_raw"});
+							$files = explode(GROUPSPLITTER, $row->{$elName.'_raw'});
 							foreach ($files as $filename)
 							{
 								$this->deleteFile(trim($filename));
@@ -2306,7 +2306,7 @@ zoom:
 			$subject = JText::_('PLG_ELEMENT_FILEUPLOAD_DOWNLOAD_EMAIL_SUBJECT') . ' :: ' . $config->get('sitename');
 			foreach (explode(',', $email_to) as $to)
 			{
-				$res = JUtility::sendMail( $from, $fromname, $to, $subject, $msg, true);
+				$res =  JFactory::getMailer()->sendMail( $from, $fromname, $to, $subject, $msg, true);
 			}
 		}
 	}
@@ -2423,7 +2423,7 @@ zoom:
 			$value = JArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
 
 			$name = $this->getFullName(false, true, false);
-			$rawname = $name . "_raw";
+			$rawname = $name . '_raw';
 			if ($groupModel->isJoin() || $this->isJoin())
 			{
 				// $$$ rob 22/02/2011 this test barfed on fileuploads which weren't repeating

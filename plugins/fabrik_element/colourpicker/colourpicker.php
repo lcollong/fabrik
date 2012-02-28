@@ -49,13 +49,14 @@ class plgFabrik_ElementColourpicker extends plgFabrik_Element
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @param int group repeat counter
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * @param	int		group repeat counter
+	 * @return	string	javascript to create instance. Instance name must be 'el'
 	 */
 
 	function elementJavascript($repeatCounter)
 	{
-		if (!$this->editable) {
+		if (!$this->editable)
+		{
 			return;
 		}
 		FabrikHelperHTML::addPath(JPATH_SITE . '/plugins/fabrik_element/colourpicker/images/', 'image', 'form', false);
@@ -87,9 +88,9 @@ class plgFabrik_ElementColourpicker extends plgFabrik_Element
 
 	/**
 	 * draws the form element
-	 * @param array row data
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * @param	array	row data
+	 * @param	int		repeat group counter
+	 * @return	string	returns element html
 	 */
 
 	function render($data, $repeatCounter = 0)
@@ -99,8 +100,10 @@ class plgFabrik_ElementColourpicker extends plgFabrik_Element
 		$value = $this->getValue($data, $repeatCounter);
 		$str = array();
 		$str[]	= '<div class="fabrikSubElementContainer">';
-		$str[] = '<input type="hidden" name="'.$name.'" id="'.$id.'" /><div class="colourpicker_bgoutput" style="float:left;width:20px;height:20px;border:1px solid #333333;background-color:rgb('.$value.')"></div>';
-		if ($this->editable) {
+		$str[] = '<input type="hidden" name="' . $name . '" id="' . $id . '" />';
+		$str[] = '<div class="colourpicker_bgoutput" style="float:left;width:20px;height:20px;border:1px solid #333333;background-color:rgb(' . $value . ')"></div>';
+		if ($this->editable)
+		{
 			$str[] = '<div class="colourPickerBackground colourpicker-widget" style="color:#000;z-index:99999;left:200px;background-color:#EEEEEE;border:1px solid #333333;width:390px;padding:0 0 5px 0;"></div>';
 		}
 		$str[] = '</div>';

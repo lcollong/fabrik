@@ -42,11 +42,12 @@ class fabrikModelMedia extends FabrikFEModelVisualization {
 	{
 		$params = $this->getParams();
 
-		$mediaElement	= $params->get('media_media_elementList');
+		$mediaElement = $params->get('media_media_elementList');
 		$mediaElement .= '_raw';
-		$titleElement	= $params->get('media_title_elementList', '');
-		$imageElement	= $params->get('media_image_elementList', '');
-		if (!empty($imageElement)) {
+		$titleElement = $params->get('media_title_elementList', '');
+		$imageElement = $params->get('media_image_elementList', '');
+		if (!empty($imageElement))
+		{
 			$imageElement .= '_raw';
 		}
 		$infoElement = $params->get('media_info_elementList', '');
@@ -71,13 +72,17 @@ class fabrikModelMedia extends FabrikFEModelVisualization {
 		$retstr .= "<playlist version=\"1\" xmlns = \"http://xspf.org/ns/0/\">\n";
 		$retstr .= "	<title>" . $list->label . "</title>\n";
 		$retstr .= "	<trackList>\n";
-		foreach ($alldata as $data) {
-			foreach ($data as $row) {
-				if (!isset($row->$mediaElement)) {
+		foreach ($alldata as $data)
+		{
+			foreach ($data as $row)
+			{
+				if (!isset($row->$mediaElement))
+				{
 					continue;
 				}
 				$location = $row->$mediaElement;
-				if (empty($location)) {
+				if (empty($location))
+				{
 					continue;
 				}
 				$location = str_replace('\\','/',$location);
@@ -86,28 +91,34 @@ class fabrikModelMedia extends FabrikFEModelVisualization {
 				//$location = urlencode($location);
 				$retstr .= "		<track>\n";
 				$retstr .= "			<location>" . $location . "</location>\n";
-				if (!empty($titleElement)) {
+				if (!empty($titleElement))
+				{
 					$title = $row->$titleElement;
 					$retstr .= "			<title>" . $title . "</title>\n";
 				}
-				if (!empty($imageElement)) {
+				if (!empty($imageElement))
+				{
 					$image = $row->$imageElement;
-					if (!empty($image)) {
+					if (!empty($image))
+					{
 						$image = str_replace('\\','/',$image);
 						$image = ltrim($image, '/');
 						$image = COM_FABRIK_LIVESITE . $image;
 						$retstr .= "			<image>" . $image . "</image>\n";
 					}
 				}
-				if (!empty($noteElement)) {
+				if (!empty($noteElement))
+				{
 					$note = $row->$noteElement;
 					$retstr .= "			<annotation>" . $note . "</annotation>\n";
 				}
-				if (!empty($infoElement)) {
+				if (!empty($infoElement))
+				{
 					$link = $row->$titleElement;
 					$retstr .= "			<info>" . $link . "</info>\n";
 				}
-				else {
+				else
+				{
 					$link = JRoute::_('index.php?option=com_fabrik&view=form&formid=' . $form->getId() . '&rowid=' . $row->__pk_val);
 					$retstr .= "			<info>" . $link . "</info>\n";
 				}
@@ -123,7 +134,7 @@ class fabrikModelMedia extends FabrikFEModelVisualization {
 	{
 		if (!isset($this->listids)) {
 			$params = $this->getParams();
-			$this->listids = $params->get('media_table', array(), '_default', 'array');
+			$this->listids = (array)$params->get('media_table');
 		}
 	}
 }

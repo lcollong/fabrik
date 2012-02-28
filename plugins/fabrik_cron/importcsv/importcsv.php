@@ -38,7 +38,8 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 	protected function getListIdFromFileName($tableName)
 	{
 		//get site's database
-		if (!isset($this->db)) {
+		if (!isset($this->db))
+		{
 			 $this->db = FabrikWorker::getDbo(true);
 		}
 		$query = $this->db->getQuery(true);
@@ -90,19 +91,23 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 		// the csv import class needs to know we are doing a cron import
 		JRequest::setVar('cron_csvimport', true);
 		$xfiles = 0;
-		foreach ($arrfiles as $full_csvfile) {
-			if (++$xfiles > $maxFiles) {
+		foreach ($arrfiles as $full_csvfile)
+		{
+			if (++$xfiles > $maxFiles)
+			{
 				break;
 			}
 			FabrikWorker::log('plg.cron.cronimportcsv.information', "Starting import: $full_csvfile:  ");
 
 			$clsImportCSV = JModel::getInstance('Importcsv', 'FabrikFEModel');
 
-			if ($useTableName) {
+			if ($useTableName)
+			{
 				$listid = $this->getListIdFromFileName(basename($full_csvfile));
 			}
-			else {
-				$table =& $listModel->getTable();
+			else
+			{
+				$table = $listModel->getTable();
 				$listid = $table->id;
 			}
 
@@ -122,20 +127,25 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 			$clsImportCSV->findExistingElements();
 
 			$msg = $clsImportCSV->makeTableFromCSV();
-			if ($app->isAdmin()) {
+			if ($app->isAdmin())
+			{
 				$app->enqueueMessage($msg);
 			}
 
-			if ($deleteFile == '1') {
+			if ($deleteFile == '1')
+			{
 				JFile::delete($full_csvfile);
 			}
-			else if ($deleteFile == '2') {
+			else if ($deleteFile == '2')
+			{
 				$new_csvfile = $full_csvfile . '.' . time();
 				JFile::move($full_csvfile, $new_csvfile);
 			}
-			else if ($deleteFile == '3') {
+			else if ($deleteFile == '3')
+			{
 				$done_folder = dirname($full_csvfile) . '/' . 'done';
-				if (JFolder::exists($done_folder)) {
+				if (JFolder::exists($done_folder))
+				{
 					$new_csvfile = $done_folder . '/' . basename($full_csvfile);
 					JFile::move($full_csvfile, $new_csvfile);
 				}
@@ -149,26 +159,28 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 		}
 
 	 	// Leave the request array how we found it
-		if (!empty($orig_listid)) {
+		if (!empty($orig_listid))
+		{
 			JRequest::setvar('listid', $orig_listid);
 		}
 
-		if ($orig_dropdata != -1) {
+		if ($orig_dropdata != -1)
+		{
 			JRequest::setVar('drop_data', $orig_dropdata);
 		}
-		if ($orig_overwrite != -1) {
+		if ($orig_overwrite != -1)
+		{
 			JRequest::setVar('overwite', $orig_overwrite);
 		}
-
-		if ($xfiles > 0) {
+		if ($xfiles > 0)
+		{
 			$updates = $clsImportCSV->addedCount + $clsImportCSV->updatedCount;
 		}
-		else {
+		else
+		{
 			$updates = 0;
 		}
 	    return $updates;
 	}
-
-
 }
 ?>

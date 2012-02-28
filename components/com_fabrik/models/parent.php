@@ -18,7 +18,7 @@ class FabrikFEModel extends JModel
 {
 
 	/** @var string The null/zero date string */
-	var $_nullDate		= '0000-00-00 00:00:00';
+	var $_nullDate = '0000-00-00 00:00:00';
 
 	/** @var object */
 	var $_pluginManger = null;

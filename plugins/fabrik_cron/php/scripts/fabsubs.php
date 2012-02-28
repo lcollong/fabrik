@@ -73,7 +73,7 @@ foreach ($res as $row) {
 			$mail->subject = str_replace('{'.$k.'}', $v, $mail->subject);
 			$mail->body = str_replace('{'.$k.'}', $v, $mail->body);
 		}
-		$res = JUtility::sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
+		$res =  JFactory::getMailer()->sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
 	}
 
 	if (array_key_exists($row->daysleft, $expiration_mails) && $row->recurring == 0) {
@@ -82,7 +82,7 @@ foreach ($res as $row) {
 			$mail->subject = str_replace('{'.$k.'}', $v, $mail->subject);
 			$mail->body = str_replace('{'.$k.'}', $v, $mail->body);
 		}
-		$res = JUtility::sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
+		$res =  JFactory::getMailer()->sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
 	}
 }
 
@@ -103,7 +103,7 @@ foreach ($res as $row) {
 			$mail->subject = str_replace('{'.$k.'}', $v, $mail->subject);
 			$mail->body = str_replace('{'.$k.'}', $v, $mail->body);
 		}
-		$res = JUtility::sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
+		$res =  JFactory::getMailer()->sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
 	}
 }
 
@@ -131,7 +131,7 @@ INNER JOIN fabsubs_plans AS p ON p.id = s.plan
 
 	$ipn = new fabrikPayPalIPN();
 	$rows = $db->loadObjectList();
-	$now = JFactory::getDate()->toMySQL();
+	$now = JFactory::getDate()->toSql();
 	$sub = FabTable::getInstance('Subscriptions', 'FabrikTable');
 	foreach ($rows as $row) {
 		$sub->load($row->subid);

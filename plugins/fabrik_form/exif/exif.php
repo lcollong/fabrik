@@ -20,17 +20,24 @@ class plgFabrik_FormExif extends plgFabrik_Form {
 	var $map_field = '';
 	var $upload_field = '';
 
-	function exifToNumber($value, $format)
+	protected function exifToNumber($value, $format)
 	{
 		$spos = JString::strpos($value, '/');
-		if ($spos === false) {
+		if ($spos === false)
+		{
 			return sprintf($format, $value);
-		} else {
+		}
+		else
+		{
 			list($base,$divider) = split("/", $value, 2);
 			if ($divider == 0)
+			{
 				return sprintf($format, 0);
+			}
 			else
+			{
 				return sprintf($format, ($base / $divider));
+			}
 		}
 	}
 
@@ -46,11 +53,14 @@ class plgFabrik_FormExif extends plgFabrik_Form {
 			($this->exifToNumber($coordinate[2], '%.6F'))) / 3600));
 	}
 
-	function getCoordinates($filename) {
-		if (extension_loaded('exif')) {
+	function getCoordinates($filename)
+	{
+		if (extension_loaded('exif'))
+		{
 			$exif = exif_read_data($filename, 'EXIF');
 			if (isset($exif['GPSLatitudeRef']) && isset($exif['GPSLatitude']) &&
-				isset($exif['GPSLongitudeRef']) && isset($exif['GPSLongitude'])) {
+				isset($exif['GPSLongitudeRef']) && isset($exif['GPSLongitude']))
+				{
 				return array (
 					$this->exifToCoordinate($exif['GPSLatitudeRef'], $exif['GPSLatitude']),
 					$this->exifToCoordinate($exif['GPSLongitudeRef'], $exif['GPSLongitude'])
@@ -94,9 +104,11 @@ class plgFabrik_FormExif extends plgFabrik_Form {
 		$this->upload_field = $plugin->getFullName();
 
 		$file_path = JPATH_SITE. '/' .$data[$this->upload_field];
-		if (JFile::exists($file_path)) {
+		if (JFile::exists($file_path))
+		{
 			$coords = $this->getCoordinates($file_path);
-			if (!empty($coords)) {
+			if (!empty($coords))
+			{
 				$data[$this->map_field] = $coords[0] . ',' . $coords[1] . ':4';
 				$data[$this->map_field . '_raw'] = $data[$this->map_field];
 			}

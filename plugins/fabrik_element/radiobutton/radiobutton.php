@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 {
 
-	var $hasLabel = false;
+	protected $hasLabel = false;
 
 	public function setId($id)
 	{
@@ -36,7 +36,8 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 
 	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
-		if (empty($value)) {
+		if (empty($value))
+		{
 			return '';
 		}
 		$labels = $this->getSubOptionLabels();
@@ -47,8 +48,8 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	}
 
 	/**
-	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::elementJavascript()
 	 */
 
 	function elementJavascript($repeatCounter)
@@ -69,17 +70,18 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	}
 
 	/**
-	 * Get the sql for filtering the table data and the array of filter settings
-	 * @param string filter value
-	 * @return string filter value
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::prepareFilterVal()
 	 */
 
 	function prepareFilterVal($val)
 	{
 		$values = $this->getSubOptionValues();
 		$labels = $this->getSubOptionLabels();
-		for ($i=0; $i<count($labels); $i++) {
-			if (strtolower($labels[$i]) == strtolower($val)) {
+		for ($i=0; $i<count($labels); $i++)
+		{
+			if (strtolower($labels[$i]) == strtolower($val))
+			{
 				$val = $values[$i];
 				return $val;
 			}
@@ -88,18 +90,16 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	}
 
 	/**
-	 * OPTIONAL
-	 * If your element risks not to post anything in the form (e.g. check boxes with none checked)
-	 * the this function will insert a default value into the database
-	 * @param array form data
-	 * @return array form data
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::getEmptyDataValue()
 	 */
 
 	function getEmptyDataValue(&$data)
 	{
 		$params = $this->getParams();
 		$element = $this->getElement();
-		if (!array_key_exists($element->name, $data)) {
+		if (!array_key_exists($element->name, $data))
+		{
 			$sel = $this->getSubInitialSelection();
 			$sel = $sel[0];
 			$arVals = $this->getSubOptionValues();
@@ -108,11 +108,8 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	}
 
 	/**
-	 * this builds an array containing the filters value and condition
-	 * @param string initial $value
-	 * @param string intial $condition
-	 * @param string eval - how the value should be handled
-	 * @return array (value condition)
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::getFilterValue()
 	 */
 
 	function getFilterValue($value, $condition, $eval)

@@ -26,11 +26,14 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		// $min will only go lower if data is negative!
 		$max = 0;
 		$min = 0;
-		foreach ($totals as $tots) {
-			if (max($totals) > $max) {
+		foreach ($totals as $tots)
+		{
+			if (max($totals) > $max)
+			{
 				$max = max($totals);
 			}
-			if (min($totals) < $min) {
+			if (min($totals) < $min)
+			{
 				$min = min($totals);
 			}
 		}
@@ -77,8 +80,8 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		$calculationData = array();
 
 		$tableDatas = $this->getTableData();
-		foreach ($tableDatas as $tableData) {
-
+		foreach ($tableDatas as $tableData)
+		{
 			$alldata = $tableData['data'];
 			$cals = $tableData['cals'];
 			$column = $chartElements[$c];
@@ -92,14 +95,16 @@ class fabrikModelChart extends FabrikFEModelVisualization
 			$tmpgdata = array();
 
 			$calcfound = $this->getCalcFound();
-			if ($calcfound) {
+			if ($calcfound)
+			{
 				$column = substr($column, 6);
 			}
 			$elements = $listModel->getElements('filtername');
 			$safename = FabrikString::safeColName($column);
 			$colElement = $elements[$safename];
 
-			if ($calcfound) {
+			if ($calcfound)
+			{
 				$calckey = $this->calc_prefixmap[$pref];
 				// you shouldnt mix calculation elements with normal elements when creating the chart
 				// so if ONE calculation element is found we use the calculation data rather than normal element data
@@ -108,9 +113,10 @@ class fabrikModelChart extends FabrikFEModelVisualization
 				//$calcfound = true;
 
 				$caldata = $cals[$calckey][$column.'_obj'];
-				if (is_array($caldata)) {
-
-					foreach ($caldata as $k=>$o) {
+				if (is_array($caldata))
+				{
+					foreach ($caldata as $k => $o)
+					{
 						$calculationData[] = $colElement->getCalculationValue($o->value);
 					}
 				}
@@ -118,23 +124,32 @@ class fabrikModelChart extends FabrikFEModelVisualization
 				$gdata[$c] = implode(',', $tmpgdata);
 				// $$$ hugh - playing around with pie charts
 				$gsums[$c] = array_sum($calculationData);
-			} else {
+			}
+			else
+			{
 				$origColumn = $column;
-				$column = $column. "_raw"; //_raw fields are most likely to contain the value
-				foreach ($alldata as $group) {
-					foreach ($group as $row) {
-						if (!array_key_exists($column, $row)) {
+				$column = $column. '_raw'; //_raw fields are most likely to contain the value
+				foreach ($alldata as $group)
+				{
+					foreach ($group as $row)
+					{
+						if (!array_key_exists($column, $row))
+						{
 							//didnt find a _raw column - revent to orig
 							$column = $origColumn;
 
-							if (!array_key_exists($column, $row)) {
+							if (!array_key_exists($column, $row))
+							{
 								JError::raiseWarning(E_NOTICE, $column . ': NOT FOUND - PLEASE CHECK IT IS PUBLISHED');
 								continue;
 							}
 						}
-						if (trim($row->$column) == '') {
+						if (trim($row->$column) == '')
+						{
 							$tmpgdata[] = - 1;
-						} else {
+						}
+						else
+						{
 							$tmpgdata[] =  $colElement->getCalculationValue($row->$column);
 						}
 					}
@@ -147,13 +162,15 @@ class fabrikModelChart extends FabrikFEModelVisualization
 			}
 			$c ++;
 		}
-		if ($calcfound) {
+		if ($calcfound)
+		{
 			$gdata =  array(implode(',', $calculationData));
 		}
 		// $$$ hugh - pie chart data has to be summed - the API only takes a
 		// single dataset for pie charts.  And it doesn't make sense trying to
 		// chart individual row data for multiple elements in a pie chart.
-		switch ($graph) {
+		switch ($graph)
+		{
 			case 'p':
 			case 'p3':
 				list($chd, $chxl, $chds, $fillGraphs) = $this->pieChart($c, $gdata, $gsums);
@@ -180,23 +197,28 @@ class fabrikModelChart extends FabrikFEModelVisualization
 			$qs .= '&amp;chm=' . $chm_override;
 		}
 		
-		if (!empty($chma_override)) {
+		if (!empty($chma_override))
+		{
 			$qs .= '&amp;chma=' . $chma_override;
 		}
-		else if ($fillGraphs) {
+		else if ($fillGraphs)
+		{
 			$qs .=  '&amp;chm=' . implode('|', $fills);
 		}
-		if ($legends) {
+		if ($legends)
+		{
 			$qs .= '&amp;chdl=' . implode('|', $this->getAxisLabels($c));
 		}
-		if (!empty($chg_override)) {
+		if (!empty($chg_override))
+		{
 			$qs .= '&amp;chg=' . $chg_override;
 		}
-		else if ($fillGraphs) {
+		else if ($fillGraphs)
+		{
 			$qs .=  '&amp;chm=' . implode('|', $fills);
 		}
 		$qs .= '&amp;'.$params->get('chart_custom');
-		$return .= $qs . '" alt="'.$this->_row->label.'" />';
+		$return .= $qs . '" alt="' . $this->_row->label . '" />';
 		$this->image =  $return;
 		return $return;
 	}
@@ -215,10 +237,12 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		$fills = array();
 		$calcfound = $this->getCalcFound();
 		$tableDatas = $this->getTableData();
-		for ($c=0; $c < count($tableDatas); $c++) {
+		for ($c = 0; $c < count($tableDatas); $c++)
+		{
 			$colour = JArrayHelper::getValue($chartColours, $c, '');
 			$colour = str_replace("#", '', $colour);
-			if ($fillGraphs) {
+			if ($fillGraphs)
+			{
 				$c2 = $c + 1;
 				$fills[] ='b,'. $colour . "," . $c  . ",". $c2 .",0";
 			}
@@ -239,18 +263,23 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		$minmax = $this->getMinMax( $gdata, $gsums);
 
 		$chd = implode('|', $gdata);
-		if (!empty($chds_override)) {
+		if (!empty($chds_override))
+		{
 			$chds = $chds_override;
-		} else {
-			$chds = $minmax['min'].','.$minmax['max'];
+		}
+		else
+		{
+			$chds = $minmax['min'] . ',' . $minmax['max'];
 		}
 		// $$$ hugh - we have to reverse the labels for horizontal bar charts
 		$axisLabels = implode('|',array_reverse(explode('|',$axisLabels)));
-		if (empty($chxl_override)) {
-			$chxl = '0:|'.$minmax['min'].'|'.$minmax['max'].$measurement_unit.'|'.'1:|'.$axisLabels;
+		if (empty($chxl_override))
+		{
+			$chxl = '0:|' . $minmax['min'] . '|' . $minmax['max'] . $measurement_unit . '|' . '1:|' . $axisLabels;
 		}
-		else {
-			$chxl = '0:|'.$chxl_override.'|'.'1:|'.$axisLabels;
+		else
+		{
+			$chxl = '0:|' . $chxl_override . '|' . '1:|' . $axisLabels;
 		}
 		return array($chd, $chxl, $chds);
 	}
@@ -268,28 +297,35 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		$params = $this->getParams();
 		$minmax = $this->getMinMax($gdata, $gsums);
 		$measurement_unit = JArrayHelper::getValue($measurement_units, $c, '');
-		$chds_override		= $params->get('chart_chds', '');
-		if (preg_match('#^\d+,$#', $chds_override)) {
+		$chds_override = $params->get('chart_chds', '');
+		if (preg_match('#^\d+,$#', $chds_override))
+		{
 			$chds_override .= $minmax['max'];
 		}
-		$chds_override 		= trim(str_replace('|',',',$chds_override),'|');
+		$chds_override = trim(str_replace('|',',',$chds_override),'|');
 		$axisLabels = implode("|", $this->getAxisLabels($c));
-		$chxl_override  	= $params->get('chart_chxl', '');
-		$chxl_override 		= trim(str_replace(',','|',$chxl_override),',');
-		if (empty($chxl_override) && !empty($chds_override)) {
+		$chxl_override = $params->get('chart_chxl', '');
+		$chxl_override = trim(str_replace(',','|',$chxl_override),',');
+		if (empty($chxl_override) && !empty($chds_override))
+		{
 			$chxl_override = str_replace(',','|',$chds_override);
 		}
 		$chd = implode('|', $gdata);
-		if (empty($chxl_override)) {
-			$chxl = '0:|'.$axisLabels.'|1:|'.$minmax['min'].'|'.$minmax['max'].$measurement_unit;
+		if (empty($chxl_override))
+		{
+			$chxl = '0:|' . $axisLabels . '|1:|' . $minmax['min'] . '|' . $minmax['max'] . $measurement_unit;
 		}
-		else {
-			$chxl = '0:|'.$axisLabels.'|1:|'.$chxl_override;
+		else
+		{
+			$chxl = '0:|' . $axisLabels . '|1:|' . $chxl_override;
 		}
-		if (!empty($chds_override)) {
+		if (!empty($chds_override))
+		{
 			$chds = $chds_override;
-		} else {
-			$chds = $minmax['min'].','.$minmax['max'];
+		}
+		else
+		{
+			$chds = $minmax['min'] . ',' . $minmax['max'];
 		}
 		return array($chd, $chxl, $chds);
 	}
@@ -301,22 +337,25 @@ class fabrikModelChart extends FabrikFEModelVisualization
 
 	private function getTableData()
 	{
-		if (!isset($this->tableData)) {
+		if (!isset($this->tableData))
+		{
 			$tmodels = array();
-
 			$this->tableData = array();
 			$params = $this->getParams();
-			$listid = $params->get('chart_table', array(), '_default', 'array');
-			$chartWheres = $params->get('chart_where', array(), '_default', 'array');
-
+			$listid = (array)$params->get('chart_table');
+			$chartWheres = (array)$params->get('chart_where');
 			$c = 0;
-			foreach ($listid as $lid) {
-				if (!array_key_exists($lid, $tmodels)) {
+			foreach ($listid as $lid)
+			{
+				if (!array_key_exists($lid, $tmodels))
+				{
 					$listModel = null;
 					$listModel = JModel::getInstance('List', 'FabrikFEModel');
 					$listModel->setId($lid);
 					$tmodels[$lid] = $listModel;
-				} else {
+				}
+				else
+				{
 					$listModel = $tmodels[$lid];
 				}
 
@@ -324,9 +363,12 @@ class fabrikModelChart extends FabrikFEModelVisualization
 				$form = $listModel->getForm();
 
 				// $$$ hugh - testing hack to let plugins add WHERE clauses
-				if (array_key_exists($c, $chartWheres) && !empty($chartWheres[$c])) {
+				if (array_key_exists($c, $chartWheres) && !empty($chartWheres[$c]))
+				{
 					$listModel->setPluginQueryWhere('chart', $chartWheres[$c]);
-				} else {
+				}
+				else
+				{
 					// if no where clause, explicitly clear any previously set clause
 					$listModel->unsetPluginQueryWhere('chart');
 				}
@@ -352,48 +394,55 @@ class fabrikModelChart extends FabrikFEModelVisualization
 
 	private function getAxisLabels($total)
 	{
-		if (isset($this->axisLabels)) {
+		if (isset($this->axisLabels))
+		{
 			return $this->axisLabels;
 		}
 		$params = $this->getParams();
 		$graph =$params->get('graph_type');
-		$chartElements 	= $params->get('chart_elementList', array(), '_default', 'array');
-		$x_axis_label 	= $params->get('x_axis_label', array(), '_default', 'array');
+		$chartElements = $params->get('chart_elementList', array(), '_default', 'array');
+		$x_axis_label = $params->get('x_axis_label', array(), '_default', 'array');
 		$tableDatas = $this->getTableData();
 		$calculationLabels = array();
 		$c = 0;
-		foreach ($tableDatas as $tableData) {
-
+		foreach ($tableDatas as $tableData)
+		{
 			$alldata = $tableData['data'];
 			$cals = $tableData['cals'];
 			$column = $chartElements[$c];
 			$listModel = $tableData['model'];
 
-			$pref =substr($column, 0, 6);
+			$pref = substr($column, 0, 6);
 			$label = JArrayHelper::getValue($x_axis_label, $c, '');
 
 			$tmpglabels = array();
 
 			$calcfound = $this->getCalcFound();
-			if($calcfound) {
+			if($calcfound)
+			 {
 				$column = substr($column, 6);
 			}
-
-			if ($calcfound) {
+			if ($calcfound)
+			{
 				$calckey = $this->calc_prefixmap[$pref];
 				$caldata = $cals[$calckey][$column.'_obj'];
-				if (is_array($caldata)) {
-					foreach ($caldata as $k=>$o) {
-						//$calculationLabels[] = trim(strip_tags($o->elLabel));
+				if (is_array($caldata))
+				{
+					foreach ($caldata as $k=>$o)
+					{
 						$calculationLabels[] = trim(strip_tags($o->label));
 					}
 				}
 				$glabels[$c] = implode('|', $calculationLabels);
 
-			} else {
-				$column = $column. "_raw"; //_raw fields are most likely to contain the value
-				foreach ($alldata as $group) {
-					foreach ($group as $row) {
+			}
+			else
+			{
+				$column = $column . '_raw'; //_raw fields are most likely to contain the value
+				foreach ($alldata as $group)
+				{
+					foreach ($group as $row)
+					{
 						$tmpglabels[] = !empty($label) ? strip_tags($row->$label) : '';
 					}
 					$glabels[$c] = implode('|', $tmpglabels);
@@ -401,28 +450,31 @@ class fabrikModelChart extends FabrikFEModelVisualization
 			}
 			$c ++;
 		}
-		if ($calcfound) {
-			if (!empty($calculationLabels)) {
+		if ($calcfound)
+		{
+			if (!empty($calculationLabels))
+			{
 				$calculationLabels = array_reverse($calculationLabels);
 				$glabels = array(implode('|', array_reverse($calculationLabels)));
 			}
 		}
-		switch ($graph) {
+		switch ($graph)
+		{
 			case 'p':
 			case 'p3':
 				$legends = $params->get('graph_show_legend', '');
-				if ($total > 1) {
-					$axisLabels = $params->get('chart_axis_labels', array(), '_default', 'array');
-				} else {
+				if ($total > 1)
+				{
+					$axisLabels = (array)$params->get('chart_axis_labels');
+				}
+				else
+				{
 					$axisLabels = explode('|',$glabels[0]);
 				}
 				break;
 			default:
-				if ($calcfound) {
-					$axisLabels = explode('|',$glabels[0]);
-				} else {
-					$axisLabels = explode('|',$glabels[0]);
-				}
+				$axisLabels = explode('|', $glabels[0]);
+				break;
 		}
 		$this->axisLabels = $axisLabels;
 		return $axisLabels;
@@ -430,16 +482,19 @@ class fabrikModelChart extends FabrikFEModelVisualization
 
 	private function getCalcFound()
 	{
-		if (!isset($this->calcfound)) {
+		if (!isset($this->calcfound))
+		{
 			$this->calcfound = false;
 			$params = $this->getParams();
-			$chartElements = $params->get('chart_elementList', array(), '_default', 'array');
-			$listid = $params->get('chart_table', array(), '_default', 'array');
+			$chartElements = (array)$params->get('chart_elementList');
+			$listid = (array)$params->get('chart_table');
 			$calc_prefixes = array('sum___', 'avg___', 'med___', 'cnt___');
-			for ($c = 0; $c < count($listid); $c ++) {
+			for ($c = 0; $c < count($listid); $c ++)
+			{
 				$column = $chartElements[$c];
 				$pref =substr($column, 0, 6);
-				if (in_array($pref, $calc_prefixes)) {
+				if (in_array($pref, $calc_prefixes))
+				{
 					$this->calcfound =  true;
 					break;
 				}
@@ -459,44 +514,54 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		$legends = $params->get('graph_show_legend', '');
 		$fillGraphs = false;
 		$axisLabels = $this->getAxisLabels($c);
-		if ($c > 1) {
+		if ($c > 1)
+		{
 			// mutiple table/elements, so use the sums
 			// need to scale our data into percentages
 			$tot_sum = array_sum($gsums);
 			$percs = array();
-			foreach ($gsums as $sum) {
+			foreach ($gsums as $sum)
+			{
 				$percs[] = sprintf('%01.2f', ($sum / $tot_sum) * 100);
 			}
 			$chd = implode(',',$percs);
-			if ($legends) {
+			if ($legends)
+			{
 				$chxl = '0:|' . implode('|', $gsums);
 			}
-			else {
+			else
+			{
 				$chxl = '0:|' . implode('|', $axisLabels);
 			}
 			$chds = '';
 
 		}
-		else {
+		else
+		{
 			// single table/elements, so use the row data
 			$gsums = explode(',',$gdata[0]);
 
 			// scale to percentages
 			$tot_sum = array_sum($gsums);
 			$percs = array();
-			foreach ($gsums as $sum) {
-				if ($tot_sum > 0) {
+			foreach ($gsums as $sum)
+			{
+				if ($tot_sum > 0)
+				{
 					$percs[] = sprintf('%01.2f', ($sum / $tot_sum) * 100);
 				}
-				else {
+				else
+				{
 					$percs[] = 0.00;
 				}
 			}
 			$chd = implode(',',$percs);
-			if ($legends) {
+			if ($legends)
+			{
 				$chxl = '0:|'.implode('|',$gsums);
 			}
-			else {
+			else
+			{
 				$chxl = '0:|'.implode('|', $axisLabels);
 			}
 			$chds = '';
@@ -507,13 +572,13 @@ class fabrikModelChart extends FabrikFEModelVisualization
 
 	function setListIds()
 	{
-		if (!isset($this->listids)) {
+		if (!isset($this->listids))
+		{
 			$params = $this->getParams();
-			$this->listids = $params->get('chart_table', array(), '_default', 'array');
+			$this->listids = (array)$params->get('chart_table');
 		}
 	}
 
 }
-
 
 ?>

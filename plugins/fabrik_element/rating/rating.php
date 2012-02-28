@@ -21,13 +21,13 @@ class plgFabrik_ElementRating extends plgFabrik_Element {
 	protected $fieldSize = '1';
 
 	/** @var array average ratings */
-	var $avgs = null;
+	protected $avgs = null;
 
 	/** @bool can the rating element be used by the current user*/
-	var $canRate = null;
+	protected $canRate = null;
 
 	/** @var array creator id */
-	var $creatorIds = null;
+	protected $creatorIds = null;
 
 	/**
 	 * shows the data formatted for the table view
@@ -376,7 +376,7 @@ class plgFabrik_ElementRating extends plgFabrik_Element {
 		$config = JFactory::getConfig();
 		$tzoffset = $config->get('offset');
 		$date = JFactory::getDate('now', $tzoffset);
-		$strDate = $db->Quote($date->toMySQL());
+		$strDate = $db->Quote($date->toSql());
 		$userid = $db->Quote($this->getStoreUserId($listid, $row_id));
 		$elementid = $this->getElement()->id;
 		$db->setQuery("INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)

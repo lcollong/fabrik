@@ -216,7 +216,7 @@ class FabrikControllerList extends FabControllerForm
 			$this->view();
 		} else {
 			//@TODO: test this
-			$app->redirect($ref, count($ids) . " " . JText::_('COM_FABRIK_RECORDS_DELETED'));
+			$app->redirect($ref, count($ids) . ' ' . JText::_('COM_FABRIK_RECORDS_DELETED'));
 		}
 	}
 

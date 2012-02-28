@@ -30,7 +30,8 @@ class plgFabrik_ElementVideo extends plgFabrik_Element {
 	 * @return string formatted value
 	 */
 
-	function renderListData($data, &$thisRow) {
+	function renderListData($data, &$thisRow)
+	{
 		$str = '';
 		$data = FabrikWorker::JSONtoData($data, true);
 		//$data = explode(GROUPSPLITTER, $data);

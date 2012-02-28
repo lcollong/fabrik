@@ -68,12 +68,12 @@ class fabrikPayPalIPN {
         $msgbuyer = 'Your payment on %s is pending. (Paypal transaction ID: %s)<br /><br />%s';
         $msgbuyer = sprintf($msgbuyer, $SiteName, $txn_id, $SiteName);
         $msgbuyer = html_entity_decode($msgbuyer, ENT_QUOTES);
-        JUtility::sendMail( $MailFrom, $FromName, $payer_email, $subject, $msgbuyer, true);
+         JFactory::getMailer()->sendMail( $MailFrom, $FromName, $payer_email, $subject, $msgbuyer, true);
 
         $msgseller = 'Payment pending on %s. (Paypal transaction ID: %s)<br /><br />%s';
         $msgseller = sprintf($msgseller, $SiteName, $txn_id, $SiteName);
         $msgseller = html_entity_decode($msgseller, ENT_QUOTES);
-        JUtility::sendMail( $MailFrom, $FromName, $receiver_email, $subject, $msgseller, true);
+         JFactory::getMailer()->sendMail( $MailFrom, $FromName, $receiver_email, $subject, $msgseller, true);
 		return 'ok';
 	}
 

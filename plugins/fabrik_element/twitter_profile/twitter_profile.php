@@ -38,19 +38,20 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 	 */
 	protected function format($screenName)
 	{
-		if (trim($screenName) == '') {
+		if (trim($screenName) == '')
+		{
 			return '';
 		}
-
 		require_once(COM_FABRIK_FRONTEND . '/libs/twitter/class.twitter.php');
 		$twitter = new twitter();
 		$params = $this->getParams();
 		static $error;
 		$tmpl = $params->get('twitter_profile_template');
 		$tmpl = str_replace('{screen_name}', $screenName, $tmpl);
-
-		if (!$twitter->twitterAvailable()) {
-			if(!isset($error)) {
+		if (!$twitter->twitterAvailable())
+		{
+			if(!isset($error))
+			{
 				$error = true;
 				JError::raiseNotice(500, 'Looks like twitters down');
 			}
@@ -59,12 +60,17 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 		}
 		$user = $twitter->showUser($screenName);
 
-		foreach($user as $k => $v) {
-			if (is_object($v)) {
-				foreach($v as $k2 => $v2) {
+		foreach($user as $k => $v)
+		{
+			if (is_object($v))
+			{
+				foreach($v as $k2 => $v2)
+				{
 					$tmpl = str_replace('{'.$k.'.'.$k2.'}', $v2, $tmpl);
 				}
-			} else {
+			}
+			else
+			{
 				$tmpl = str_replace('{'.$k.'}', $v, $tmpl);
 			}
 		}
@@ -81,13 +87,14 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 
 	function render($data, $repeatCounter = 0)
 	{
-		$name 			= $this->getHTMLName($repeatCounter);
-		$id 				= $this->getHTMLId($repeatCounter);
-		$params 		=& $this->getParams();
-		$element 		= $this->getElement();
-		$size 			= $element->width;
-		$maxlength  = $params->get('maxlength');
-		if ($maxlength == "0" or $maxlength == "") {
+		$name = $this->getHTMLName($repeatCounter);
+		$id = $this->getHTMLId($repeatCounter);
+		$params = $this->getParams();
+		$element = $this->getElement();
+		$size = $element->width;
+		$maxlength = $params->get('maxlength');
+		if ($maxlength == "0" or $maxlength == "")
+		{
 			$maxlength = $size;
 		}
 		$bits = array();
@@ -96,18 +103,22 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 		//but in table view when getting read only filter value from url filter this
 		// _form_data was not set to no readonly value was returned
 		// added little test to see if the data was actually an array before using it
-		if (is_array($formModel->_data)) {
+		if (is_array($formModel->_data))
+		{
 			$data = $formModel->_data;
 		}
 		$value 	= $this->getValue($data, $repeatCounter);
 		$type = "text";
-		if (isset($this->_elementError) && $this->_elementError != '') {
+		if (isset($this->_elementError) && $this->_elementError != '')
+		{
 			$type .= " elementErrorHighlight";
 		}
-		if ($element->hidden == '1') {
+		if ($element->hidden == '1')
+		{
 			$type = "hidden";
 		}
-		if (!$this->editable) {
+		if (!$this->editable)
+		{
 			$value = $this->format($value);
 			return($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
 		}
@@ -121,17 +132,19 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 		//so add false flag to ensure its encoded once only
 		// $$$ hugh - the 'double encode' arg was only added in 5.2.3, so this is blowing some sites up
 		if (version_compare( phpversion(), '5.2.3', '<')) {
-			$bits['value']		= htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
+			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8');
 		}
-		else {
-			$bits['value']		= htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
+		else
+		{
+			$bits['value'] = htmlspecialchars($value, ENT_COMPAT, 'UTF-8', false);
 		}
-		$bits['size']		= $size;
-		$bits['maxlength']	= $maxlength;
+		$bits['size'] = $size;
+		$bits['maxlength'] = $maxlength;
 
 		$str = "<input ";
-		foreach ($bits as $key=>$val) {
-			$str.= "$key = \"$val\" ";
+		foreach ($bits as $key=>$val)
+		{
+			$str.= $key . ' = "' . $val . '" ';
 		}
 		$str .= " />\n";
 		return $str;

@@ -32,7 +32,7 @@ class FabrikViewList extends JView
 		$model = JModel::getInstance('list', 'FabrikFEModel');
 		$model->setId(JRequest::getInt('listid'));
 		$model->set('_outPutFormat', 'csv');
-		$exporter->model =& $model;
+		$exporter->model = $model;
 		JRequest::setVar('limitstart'.$model->getId(), JRequest::getInt('start', 0));
 		JRequest::setVar('limit'.$model->getId(), $exporter->_getStep());
 		//$model->limitLength = $exporter->_getStep();
@@ -44,15 +44,19 @@ class FabrikViewList extends JView
 
 		$total 	= $model->getTotalRecords();
 
-		$key = 'fabrik.list.'.$model->getId().'csv.total';
-		if (is_null($session->get($key))) {
+		$key = 'fabrik.list.' . $model->getId() . 'csv.total';
+		if (is_null($session->get($key)))
+		{
 			$session->set($key, $total);
 		}
 
 		$start = JRequest::getInt('start', 0);
-		if ($start <= $total) {
+		if ($start <= $total)
+		{
 			$exporter->writeFile($total);
-		} else {
+		}
+		else
+		{
 			$session->clear($key);
 			$exporter->downloadFile();
 		}

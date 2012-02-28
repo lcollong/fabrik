@@ -59,7 +59,8 @@ class plgContentFabrik extends JPlugin
 		$lang = JFactory::getLanguage();
 		$lang->load('com_fabrik', JPATH_BASE . '/components/com_fabrik');
 
-		if (!defined('COM_FABRIK_FRONTEND')) {
+		if (!defined('COM_FABRIK_FRONTEND'))
+		{
 			JError::raiseError(400, JText::_('COM_FABRIK_SYSTEM_PLUGIN_NOT_ACTIVE'));
 		}
 
@@ -72,7 +73,8 @@ class plgContentFabrik extends JPlugin
 		// simple performance check to determine whether bot should process further
 		$botRegex = $fparams->get('Botregex') != '' ? $fparams->get('Botregex') : 'fabrik';
 
-		if (JString::strpos($row->text, $botRegex) === false) {
+		if (JString::strpos($row->text, $botRegex) === false)
+		{
 			return true;
 		}
 
@@ -197,15 +199,18 @@ class plgContentFabrik extends JPlugin
 					}
 			}
 		}
-		if ($viewName == 'table') { //some backwards compat with fabrik 2
+		if ($viewName == 'table')
+		{ //some backwards compat with fabrik 2
 			$viewName = 'list';
 		}
 		//moved out of switch as otherwise first plugin to use this will effect all subsequent plugins
 		JRequest::setVar('usekey', $usekey);
 		//$$$rob for list views in category blog layouts when no layout specified in {} the blog layout
 		// was being used to render the list - which was not found which gave a 500 error
-		if (!$layoutFound) {
-			if (JRequest::getVar('option') === 'com_content' && JRequest::getVar('layout') === 'blog') {
+		if (!$layoutFound)
+		{
+			if (JRequest::getVar('option') === 'com_content' && JRequest::getVar('layout') === 'blog')
+			{
 				$layout = 'default';
 				JRequest::setVar('layout', $layout);
 			}
@@ -214,7 +219,8 @@ class plgContentFabrik extends JPlugin
 		// included when the article is rendered by com_content, by inserting ...
 		// {fabrik view=form_css id=X layout=foo}
 		// ... at the top of the article.
-		if ($viewName == 'form_css') {
+		if ($viewName == 'form_css')
+		{
 			// the getFormCss() call blows up if we don't do this
 			jimport('joomla.filesystem.file');
 			$this->generalIncludes('form');
@@ -223,7 +229,8 @@ class plgContentFabrik extends JPlugin
 			$controller = $this->_getController('form', $id);
 			$view = $this->_getView($controller, 'form', $id);
 			$model = $this->_getModel($controller, 'form', $id);
-			if (!$model) {
+			if (!$model)
+			{
 				return;
 			}
 			$model->setId($id);
@@ -241,8 +248,7 @@ class plgContentFabrik extends JPlugin
 		{
 			//special case for rendering element data
 			$controller = $this->_getController('list', $listid);
-			//$view 			=& $this->_getView($controller, $viewName, $listid);
-			$model =& $this->_getModel($controller, 'list', $listid);
+			$model = $this->_getModel($controller, 'list', $listid);
 			if (!$model)
 			{
 				return;
@@ -400,18 +406,21 @@ class plgContentFabrik extends JPlugin
 				
 				$formModel = $model->getFormModel();
 				//apply filters set in mambot
-				foreach ($unused as $k => $v) {
-
+				foreach ($unused as $k => $v)
+				{
 					//allow for element_test___id[match]=1 to set the match type
-					if (strstr($k, "[match]")){
-						$k2 = str_replace("[match]", "", $k);
-						if (array_key_exists($k2, $_REQUEST)) {
+					if (strstr($k, '[match]'))
+					{
+						$k2 = str_replace('[match]', '', $k);
+						if (array_key_exists($k2, $_REQUEST))
+						{
 							$v2 = JRequest::getVar($k2);
 							$v2 = array('value' => $v2, 'match' => $v);
 						}
 						JRequest::setVar($k2, $v2);
 					}
-					else {
+					else
+					{
 						JRequest::setVar($k, $v);
 					}
 				}
@@ -421,17 +430,19 @@ class plgContentFabrik extends JPlugin
 				JRequest::setVar('showfilters', $showfilters);
 				JRequest::setVar('clearfilters', $clearfilters);
 				JRequest::setVar('resetfilters', $resetfilters);
-				foreach ($unused as $k=>$v) {
+				foreach ($unused as $k => $v)
+				{
 					JRequest::setVar($k, $v, 'get');
 				}
 				break;
 		}
 		//hack for gallery viz as it may not use the default view
 		$controller->isMambot = true;
-		if (!$displayed) {
+		if (!$displayed)
+		{
 			ob_start();
-			
-			if (method_exists($model, 'reset')) {
+			if (method_exists($model, 'reset'))
+			{
 				$model->reset();
 				// $$$ rob erm $ref is a regex?! something not right here (caused js error in cb plugin)
 				//$model->setRenderContext($ref); 
@@ -443,10 +454,12 @@ class plgContentFabrik extends JPlugin
 		JRequest::setVar('id', $origid);
 		JRequest::setVar('view', $origView);
 
-		if ($origLayout != '') {
+		if ($origLayout != '')
+		{
 			JRequest::setVar('layout', $origLayout);
 		}
-		if ($origFFlayout != '') {
+		if ($origFFlayout != '')
+		{
 			JRequest::setVar('flayout', $origFFlayout);
 		}
 		$this->resetRequest();
@@ -456,7 +469,8 @@ class plgContentFabrik extends JPlugin
 	protected function _setRequest($unused)
 	{
 		$this->origRequestVars = array();
-		foreach ($unused as $k => $v) {
+		foreach ($unused as $k => $v)
+		{
 			$origVar = JRequest::getVar($k);
 			$this->origRequestVars[$k] = $origVar;
 			JRequest::setVar($k, $v);
@@ -470,7 +484,8 @@ class plgContentFabrik extends JPlugin
 
 	protected function resetRequest()
 	{
-		foreach ($this->origRequestVars as $k => $v) {
+		foreach ($this->origRequestVars as $k => $v)
+		{
 			JRequest::setVar($k, $v);
 		}
 	}
@@ -485,22 +500,28 @@ class plgContentFabrik extends JPlugin
 
 	protected function _getModel(&$controller, $viewName, $id)
 	{
-		if ($viewName == 'visualization') {
+		if ($viewName == 'visualization')
+		{
 			$viewName = $this->_getPluginVizName($id);
 		}
-		if ($viewName == 'details') {
+		if ($viewName == 'details')
+		{
 			$viewName = 'form';
 		}
-		if ($viewName == 'csv') {
+		if ($viewName == 'csv')
+		{
 			$viewName = 'list';
 		}
 		$prefix= '';
-		if ($viewName == 'form' || $viewName == 'list') {
+		if ($viewName == 'form' || $viewName == 'list')
+		{
 			$prefix = 'FabrikFEModel';
 		}
-		if (!isset($controller->_model)) {
+		if (!isset($controller->_model))
+		{
 			$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', $prefix);
-			if(!$controller->_model = $controller->getModel($viewName, $prefix)) {
+			if(!$controller->_model = $controller->getModel($viewName, $prefix))
+			{
 				JError::raiseNotice(500, 'Fabrik Content Plug-in: could not create model');
 				return false;
 			}
@@ -510,20 +531,16 @@ class plgContentFabrik extends JPlugin
 
 	/**
 	 * get a view
-	 * @param object controller
-	 * @param string $viewName
-	 * @param int id
+	 * @param	object	controller
+	 * @param	string	$viewName
+	 * @param	int		id
 	 */
 
 	protected function _getView(&$controller, $viewName, $id)
 	{
-		$viewType	= JFactory::getDocument()->getType();
-		/*
-		if ($viewName == 'visualization') {
-			$viewName = $this->_getPluginVizName($id);
-		}
-		*/
-		if ($viewName == 'details') {
+		$viewType = JFactory::getDocument()->getType();
+		if ($viewName == 'details')
+		{
 			$viewName = 'form';
 		}
 		$view = &$controller->getView($viewName, $viewType);
@@ -539,13 +556,15 @@ class plgContentFabrik extends JPlugin
 
 	protected function _getPluginVizName($id)
 	{
-		if (!isset($this->pluginVizName)) {
+		if (!isset($this->pluginVizName))
+		{
 			$this->pluginVizName = array();
 		}
-		if (!array_key_exists($id, $this->pluginVizName)) {
+		if (!array_key_exists($id, $this->pluginVizName))
+		{
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
-			$query->select('plugin')->from('#__{package}_visualizations')->where('id = '.(int)$id);
+			$query->select('plugin')->from('#__{package}_visualizations')->where('id = ' . (int)$id);
 			$db->setQuery($query);
 			$this->pluginVizName[$id] = $db->loadResult();
 		}
@@ -562,26 +581,13 @@ class plgContentFabrik extends JPlugin
 
 	protected function _getController($viewName, $id)
 	{
-		if (!isset($this->controllers)) {
+		if (!isset($this->controllers))
+		{
 			$this->controllers = array();
 		}
-		switch ($viewName) {
+		switch ($viewName)
+		{
 			case 'visualization':
-				/*
-				$name = $this->_getPluginVizName($id);
-				$path = COM_FABRIK_BASE.'plugins/fabrik_visualization/' . $name . '/controllers/' . $name.'.php';
-				if (file_exists($path)) {
-					require_once $path;
-				}
-				$controllerName = 'FabrikControllerVisualization'.$name;
-				$controller = new $controllerName();
-				$controller->addViewPath(COM_FABRIK_FRONTEND . '/plugins/visualization/' . $name . '/views');
-				$controller->addViewPath(COM_FABRIK_FRONTEND . '/views');
-
-				//add the model path
-				$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND . '/plugins/visualization/' . $name . '/models');
-				$modelpaths = JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-				*/
 				$controller = new FabrikControllerVisualization();
 				break;
 			case 'form':
@@ -592,12 +598,15 @@ class plgContentFabrik extends JPlugin
 				break;
 			case 'list':
 				// $$$ hugh - had to add [$id] for cases where we have multiple plugins with different tableid's
-				if (array_key_exists('list', $this->controllers)) {
-					if (!array_key_exists($id, $this->controllers['list'])) {
+				if (array_key_exists('list', $this->controllers))
+				 {
+					if (!array_key_exists($id, $this->controllers['list']))
+					{
 						$this->controllers['list'][$id] = new FabrikControllerList();
 					}
 				}
-				else {
+				else
+				{
 					$this->controllers['list'][$id] = new FabrikControllerList();
 				}
 				$controller = $this->controllers['list'][$id];
@@ -632,16 +641,19 @@ class plgContentFabrik extends JPlugin
 		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 		JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
 		JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
-		if ($view == 'details') {
+		if ($view == 'details')
+		{
 			$view = 'form';
 		}
-		if ($view == ''){
+		if ($view == '')
+		{
 			JError::raiseError(500, 'Please specify a view in your fabrik {} code');
 		}
 		//$$$rob looks like including the view does something to the layout variable
 		$layout = JRequest::getVar('layout', 'default');
 		require_once(COM_FABRIK_FRONTEND . '/views/' . $view . '/view.html.php');
-		if (!is_null($layout)) {
+		if (!is_null($layout))
+		{
 			JRequest::setVar('layout', $layout);
 		}
 	}

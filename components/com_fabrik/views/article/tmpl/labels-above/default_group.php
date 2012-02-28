@@ -1,5 +1,6 @@
 <ul>
-<?php foreach ( $this->elements as $element) {
+<?php foreach ( $this->elements as $element)
+{
 	?>
 	<li <?php echo @$element->column;?> class="<?php echo $element->containerClass;?>">
 		<?php echo $element->label;?>

@@ -198,10 +198,12 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 	function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		//@TODO rename $this->defaults to $this->values
-		if (!isset($this->defaults)) {
+		if (!isset($this->defaults))
+		{
 			$this->defaults = array();
 		}
-		if (!array_key_exists($repeatCounter, $this->defaults)) {
+		if (!array_key_exists($repeatCounter, $this->defaults))
+		{
 			$groupModel = $this->getGroup();
 			$joinid = $groupModel->getGroup()->join_id;
 			$formModel = $this->getForm();
@@ -211,66 +213,91 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 			$value = JArrayHelper::getValue($opts, 'use_default', true) == false ? '' : $this->getDefaultValue($data);
 
 			$name = $this->getFullName(false, true, false);
-			$rawname = $name . "_raw";
-			if ($groupModel->isJoin()) {
-				if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid])) {
-					if ($groupModel->canRepeat()) {
-
-						if (array_key_exists($rawname, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$rawname])) {
+			$rawname = $name . '_raw';
+			if ($groupModel->isJoin())
+			{
+				if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]))
+				{
+					if ($groupModel->canRepeat())
+					{
+						if (array_key_exists($rawname, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$rawname]))
+						{
 							$value = $data['join'][$joinid][$rawname][$repeatCounter];
-						} else {
-							if (array_key_exists($rawname, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$name])) {
+						}
+						else
+						{
+							if (array_key_exists($rawname, $data['join'][$joinid]) && array_key_exists($repeatCounter, $data['join'][$joinid][$name]))
+							{
 								$value = $data['join'][$joinid][$name][$repeatCounter];
 							}
 						}
-					} else {
+					}
+					else
+					{
 						$value = JArrayHelper::getValue($data['join'][$joinid], $rawname, JArrayHelper::getValue($data['join'][$joinid], $name, $value));
 
 						// $$$ rob if you have 2 tbl joins, one repeating and one not
 						// the none repeating one's values will be an array of duplicate values
 						// but we only want the first value
-						if (is_array($value)) {
+						if (is_array($value))
+						{
 							$value = array_shift($value);
 						}
 					}
 				}
-			} else {
-				if ($groupModel->canRepeat()) {
+			}
+			else
+			{
+				if ($groupModel->canRepeat())
+				{
 					//repeat group NO join
 					$thisname = $rawname;
-					if (!array_key_exists($name, $data)) {
+					if (!array_key_exists($name, $data))
+					{
 						$thisname = $name;
 					}
-					if (array_key_exists($thisname, $data)) {
-						if (is_array($data[$thisname])) {
+					if (array_key_exists($thisname, $data))
+					{
+						if (is_array($data[$thisname]))
+						{
 							//occurs on form submission for fields at least
 							$a = $data[$thisname];
-						} else {
+						}
+						else
+						{
 							//occurs when getting from the db
 							$a = json_decode($data[$thisname]);
 						}
 						$value = JArrayHelper::getValue($a, $repeatCounter, $value);
 					}
 
-				} else {
-					if (!is_array($data)) {
+				}
+				else
+				{
+					if (!is_array($data))
+					{
 						$value = $data;
-					} else {
+					}
+					else
+					{
 						$value = JArrayHelper::getValue($data, $name, JArrayHelper::getValue($data, $rawname, $value));
 					}
 				}
 			}
 
-			if (is_array($value)) {
+			if (is_array($value))
+			{
 				$value = implode(',', $value);
 			}
-			if ($value === '') {
+			if ($value === '')
+			{
 				//query string for joined data
 				$value = JArrayHelper::getValue($data, $name, $value);
 			}
 			//@TODO perhaps we should change this to $element->value and store $element->default as the actual default value
 			//stops this getting called from form validation code as it messes up repeated/join group validations
-			if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1) {
+			if (array_key_exists('runplugins', $opts) && $opts['runplugins'] == 1)
+			{
 				FabrikWorker::getPluginManager()->runPlugins('onGetElementDefault', $formModel, 'form', $this);
 			}
 			$this->defaults[$repeatCounter] = $value;
@@ -287,10 +314,13 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 	function storeDatabaseFormat($val, $data)
 	{
 		$groupModel = $this->getGroup();
-		if ($groupModel->canRepeat()) {
-			if (is_array($val)) {
+		if ($groupModel->canRepeat())
+		{
+			if (is_array($val))
+			{
 				$res = array();
-				foreach ($val as $v) {
+				foreach ($val as $v)
+				{
 					$res[] = $this->_indStoreDBFormat($v);
 				}
 				return json_encode($res);
@@ -313,24 +343,27 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		//$d = mktime(0, 0, 0, $val[1], $val[0], $val[2]);
 		$d = $val[2].'-'.$val[1].'-'.$val[0];
 		//$date = JFactory::getDate($d);
-		return $d; //return $date->toMySQL();
+		return $d; //return $date->toSql();
 	}
 
 	/**
 	 * used in isempty validation rule
 	 *
-	 * @param array $data
-	 * @return bol
+	 * @param	array	$data
+	 * @return	bool
 	 */
 
 	function dataConsideredEmpty($data, $repeatCounter)
 	{
-		if (strstr($data, ',')) {
+		if (strstr($data, ','))
+		{
 			$data = explode(',', $data);
 		}
 		$data = (array)$data;
-		foreach ($data as $d) {
-			if (trim($d) == '') {
+		foreach ($data as $d)
+		{
+			if (trim($d) == '')
+			{
 				return true;
 			}
 		}
@@ -339,7 +372,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * @return	string	javascript to create instance. Instance name must be 'el'
 	 */
 
 	function elementJavascript($repeatCounter)
@@ -369,10 +402,8 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		$fta = $params->get('table_age_format', 'no');
 		$format = array();
 		
-		
-		
-		
-		foreach ($data as $d) {
+		foreach ($data as $d)
+		{
 			if (!in_array($d, $aNullDates))
 			{
 				// $$$ rob default to a format date

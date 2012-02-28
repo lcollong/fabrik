@@ -233,7 +233,7 @@ class FabrikViewList extends JView{
 				$elementModel->setContext($groupModel, $form, $model);
 				$elparams = $elementModel->getParams();
 				$col 	= $elementModel->getFullName(false, true, false);
-				$col .= "_raw";
+				$col .= '_raw';
 				$rowclass = $elparams->get('use_as_row_class');
 				if ($rowclass == 1)
 				{

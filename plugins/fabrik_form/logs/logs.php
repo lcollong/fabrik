@@ -18,25 +18,30 @@ class plgFabrik_FormLogs extends plgFabrik_Form {
 
 	function onLoad(&$params, &$formModel)
 	{
-
-		if ((JRequest::getVar('view') == 'details') && ($params->get('log_details') != '0')) {
+		if ((JRequest::getVar('view') == 'details') && ($params->get('log_details') != '0'))
+		{
 			$db = FabrikWorker::getDbo();
 			$user = JFactory::getUser();
 			$message = $user->get(''.$params->get('log_details').'');
-			if (($params->get('log_details_ifvisitor') != 0) && ($message == NULL)) {
-				if ($params->get('log_details_ifvisitor') == 1) {
+			if (($params->get('log_details_ifvisitor') != 0) && ($message == NULL))
+			{
+				if ($params->get('log_details_ifvisitor') == 1)
+				{
 					$message = $_SERVER['REMOTE_ADDR'];
-				} else {
+				}
+				else
+				{
 					$message = JText::_('PLG_FORM_LOG_LOG_DETAILS_VISITOR');
 				}
 			}
 			$in_db = "INSERT INTO `#__{package}_log` (`referring_url`, `message_type`, `message`) VALUES ('".JRequest::getVar('HTTP_REFERER', '', 'server')."', 'details.view', '$message');";
 			$db->setQuery($in_db);
-			if ($message != NULL) {
+			if ($message != NULL)
+			{
 				$db->query();
 			}
 		}
-	return true;
+		return true;
 	}
 
 	/**
@@ -49,15 +54,17 @@ class plgFabrik_FormLogs extends plgFabrik_Form {
 
 	function onLastProcess(&$params, &$formModel)
 	{
-	  $app 				=& JFactory::getApplication();
-
+	  $app = JFactory::getApplication();
 	 	// Generate random filename
-		if ($params->get('logs_random_filename') == 1) {
-	 		function generate_filename($length) {
+		if ($params->get('logs_random_filename') == 1)
+		{
+	 		function generate_filename($length)
+	 		{
   				$key = "";
   				$possible = "0123456789bcdfghjkmnpqrstvwxyzBCDFGHJKLMNPQRTVWXYZ";
   				$i = 0;
-  					while ($i < $length) {
+  					while ($i < $length)
+  					{
     					$char = substr($possible, mt_rand(0, strlen($possible)-1), 1);
       					$key .= $char;
       					$i++;
@@ -65,14 +72,16 @@ class plgFabrik_FormLogs extends plgFabrik_Form {
   				return $key;
 			}
 			$random_filename = '_'.generate_filename($params->get('logs_random_filename_length'));
-		} else {
+		}
+		else
+		{
 			$random_filename = '';
 		}
 
-
 		$w = new FabrikWorker();
 		$logs_path = $w->parseMessageForPlaceHolder($params->get('logs_path'));
-		if (!file_exists($logs_path)) {
+		if (!file_exists($logs_path))
+		{
 			JFolder::create( $logs_path);
 		}
 
@@ -87,9 +96,8 @@ class plgFabrik_FormLogs extends plgFabrik_Form {
 
 		// COMPARE DATA
 		$result_compare = '';
-		if( $params->get('compare_data') == 1 ) {
-
-
+		if( $params->get('compare_data') == 1 )
+		{
 			$this->formModel = $formModel;
 			$data = $this->getEmailData();
 			$post = JRequest::get('post');

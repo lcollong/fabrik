@@ -24,9 +24,8 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	}
 
 	/**
-	 * draws the form element
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * (non-PHPdoc)
+	 * @see plgFabrik_ElementList::render()
 	 */
 
 	function render($data, $repeatCounter = 0)
@@ -66,40 +65,49 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 		FabrikHelperHTML::addStyleDeclaration($style);
 		$i = 0;
 		$aRoValues = array();
-		$fromlist = "from:<ul id=\"$id" . "_fromlist\" class=\"frompicklist\">\n";
-		$tolist = "to:<ul id=\"$id" . "_tolist\" class=\"topicklist\">\n";
-		foreach ($arVals as $v) {
+		$fromlist = array();
+		$tolist = array();
+		$fromlist[] = 'from:<ul id="' . $id      . '_fromlist" class="frompicklist">';
+		$tolist[] = 'to:<ul id="' . $id . '_tolist" class="topicklist">';
+		foreach ($arVals as $v)
+		{
 			//$tmptxt = addslashes(htmlspecialchars($arTxt[$i]));
-			if (!in_array($v, $arSelected)) {
-				$fromlist .= "<li id=\"{$id}_value_$v\" class=\"picklist\">". $arTxt[$i] . "</li>\n";
+			if (!in_array($v, $arSelected))
+			{
+				$fromlist[] = '<li id="' . $id . '_value_' . $v . '" class="picklist">' . $arTxt[$i] . '</li>';
 			}
 			$i ++;
 		}
 		$i = 0;
 		$lookup = array_flip($arVals);
-		foreach ($arSelected as $v) {
-			if ($v == '' || $v == '-') {
+		foreach ($arSelected as $v)
+		{
+			if ($v == '' || $v == '-')
+			{
 				continue;
 			}
 			$k = JArrayHelper::getValue($lookup, $v);
 			$tmptxt = addslashes(htmlspecialchars(JArrayHelper::getValue($arTxt, $k)));
-			$tolist .= "<li id=\"{$id}_value_$v\" class=\"$v\">". $tmptxt . "</li>\n";
+			$tolist[] = '<li id="' . $id . '_value_' . $v . '" class="' . $v . '">'. $tmptxt . '</li>';
 			$aRoValues[] = $tmptxt;
 			$i ++;
 		}
-		if (empty($arSelected)) {
-			$fromlist .= "<li class=\"emptyplicklist\">". JText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE') . "</li>\n";
+		if (empty($arSelected))
+		{
+			$fromlist[] = '<li class="emptyplicklist">' . JText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE') . '</li>';
 		}
-		if (empty($aRoValues)) {
-			$tolist .= "<li class=\"emptyplicklist\">". JText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE') . "</li>\n";
+		if (empty($aRoValues))
+		{
+			$tolist[] = '<li class="emptyplicklist">' . JText::_('PLG_ELEMENT_PICKLIST_DRAG_OPTIONS_HERE') . '</li>';
 		}
 
 		$fromlist .= "</ul>\n";
 		$tolist .= "</ul>\n";
 
-		$str = "<div $attribs>$fromlist</div><div class='picklistcontainer'>$tolist</div>";
+		$str = "<div $attribs>" . implode("\n", $fromlist) . "</div><div class='picklistcontainer'>" . implode("\n", $tolist) . "</div>";
 		$str .=  $this->getHiddenField($name, json_encode($arSelected), $id);
-		if (!$this->editable) {
+		if (!$this->editable)
+		{
 			return implode(', ', $aRoValues);
 		}
 		$str .= $this->getAddOptionFields($repeatCounter);
@@ -107,8 +115,8 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	}
 
 	/**
-	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::elementJavascript()
 	 */
 
 	function elementJavascript($repeatCounter)
@@ -132,16 +140,18 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 
 	/**
 	 * Get the sql for filtering the table data and the array of filter settings
-	 * @param string filter value
-	 * @return string filter value
+	 * @param	string	filter value
+	 * @return	string	filter value
 	 */
 
 	function prepareFilterVal($val)
 	{
 		$arVals = $this->getSubOptionValues();
 		$arTxt 	= $this->getSubOptionLabels();
-		for ($i=0; $i<count($arTxt); $i++) {
-			if (strtolower($arTxt[$i]) == strtolower($val)) {
+		for ($i = 0; $i<count($arTxt); $i++)
+		{
+			if (strtolower($arTxt[$i]) == strtolower($val))
+			{
 				$val =  $arVals[$i];
 				return $val;
 			}
@@ -151,10 +161,10 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 
 	/**
 	 * this builds an array containing the filters value and condition
-	 * @param string initial $value
-	 * @param string intial $condition
-	 * @param string eval - how the value should be handled
-	 * @return array (value condition)
+	 * @param	string	initial $value
+	 * @param	string	intial $condition
+	 * @param	string	eval - how the value should be handled
+	 * @return	array	(value condition)
 	 */
 
 	function getFilterValue($value, $condition, $eval )
@@ -165,28 +175,15 @@ class plgFabrik_ElementPicklist extends plgFabrik_ElementList
 	}
 
 	/**
-	 * build the filter query for the given element.
-	 * @param $key element name in format `tablename`.`elementname`
-	 * @param $condition =/like etc
-	 * @param $value search string - already quoted if specified in filter array options
-	 * @param $originalValue - original filter value without quotes or %'s applied
-	 * @param string filter type advanced/normal/prefilter/search/querystring/searchall
-	 * @return string sql query part e,g, "key = value"
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::getFilterQuery()
 	 */
 
-	function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		$originalValue = trim($value, "'");
 		$this->encryptFieldName($key);
 		$str = ' ('.$key.' '.$condition.' '.$value.' OR '.$key.' LIKE \'%"'.$originalValue.'"%\')';
-		/*	switch ($condition) {
-			case '=':
-		$str = ' ('.$key.' '.$condition.' '.$value.' OR '.$key.' LIKE \'%"'.$originalValue.'"%\')';
-		break;
-		default:
-		$str = " $key $condition $value ";
-		break;
-		}*/
 		return $str;
 	}
 

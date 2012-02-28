@@ -564,7 +564,7 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 		$user = JFactory::getUser();
 		$user_id = (int)$user->get('id');
 		$ref = $db->Quote($formModel->getlistModel()->getTable()->id . '.' . $formModel->get('id') . '.' . JRequest::getVar('rowid'));
-		$date = $db->Quote(JFactory::getDate()->toMySQL());
+		$date = $db->Quote(JFactory::getDate()->toSql());
 		$query = $db->getQuery(true);
 		$query->insert('#__{package}_notification_event')->columns('event, user_id, reference, date_time')->values("$event, $user_id, $ref, $date");
 		//$db->setQuery("INSERT INTO #__{package}_notification_event (`event`, `user_id`, `reference`, `date_time`) VALUES ($event, $user_id, $ref, $date)");
@@ -652,7 +652,7 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 			}
 			if (!in_array($comment->email, $sentto))
 			{
-				JUtility::sendMail($app->getCfg( 'mailfrom'), $app->getCfg( 'fromname'), $comment->email, $title, $message, true);
+				 JFactory::getMailer()->sendMail($app->getCfg( 'mailfrom'), $app->getCfg( 'fromname'), $comment->email, $title, $message, true);
 				$sentto[] = $comment->email;
 			}
 		}
@@ -661,7 +661,7 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 		$rowdata = $listModel->getRow($row->row_id);
 		if (!in_array($rowdata->ide_idea___email_raw, $sentto))
 		{
-			JUtility::sendMail($app->getCfg( 'mailfrom'), $app->getCfg( 'fromname'), $rowdata->ide_idea___email_raw, $title, $message, true);
+			 JFactory::getMailer()->sendMail($app->getCfg( 'mailfrom'), $app->getCfg( 'fromname'), $rowdata->ide_idea___email_raw, $title, $message, true);
 			$sentto[] = $rowdata->ide_idea___email_raw;
 		}
 
@@ -672,10 +672,10 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 			$rows = $this->getAdminInfo();
 			foreach ($rows as $row)
 			{
-				JUtility::sendMail($mailfrom, $fromname, $row->email, $subject2, $message2);
+				 JFactory::getMailer()->sendMail($mailfrom, $fromname, $row->email, $subject2, $message2);
 				if (!in_array($row->email, $sentto))
 				{
-					JUtility::sendMail($app->getCfg('mailfrom'), $app->getCfg('fromname'), $row->email, $title, $message, true);
+					 JFactory::getMailer()->sendMail($app->getCfg('mailfrom'), $app->getCfg('fromname'), $row->email, $title, $message, true);
 					$sentto[] = $row->email;
 				}
 			}

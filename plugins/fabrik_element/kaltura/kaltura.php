@@ -27,7 +27,7 @@ class plgFabrik_ElementKaltura extends plgFabrik_Element {
 	function renderListData($data, &$thisRow)
 	{
 		$id = $this->getHTMLId();
-		$id .= "_" . $thisRow->__pk_val;
+		$id .= '_' . $thisRow->__pk_val;
 		FabrikHelperHTML::script('media/com_fabrik/js/lib/swfobject.js');
 		$params = $this->getParams();
 		$partnerid = $params->get('kaltura_partnerid');
@@ -61,16 +61,17 @@ return '<div id="'.$id.'"></div>';
 
 	function render($data, $repeatCounter = 0)
 	{
-		$name 			= $this->getHTMLName($repeatCounter);
-		$id 				= $this->getHTMLId($repeatCounter);
-		$return = "<input id=\"$id\" type=\"hidden\" value=\"$data\" name=\"$name\" />";
+		$name = $this->getHTMLName($repeatCounter);
+		$id = $this->getHTMLId($repeatCounter);
+		$return = $this->getHiddenField($name, $data, $id);
 		$return .= '<div id="kcw"></div>';
 		return $return;
 	}
 
 	private function getKalturaFlashVars()
 	{
-		if (!isset($this->kalturaFlashVars)) {
+		if (!isset($this->kalturaFlashVars))
+		 {
 			$params = $this->getParams();
 			$partnerid = $params->get('kaltura_partnerid');
 			$subpartnerid = $params->get('kaltura_sub_partnerid');
@@ -92,7 +93,8 @@ return '<div id="'.$id.'"></div>';
 
 	private function getKalturaSession()
 	{
-		if (!isset($this->kalturaSession)) {
+		if (!isset($this->kalturaSession))
+		{
 			$params = $this->getParams();
 			$secret = $params->get('kaltura_webservice_secret');
 			$client = $this->getKalturaClient();
@@ -108,7 +110,8 @@ return '<div id="'.$id.'"></div>';
 	 */
 	private function getKalturaConfig()
 	{
-		if (!isset($this->kalturaConfig)) {
+		if (!isset($this->kalturaConfig))
+		{
 			$params = $this->getParams();
 			$partnerid = $params->get('kaltura_partnerid');
 			$subpartnerid = $params->get('kaltura_sub_partnerid');
@@ -124,7 +127,8 @@ return '<div id="'.$id.'"></div>';
 	 */
 	private function getKalturaUser()
 	{
-		if (!isset($this->kalturaUser)) {
+		if (!isset($this->kalturaUser))
+		{
 			$this->kalturaUser = new KalturaSessionUser(2);
 		}
 		return $this->kalturaUser;
@@ -137,7 +141,8 @@ return '<div id="'.$id.'"></div>';
 
 	private function getKalturaClient()
 	{
-		if (!isset($this->kalturaClient)) {
+		if (!isset($this->kalturaClient))
+		{
 			$conf = $this->getKalturaConfig();
 			$this->kalturaClient = new KalturaClient($conf);
 		}

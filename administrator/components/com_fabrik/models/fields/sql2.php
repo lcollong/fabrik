@@ -47,7 +47,7 @@ class JFormFieldSQL2 extends JFormFieldList
 
 		$check = $this->element['checkexists'] ? (bool)$this->element['checkexists'] : false;
 		if ($check) {
-			$q = explode(" ", $this->element['query']);
+			$q = explode(' ', $this->element['query']);
 			$i = array_search('FROM', $q);
 			if (!$i) {
 				$i = array_search('from', $q);
@@ -56,7 +56,7 @@ class JFormFieldSQL2 extends JFormFieldList
 			$tbl = $db->replacePrefix($q[$i]);
 
 			$db->setQuery("SHOW TABLES");
-			$rows = $db->loadResultArray();
+			$rows = $db->loadColumn();
 			$found = in_array($tbl, $rows) ? true : false;
 			if (!$found) {
 				return array(JHTML::_('select.option', $tbl.' not found', ''));

@@ -37,7 +37,7 @@ class FabrikControllerForm extends JController
 	{
 		$document = JFactory::getDocument();
 		$model = JModel::getInstance('Form', 'FabrikFEModel');
-		$viewType	= $document->getType();
+		$viewType = $document->getType();
 		//$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout	= JRequest::getCmd('layout', 'default');
 		$view = $this->getView('form', $viewType, '');
@@ -70,7 +70,7 @@ class FabrikControllerForm extends JController
 			$modelName = 'form';
 		}
 
-		$viewType	= $document->getType();
+		$viewType = $document->getType();
 
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
@@ -241,7 +241,7 @@ class FabrikControllerForm extends JController
 	protected function getRedirectMessage($model)
 	{
 		$session = JFactory::getSession();
-		$registry	= $session->get('registry');
+		$registry = $session->get('registry');
 		$formdata = $session->get('com_fabrik.form.data');
 		//$$$ rob 30/03/2011 if using as a search form don't show record added message
 		if ($registry && $registry->get('com_fabrik.searchform.fromForm') != $model->get('id'))
@@ -385,7 +385,7 @@ class FabrikControllerForm extends JController
 
 	function ajax_validate()
 	{
-		$model	= &$this->getModel('form', 'FabrikFEModel');
+		$model = $this->getModel('form', 'FabrikFEModel');
 		$model->setId(JRequest::getInt('formid', 0));
 		$model->getForm();
 		$model->rowId = JRequest::getVar('rowid', '');

@@ -78,6 +78,7 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 	protected function process($add = true, $why = 'author')
 	{
 		$db = FabrikWorker::getDbo();
+		$query = $db->getQuery(true);
 		$user = JFactory::getUser();
 		$userid = $user->get('id');
 		$ref = $this->getRef();
@@ -90,15 +91,16 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 		else
 		{
 			echo JText::_('PLG_CRON_NOTIFICATION_REMOVED');
-			$db->setQuery("DELETE FROM #__{package}_notification WHERE reference = $ref AND user_id = $userid");
+			$query->delete('#__{package}_notification')->where(' reference = ' . $ref . ' AND user_id = ' . $userid);
+			$db->setQuery($query);
 			$db->query();
-
 		}
 	}
 
  	public function onAfterProcess($params, &$formModel)
 	{
-		if ($params->get('notification_ajax', 0) == 1) {
+		if ($params->get('notification_ajax', 0) == 1)
+		{
 			return;
 		}
 		$user = JFactory::getUser();
@@ -116,12 +118,19 @@ class plgFabrik_FormNotification extends plgFabrik_Form {
 		$db = FabrikWorker::getDbo();
 		$event = JRequest::getInt('rowid') == 0 ? $db->Quote(JText::_('RECORD_ADDED')) : $db->Quote(JText::_('RECORD_UPDATED'));
 		$date = JFactory::getDate();
-		$date = $db->Quote($date->toMySQL());
+		$date = $db->Quote($date->toSql());
 		$ref = $this->getRef();
 		$msg = $notify ? JText::_('PLG_CRON_NOTIFICATION_ADDED') : JText::_('PLG_CRON_NOTIFICATION_REMOVED');
 		$app = JFactory::getApplication();
 		$app->enqueueMessage($msg);
-		$db->setQuery("INSERT INTO #__{package}_notification_event (`reference`, `event`, `user_id`, `date_time`) VALUES ($ref, $event, $userid, $date)");
+		$query = $db->getQuery(true);
+		$query->insert('#__{package}_notification_event')->set(array(
+		'reference = ' . $ref,
+		'event = ' . $event,
+		'user_id = ' . $userid,
+		'date_time = ' . $date
+		));
+		$db->setQuery($query);
 		$db->query();
 	}
 

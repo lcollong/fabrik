@@ -15,14 +15,11 @@ require_once(JPATH_SITE . '/plugins/fabrik_element/databasejoin/databasejoin.php
 class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 {
 
-	/** @var bol is a join element */
-	var $_isJoin = true;
-
 	protected $fieldDesc = 'INT(11)';
 
 	/**
 	 * bit of a hack to set join_db_name in params
-	 * @return params
+	 * @return	object	params
 	 */
 
 	function &getParams()
@@ -37,8 +34,8 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	/**
 	 * draws the form element
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * @param	int		repeat group counter
+	 * @return	string	returns element html
 	 */
 
 	function render($data, $repeatCounter = 0)
@@ -64,7 +61,8 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			}
 			else
 			{
-				$user = JFactory::getUser((int)$this->getValue($data, $repeatCounter));
+				$userid = (int)$this->getValue($data, $repeatCounter);
+				$user = $userid === 0 ? JFactory::getUser() : JFactory::getUser($userid);
 			}
 		}
 		else
@@ -96,6 +94,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 					// so wrong uid is written to form, and wipes out real ID when form is submitted.
 					// OK, problem was we were using $id firther on as the html ID, so if we added _raw, element
 					// on form had wrong ID.  Added $html_id above, to use as (duh) html ID instead of $id.
+
 					if (!strstr($id, '_raw') && array_key_exists($id . '_raw', $data))
 					{
 						$id .= '_raw';
@@ -106,7 +105,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 				{
 					$uid = $this->getValue($data, $repeatCounter);
 				}
-				$user = JFactory::getUser((int)$uid);
+				$user = $id == '' ? JFactory::getUser() : JFactory::getUser((int)$uid);
 			}
 		}
 
@@ -114,7 +113,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		// we should simply return a hidden field with the user id in it.
 		if (!$this->inJDb())
 		{
-			return $this->_getHiddenField($name, $user->get('id'), $html_id);
+			return $this->getHiddenField($name, $user->get('id'), $html_id);
 		}
 		$str = '';
 		if ($this->editable)
@@ -122,7 +121,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			$value = $user->get('id');
 			if ($element->hidden)
 			{
-				$str = $this->_getHiddenField($name, $value, $html_id);
+				$str = $this->getHiddenField($name, $value, $html_id);
 			}
 			else
 			{
@@ -131,7 +130,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		}
 		else
 		{
-			$displayParam = $this->_getValColumn();
+			$displayParam = $this->getValColumn();
 			if (is_a($user, 'JUser'))
 			{
 				$str = $user->get($displayParam);
@@ -142,20 +141,6 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			}
 		}
 		return $str;
-	}
-
-	/**
-	 * get element's hidden field
-	 *
-	 * @access private
-	 * @param string $name
-	 * @param string $value
-	 * @param string $id
-	 * @return strin
-	 */
-	function _getHiddenField($name, $value, $id )
-	{
-		return "<input class='fabrikinput inputbox' type='hidden' name='$name' value='$value' id='$id' />\n";
 	}
 
 	/**
@@ -362,7 +347,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		parent::formJavascriptClass($srcs, $script);
 	}
 
-	protected function _getSelectLabel()
+	protected function getSelectLabel()
 	{
 		return $this->getParams()->get('user_noselectionlabel', JText::_('COM_FABRIK_PLEASE_SELECT'));
 	}
@@ -537,7 +522,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		//corect default got
 		$default = $this->getDefaultFilterVal($normal, $counter);
 		$return = array();
-		$tabletype = $this->_getValColumn();
+		$tabletype = $this->getValColumn();
 		$join = $this->getJoin();
 		$joinTableName = FabrikString::safeColName($join->table_join_alias);
 		// if filter type isn't set was blowing up in switch below 'cos no $rows
@@ -606,10 +591,10 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	/**
 	 * (non-PHPdoc)
-	 * @see components/com_fabrik/models/plgFabrik_Element::_buildFilterJoin()
+	 * @see components/com_fabrik/models/plgFabrik_Element::buildFilterJoin()
 	 */
 
-	protected function _buildFilterJoin()
+	protected function buildFilterJoin()
 	{
 		$params = $this->getParams();
 		$joinTable 	= FabrikString::safeColName($params->get('join_db_name'));
@@ -617,20 +602,15 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		$joinTableName = FabrikString::safeColName($join->table_join_alias);
 		$joinKey = $this->getJoinValueColumn();
 		$elName = FabrikString::safeColName($this->getFullName(false, true, false));
-		return 'INNER JOIN '.$joinTable.' AS '.$joinTableName.' ON '.$joinKey.' = '.$elName;
+		return 'INNER JOIN ' . $joinTable . ' AS ' . $joinTableName . ' ON ' . $joinKey . ' = ' . $elName;
 	}
 
 	/**
-	 * build the filter query for the given element.
-	 * @param $key element name in format `tablename`.`elementname`
-	 * @param $condition =/like etc
-	 * @param $value search string - already quoted if specified in filter array options
-	 * @param $originalValue - original filter value without quotes or %'s applied
-	 * @param string filter type advanced/normal/prefilter/search/querystring/searchall
-	 * @return string sql query part e,g, "key = value"
+	 * (non-PHPdoc)
+	 * @see plgFabrik_ElementDatabasejoin::getFilterQuery()
 	 */
 
-	function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		if (!$this->inJDb())
 		{
@@ -676,7 +656,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 					break;
 				case 'field':
 				default:
-					$tabletype = $this->_getValColumn();
+					$tabletype = $this->getValColumn();
 					break;
 			}
 			$k = $db->quoteName($joinTableName) . '.' . $db->quoteName($tabletype);
@@ -689,7 +669,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			}
 			else
 			{
-				$tabletype = $this->_getValColumn();
+				$tabletype = $this->getValColumn();
 				$k = $db->quoteName($joinTableName ). '.' . $db->quoteName($tabletype);
 			}
 		}
@@ -725,7 +705,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		{
 			$userid = (int)array_shift($userid);
 		}
-		$user = JFactory::getUser($userid);
+		$user = $userid === 0 ? JFactory::getUser() : JFactory::getUser($userid);
 		return $this->getUserDisplayProperty($user);
 	}
 
@@ -739,7 +719,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	{
 		static $displayMessage;
 		$params = $this->getParams();
-		$displayParam = $this->_getValColumn();
+		$displayParam = $this->getValColumn();
 		return $user->get($displayParam);
 	}
 
@@ -802,10 +782,10 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	 * get the element name or concat statement used to build the dropdown labels or
 	 * table data field
 	 *
-	 * @return string
+	 * @return	string
 	 */
 
-	function _getValColumn()
+	protected function getValColumn()
 	{
 		static $displayMessage;
 		$params = $this->getParams();

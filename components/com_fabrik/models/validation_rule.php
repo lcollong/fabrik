@@ -21,7 +21,7 @@ require_once(JPATH_SITE . '/components/com_fabrik/models/plugin.php');
 class plgFabrik_Validationrule extends FabrikPlugin
 {
 
-	var $_pluginName = null;
+	public $pluginName = null;
 
 	var $_counter = null;
 
@@ -48,19 +48,23 @@ class plgFabrik_Validationrule extends FabrikPlugin
 	/**
 	 * looks at the validation condition & evaulates it
 	 * if evaulation is true then the validation rule is applied
-	 *@return bol apply validation
+	 * @param	string	elements data
+	 * @param	int		repeat group counter
+	 * @return	bool	apply validation
 	 */
 
 	function shouldValidate($data, $c)
 	{
 		$params = $this->getParams();
-		$post	= JRequest::get('post');
-		$v = (array)$params->get($this->_pluginName .'-validation_condition');
-		if (!array_key_exists($c, $v)) {
+		$post = JRequest::get('post');
+		$v = (array)$params->get($this->pluginName . '-validation_condition');
+		if (!array_key_exists($c, $v))
+		{
 			return true;
 		}
 		$condition = $v[$c];
-		if ($condition == '') {
+		if ($condition == '')
+		{
 			return true;
 		}
 
@@ -68,9 +72,12 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
 		// $$$ rob merge join data into main array so we can access them in parseMessageForPlaceHolder()
 		$joindata = JArrayHelper::getValue($post, 'join', array());
-		foreach ($joindata as $joinid => $joind) {
-			foreach ($joind as $k => $v) {
-				if ($k !== 'rowid') {
+		foreach ($joindata as $joinid => $joind)
+		{
+			foreach ($joind as $k => $v)
+			{
+				if ($k !== 'rowid')
+				{
 					$post[$k] = $v;
 				}
 			}
@@ -79,7 +86,8 @@ class plgFabrik_Validationrule extends FabrikPlugin
 		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
 
 		$res = @eval($condition);
-		if (is_null($res)) {
+		if (is_null($res))
+		{
 			return true;
 		}
 		return $res;
@@ -105,7 +113,8 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
 	function &getValidationRule()
 	{
-		if (!$this->_rule) {
+		if (!$this->_rule)
+		{
 			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 			$row = FabTable::getInstance('Validationrule', 'FabrikTable');
 			$row->load($this->_id);
@@ -123,9 +132,7 @@ class plgFabrik_Validationrule extends FabrikPlugin
 	function getMessage($c)
 	{
 		$params = $this->getParams();
-		$v = $params->get($this->_pluginName .'-message', JText::_('COM_FABRIK_FAILED_VALIDATION'), '_default', 'array', $c);
-		// $$$ hugh - under some weird circumastance (I think when session errors aren't being cleared properly), $v[$c] doesn't exist.
-		// So changed this to use JArrayhelper rather than just return $v[$c], to avoid PHP notices.
+		$v = (array)$params->get($this->pluginName . '-message', JText::_('COM_FABRIK_FAILED_VALIDATION'));
 		return JArrayHelper::getValue($v, $c, '');
 	}
 
@@ -138,11 +145,12 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
 	public function getIcon($elementModel, $c = 0, $tmpl = '')
 	{
-		$name = $this->icon === true ? $this->_pluginName : $this->icon;
-		if ($this->allowEmpty($elementModel, $c)) {
+		$name = $this->icon === true ? $this->pluginName : $this->icon;
+		if ($this->allowEmpty($elementModel, $c))
+		{
 			$name .= '_allowempty';
 		}
-		$label = '<span>'.$this->getLabel($elementModel, $c).'</span>';
+		$label = '<span>' . $this->getLabel($elementModel, $c) . '</span>';
 		$str = FabrikHelperHTML::image($name.'.png', 'form', $tmpl, array('class' => 'fabrikTip', 'opts' => "{notice:true}",  'title' => $label));
 		return $str;
 	}
@@ -156,11 +164,13 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
 	protected function getLabel($elementModel, $c)
 	{
-		if ($this->allowEmpty($elementModel, $c)) {
-			return JText::_('PLG_VALIDATIONRULE_'.strtoupper($this->_pluginName).'_ALLOWEMPTY_LABEL');
+		if ($this->allowEmpty($elementModel, $c))
+		{
+			return JText::_('PLG_VALIDATIONRULE_' . strtoupper($this->pluginName) . '_ALLOWEMPTY_LABEL');
 		}
-		else {
-			return JText::_('PLG_VALIDATIONRULE_'.strtoupper($this->_pluginName).'_LABEL');
+		else
+		{
+			return JText::_('PLG_VALIDATIONRULE_' . strtoupper($this->pluginName) . '_LABEL');
 		}
 	}
 

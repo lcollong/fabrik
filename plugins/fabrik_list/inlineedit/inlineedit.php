@@ -63,10 +63,12 @@ class plgFabrik_ListInlineedit extends plgFabrik_List {
 		
 		$pels = $params->get('inline_editable_elements');
 		$use = json_decode($pels);
-		if (!is_object($use)) {
+		if (!is_object($use))
+		{
 			$aEls = trim($pels) == '' ? array() : explode(",", $pels);
 			$use = new stdClass();
-			foreach ($aEls as $e) {
+			foreach ($aEls as $e)
+			{
 				$use->$e = array($e);
 			}
 		}
@@ -74,32 +76,37 @@ class plgFabrik_ListInlineedit extends plgFabrik_List {
 		$srcs = array();
 
 		$test = (array)$use;
-		if (!empty($test)) {
-			foreach ($use as $key => $fields) {
+		if (!empty($test))
+		{
+			foreach ($use as $key => $fields)
+			{
 				$trigger = $elements[$key];
 				$els[$key] = new stdClass();
 				$els[$key]->elid = $trigger->_id;
 				$els[$key]->plugins = array();
-				foreach ($fields as $field) {
+				foreach ($fields as $field)
+				{
 					$val = $elements[$field];
-				//load in all element js classes
-					if (is_object($val)) {
+				//	load in all element js classes
+					if (is_object($val))
+					{
 						$val->formJavascriptClass($srcs);
 						$els[$key]->plugins[$field] = $val->getElement()->id;
 					}
 				}
 			}
-		} else {
-			foreach ($elements as $key => $val) {
+		}
+		else
+		{
+			foreach ($elements as $key => $val)
+			{
 				$key = FabrikString::safeColNameToArrayKey($key);
-				
 				$els[$key] = new stdClass();
 				$els[$key]->elid = $val->_id;
 				$els[$key]->plugins = array();
 				$els[$key]->plugins[$key] = $val->getElement()->id;
 				//load in all element js classes
 				$val->formJavascriptClass($srcs);
-				
 			}
 		}
 		FabrikHelperHTML::script($srcs);

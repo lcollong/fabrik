@@ -50,7 +50,7 @@ class amazons3storage extends storageAdaptor{
 			return false;
 		}
 		$bucket = $this->getBucketName();
-		$filepath = str_replace("%20", " ", $filepath);
+		$filepath = str_replace("%20", ' ', $filepath);
 		$filepath = $this->urlToPath($filepath);
 		$response = $this->s3->getObject($bucket, $filepath);
 		return $response === false ? false : true;
@@ -104,7 +104,7 @@ class amazons3storage extends storageAdaptor{
 		//move the file
 		if ($this->s3->putObjectFile($tmpFile, $bucket, $filepath, $acl)) {
 
-			$this->uploadedFilePath = $this->getS3BaseURL() . str_replace(" ", "%20", $filepath);
+			$this->uploadedFilePath = $this->getS3BaseURL() . str_replace(' ', "%20", $filepath);
 			return true;
 		}else{
 			return false;
@@ -121,7 +121,7 @@ class amazons3storage extends storageAdaptor{
 	function write($file, $buffer)
 	{
 		$file = $this->urlToPath($file);
-		$file = str_replace("%20", " ", $file);
+		$file = str_replace("%20", ' ', $file);
 		$file = str_replace("\\", '/', $file);
 		$bucket = $this->getBucketName();
 		if ($this->s3->putObject($buffer, $bucket, $file, S3::ACL_PUBLIC_READ)) {
@@ -133,7 +133,7 @@ class amazons3storage extends storageAdaptor{
 	
 	function read($file) {
 		$file = $this->urlToPath($file);
-		$file = str_replace("%20", " ", $file);
+		$file = str_replace("%20", ' ', $file);
 		$file = str_replace("\\", '/', $file);
 		$bucket = $this->getBucketName();
 		$s3object =  $this->s3->getObject($bucket, $file);
@@ -341,7 +341,7 @@ class amazons3storage extends storageAdaptor{
 	
 	function getFullPath($filepath) {
 		$filepath = $this->urlToPath($filepath);
-		$filepath = str_replace("%20", " ", $filepath);
+		$filepath = str_replace("%20", ' ', $filepath);
 		$filepath = str_replace("\\", '/', $filepath);
 		return $filepath;
 	}
@@ -350,7 +350,7 @@ class amazons3storage extends storageAdaptor{
 		$params =& $this->getParams();
 		if ($lifetime = (int)$params->get('fileupload_amazon_auth_url', 0)) {
 			$file = $this->urlToPath($filepath);
-			$file = str_replace("%20", " ", $file);
+			$file = str_replace("%20", ' ', $file);
 			$file = str_replace("\\", '/', $file);
 			$bucket = $this->getBucketName();
 			$hostbucket = !$this->ssl;

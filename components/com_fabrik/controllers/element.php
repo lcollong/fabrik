@@ -40,7 +40,7 @@ class FabrikControllerElement extends JController
 		$modelName = $viewName;
 		$viewType = $document->getType();
 		// Set the default view name from the Request
-		$view = &$this->getView($viewName, $viewType);
+		$view = $this->getView($viewName, $viewType);
 
 		// $$$ rob 04/06/2011 don't assign a model to the element as its only a plugin
 

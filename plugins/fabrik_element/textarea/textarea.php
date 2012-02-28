@@ -77,7 +77,7 @@ class plgFabrik_ElementTextarea extends plgFabrik_Element
 				$tags[] = '<a href="' . $thisurl . '" class="fabrikTag">' . $icon . $d . '</a>';
 			}
 		}
-		return implode(" ", $tags);
+		return implode(' ', $tags);
 	}
 
 	/**
@@ -206,9 +206,9 @@ class plgFabrik_ElementTextarea extends plgFabrik_Element
 				$str = "<textarea ";
 				foreach ($bits as $key => $val)
 				{
-					$str .="$key=\"$val\" ";
+					$str .= $key . '="' . $val . '" ';
 				}
-				$str .= "name=\"$name\" id=\"". $id. "\" cols=\"$cols\" rows=\"$rows\">".$value."</textarea>\n";
+				$str .= 'name="' . $name . '" id="' . $id. '" cols="' . $cols . '" rows="' . $rows . '">' . $value . '</textarea>';
 			}
 			else
 			{
@@ -230,7 +230,7 @@ class plgFabrik_ElementTextarea extends plgFabrik_Element
 			$str = "<textarea ";
 			foreach ($bits as $key => $val)
 			{
-				$str .="$key=\"$val\" ";
+				$str .= $key . '="' . $val . '" ';
 			}
 			$str .= "name=\"$name\" id=\"". $id. "\" cols=\"$cols\" rows=\"$rows\">".$value."</textarea>\n";
 		}

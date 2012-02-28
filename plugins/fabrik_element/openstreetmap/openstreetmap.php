@@ -113,20 +113,20 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 
 		$layers = new stdClass();
 		$layers->virtualEarth = $params->get('fb_osm_virtualearthlayers');
-		$layers->yahoo 				= $params->get('fb_osm_yahoolayers');
-		$layers->google 			= $params->get('fb_osm_gmlayers');
+		$layers->yahoo = $params->get('fb_osm_yahoolayers');
+		$layers->google = $params->get('fb_osm_gmlayers');
 
 		$opts = $this->getElementJSOptions($repeatCounter);
 
-		$opts->lon 				= $o->coords[0];
-		$opts->lat 				= $o->coords[1];
-		$opts->zoomlevel 		= $o->zoomlevel;
+		$opts->lon = $o->coords[0];
+		$opts->lat = $o->coords[1];
+		$opts->zoomlevel = $o->zoomlevel;
 
 		$opts->layers = $layers;
 
-		$opts->control 			= $params->get('fb_osm_mapcontrol');
-		$opts->scalecontrol 	= $params->get('fb_osm_scalecontrol');
-		$opts->maptypecontrol 	= $params->get('fb_osm_maptypecontrol');
+		$opts->control = $params->get('fb_osm_mapcontrol');
+		$opts->scalecontrol = $params->get('fb_osm_scalecontrol');
+		$opts->maptypecontrol = $params->get('fb_osm_maptypecontrol');
 		$opts->overviewcontrol 	= $params->get('fb_osm_overviewcontrol');
 		$opts->drag = ($this->getFormModel()->editable) ? true : false;
 		$opts->staticmap = $this->_useStaticMap() ? true: false;
@@ -134,7 +134,6 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 		$opts->key = $params->get('fb_osm_key');
 		$opts->defaultLayer = $params->get('fb_osm_defaultlayer');
 		$opts = json_encode($opts);
-
 		return "new FbOpenStreetMap('$id', $opts)";
 	}
 
@@ -204,7 +203,7 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 	 * @return string static map html
 	 */
 
-	function _staticMap($v, $w=null, $h=null, $z=null, $repeatCounter = 0)
+	function _staticMap($v, $w = null, $h = null, $z = null, $repeatCounter = 0)
 	{
 		static $eljsloaded;
 		if (!isset($eljsloaded))
@@ -240,9 +239,9 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 
 		$opts = $this->getElementJSOptions($repeatCounter);
 
-		$opts->lon 				= $o->coords[0];
-		$opts->lat 				= $o->coords[1];
-		$opts->zoomlevel 		= $z;
+		$opts->lon	= $o->coords[0];
+		$opts->lat	= $o->coords[1];
+		$opts->zoomlevel	= $z;
 
 		$opts->layers = $layers;
 
@@ -333,8 +332,8 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 		{
 			$aFields[] 	= $str;
 			$aAsFields[] = $fullElName;
-			$aFields[] = $db->quoteName($dbtable).'.'.$db->quoteName($this->_element->name).' AS '.$db->quoteName($fullElName."_raw");
-			$aAsFields[] = $db->quoteName($fullElName."_raw");
+			$aFields[] = $db->quoteName($dbtable).'.'.$db->quoteName($this->_element->name).' AS '.$db->quoteName($fullElName.'_raw');
+			$aAsFields[] = $db->quoteName($fullElName.'_raw');
 		}
 	}
 

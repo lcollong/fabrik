@@ -36,7 +36,7 @@ class plgFabrik_FormSMS extends plgFabrik_Form {
  	  if (!isset($this->gateway)) {
  	    $params = $this->getParams();
  	    $gateway = JFilterInput::clean($params->get('sms-gateway', 'Kapow'), 'CMD');
-      require_once(JPATH_ROOT. '/' .'plugins/fabrik_form/sms/gateway'. '/' .strtolower($gateway));
+      	require_once(JPATH_ROOT. '/plugins/fabrik_form/sms/gateway/' .strtolower($gateway));
  	    $this->gateway = new $gateway();
  	    $this->gateway->params = $params;
  	  }
@@ -53,22 +53,28 @@ class plgFabrik_FormSMS extends plgFabrik_Form {
  	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
  	  curl_setopt($ch, CURLOPT_COOKIEJAR, 'cookie.txt');
  	  curl_setopt($ch, CURLOPT_COOKIEFILE, 'cookie.txt');
- 	  if ($method == 'POST') {
+ 	  if ($method == 'POST')
+ 	  {
  	    curl_setopt($ch, CURLOPT_POST, 1);
  	    curl_setopt($ch, CURLOPT_POSTFIELDS, $vars);
  	  }
  	  $data = curl_exec($ch);
  	  curl_close($ch);
- 	  if ($data) {
+ 	  if ($data)
+ 	  {
  	    if ($this->callback)
  	    {
  	      $callback = $this->callback;
  	      $this->callback = false;
  	      return call_user_func($callback, $data);
- 	    } else {
+ 	    }
+ 	    else
+ 	    {
  	      return $data;
  	    }
- 	  } else {
+ 	  }
+ 	  else
+ 	  {
  	    return curl_error($ch);
  	  }
  	}
@@ -90,25 +96,35 @@ class plgFabrik_FormSMS extends plgFabrik_Form {
  	  $message = "";
  	  $pluginManager = FabrikWorker::getPluginManager();
  	  $groups = $this->formModel->getGroupsHiarachy();
- 	  foreach ($groups as $groupModel) {
+ 	  foreach ($groups as $groupModel)
+ 	  {
  	    $elementModels = $groupModel->getPublishedElements();
- 	    foreach ($elementModels as $elementModel) {
+ 	    foreach ($elementModels as $elementModel)
+ 	    {
  	      $element = $elementModel->getElement();
  	      $element->label = strip_tags($element->label);
- 	      if (!array_key_exists($element->name, $data)) {
+ 	      if (!array_key_exists($element->name, $data))
+ 	      {
  	        $elName = $element->getFullName();
- 	      } else {
+ 	      }
+ 	      else
+ 	      {
  	        $elName =  $element->name;
  	      }
  	      $key = $elName;
- 	      if (!in_array($key, $arDontEmailThesKeys)) {
+ 	      if (!in_array($key, $arDontEmailThesKeys))
+ 	       {
  	        if (array_key_exists($elName, $data)) {
  	          $val = stripslashes($data[$elName]);
  	          $params = $elementModel->getParams();
- 	          if (method_exists($elementModel, 'getEmailValue')) {
+ 	          if (method_exists($elementModel, 'getEmailValue'))
+ 	          {
  	            $val = $elementModel->getEmailValue($val);
- 	          } else {
- 	            if (is_array($val)) {
+ 	          }
+ 	          else
+ 	          {
+ 	            if (is_array($val))
+ 	            {
  	              $val = implode("\n", $val);
  	            }
  	          }

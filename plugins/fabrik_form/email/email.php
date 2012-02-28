@@ -107,7 +107,7 @@ class plgFabrik_FormEmail extends plgFabrik_Form {
 				if (!JMailHelper::isEmailAddress($key) && trim($key) !== '' && strstr($key, '}'))
 				{
 					$key = explode("}", $key);
-					if (substr($key[0], -4) !== "_raw")
+					if (substr($key[0], -4) !== '_raw')
 					{
 						$key = $key[0] . "_raw}";
 					} else
@@ -336,7 +336,7 @@ class plgFabrik_FormEmail extends plgFabrik_Form {
 		$mainframe = JApplication::getInstance('site', array(), 'J');
 		$res = $articleModel->getItem($contentTemplate);
 		$mainframe = $origMainframe;
-		return $res->introtext . " " . $res->fulltext;
+		return $res->introtext . ' ' . $res->fulltext;
 	}
 
 	/**

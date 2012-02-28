@@ -26,7 +26,8 @@ class fabrikViewCsv extends JView
 		$this->getManagementJS($data);
 		$this->assign('id', $this->get('id'));
 		$this->form = $this->get('Form');
-		if (!$listModel->canCSVExport()) {
+		if (!$listModel->canCSVExport())
+		{
 			JError::raiseError(400, 'Naughty naughty!');
 			jexit;
 		}
@@ -48,7 +49,8 @@ class fabrikViewCsv extends JView
 
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
 		$labels = $this->headings;
-		foreach ($labels as &$l) {
+		foreach ($labels as &$l)
+		{
 			$l = strip_tags($l);
 		}
 		$listParams = $model->getParams();

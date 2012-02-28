@@ -269,7 +269,7 @@ class FabrikViewList extends JView{
 			foreach ($elementModels as $elementModel) {
 				$elementModel->setContext($groupModel, $form, $model);
 				$col = $elementModel->getFullName(false, true, false);
-				$col .= "_raw";
+				$col .= '_raw';
 				$rowclass = $elementModel->getParams()->get('use_as_row_class');
 				if ($rowclass == 1) {
 					foreach ($data as $groupk => $group) {

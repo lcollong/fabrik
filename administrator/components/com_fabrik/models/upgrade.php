@@ -234,7 +234,7 @@ class FabrikModelUpgrade extends JModel
 		$db = JFactory::getDbo(true);
 		$r = array();
 		$db->setQuery("SHOW TABLES");
-		$rows = $db->loadResultArray();
+		$rows = $db->loadColumn();
 		foreach ($rows as $row) {
 			if (strstr($row, '_fabrik_') && !strstr($row, 'bkup_')) {
 				$o = new stdClass();
@@ -254,7 +254,7 @@ class FabrikModelUpgrade extends JModel
 	{
 		$db = JFactory::getDbo(true);
 		$db->setQuery("SHOW TABLES");
-		$rows = $db->loadResultArray();
+		$rows = $db->loadColumn();
 		foreach ($rows as $row) {
 			if (strstr($row, '_fabrik_tables') && !strstr($row, 'bkup_')) {
 				return true;

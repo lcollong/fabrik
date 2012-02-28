@@ -47,7 +47,7 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	function getElementTypeDd($default, $name='plugin', $extra='class="inputbox elementtype"  size="1"', $defaultlabel='')
 	{
-		$hash = $default.$name.$extra.$defaultlabel;
+		$hash = $default . $name . $extra . $defaultlabel;
 		if (!array_key_exists($hash, $this->_elementLists))
 		{
 			if ($defaultlabel == '')
@@ -57,7 +57,7 @@ class FabrikFEModelPluginmanager extends JModel{
 			$a = array(JHTML::_('select.option', '', $defaultlabel));
 			$elementstypes = $this->_getList();
 			$elementstypes = array_merge($a, $elementstypes);
-			$this->_elementLists[$hash] = JHTML::_('select.genericlist',  $elementstypes, $name, $extra , 'value', 'text', $default);
+			$this->_elementLists[$hash] = JHTML::_('select.genericlist', $elementstypes, $name, $extra , 'value', 'text', $default);
 		}
 		return $this->_elementLists[$hash];
 	}

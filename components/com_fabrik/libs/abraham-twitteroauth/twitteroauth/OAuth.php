@@ -776,8 +776,8 @@ class OAuthUtil {
       $out = array();
       foreach ($headers AS $key => $value) {
         $key = str_replace(
-            " ",
-            "-",
+            ' ',
+            '-',
             ucwords(strtolower(str_replace("-", " ", $key)))
         );
         $out[$key] = $value;

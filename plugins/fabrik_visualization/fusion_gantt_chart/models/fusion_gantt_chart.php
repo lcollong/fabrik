@@ -37,13 +37,11 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 		// Define path to FC's SWF
 		$this->fc->setSWFPath($this->srcBase."fusion_gantt_chart/lib/FCCharts/");
 
-
 		$this->fc->setChartParam('dateFormat', 'yyyy-mm-dd');
 		$this->fc->setChartParam('showTaskNames', 1);
 
 		$this->fc->setChartParams('ganttWidthPercent=70;gridBorderAlpha=100;canvasBorderColor=333333;canvasBorderThickness=0;hoverCapBgColor=FFFFFF;hoverCapBorderColor=333333;extendcategoryBg=0;ganttLineColor=99cc00;ganttLineAlpha=20;baseFontColor=333333;gridBorderColor=99cc00');
 		// ------------------- Setting Param string
-
 
 		$listid = $params->get('fusion_gantt_chart_table');
 		$listModel = JModel::getInstance('list', 'FabrikFEModel');
@@ -60,14 +58,16 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 		$label = $params->get('fusion_gantt_chart_label');
 		$hover = $params->get('fusion_gantt_chart_hover');
 		$milestone = $params->get('fusion_gantt_chart_milestone');
-		$milestoneraw = $milestone."_raw";
+		$milestoneraw = $milestone.'_raw';
 		$connector = $params->get('fusion_gantt_chart_connector');
-		$connectorraw = $connector."_raw";
+		$connectorraw = $connector.'_raw';
 		$fields = array();
 		$names = array();
 		$uses = array($process, $start, $end, $label, $hover, $milestone, $connector);
-		foreach ($uses as $use) {
-			if ($use !== '') {
+		foreach ($uses as $use)
+		{
+			if ($use !== '')
+			{
 				$formModel->getElement($use)->getAsField_html($fields, $names);
 			}
 		}
@@ -75,7 +75,8 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 		$listModel->asfields = $fields;
 		$nav = $listModel->getPagination(0, 0, 0);
 		$data = $listModel->getData();
-		if (empty($data)) {
+		if (empty($data))
+		{
 			JError::raiseNotice(500, 'No data found for gantt chart');
 			return;
 		}
@@ -91,10 +92,11 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 		$processLabel = $params->get('fusion_gantt_chart_process_label');
 		$this->fc->setGanttProcessesParams("positionInGrid=right;align=center;headerText=$processLabel;fontColor=333333;fontSize=11;isBold=1;isAnimated=1;bgColor=99cc00;headerbgColor=333333;headerFontColor=99cc00;headerFontSize=16;bgAlpha=40");
 		$c = 0;
-		foreach ($groupByKeys as $groupByKey) {
-			
+		foreach ($groupByKeys as $groupByKey)
+		{
 			$groupedData = $data[$groupByKey];
-			foreach ($groupedData as $d) {
+			foreach ($groupedData as $d)
+			{
 				if ($c > 6) {
 					//continue;
 				}
@@ -104,50 +106,63 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 					continue;
 				}
 				$startdate = JFactory::getDate($d->$startraw);
-				if (isset($d->$endraw)) {
+				if (isset($d->$endraw))
+				{
 					$enddate = JFactory::getDate($d->$endraw);
-				} else {
+				}
+				else
+				{
 					$enddate = $startdate;
 				}
-				$strParam = "start=".$startdate->toFormat('%Y/%m/%d').";end=".$enddate->toFormat('%Y/%m/%d').";";
-				if ($process !== '') {
-					$strParam .= "processId={$processid};";
+				$strParam = 'start=' . $startdate->format('Y/m/d') . ';end=' . $enddate->format('Y/m/d') . ';';
+				if ($process !== '')
+				{
+					$strParam .= 'processId='. $processid . ';';
 				}
-				$strParam .= "id={$d->__pk_val};color=99cc00;alpha=60;topPadding=19;hoverText={$hovertext};";
-				$strParam .="link={$d->fabrik_view_url};";
+				$strParam .= 'id=' . $d->__pk_val . ';color=99cc00;alpha=60;topPadding=19;hoverText=' . $hovertext . ';';
+				$strParam .= 'link=' . $d->fabrik_view_url . ';';
 				
-				if (isset($d->label)) {
-				$l = $this->prepData($d->$label);
-				} else {
+				if (isset($d->label))
+				{
+					$l = $this->prepData($d->$label);
+				}
+				else
+				{
 					$l = '';
 				}
 				$this->fc->addGanttTask($l, $strParam);
 	
-				if ($milestone !== '' && $d->$milestoneraw == 1) {
-					$this->fc->addGanttMilestone($d->__pk_val, "date=".$enddate->toFormat('%Y/%m/%d').";radius=10;color=333333;shape=Star;numSides=5;borderThickness=1");
+				if ($milestone !== '' && $d->$milestoneraw == 1)
+				{
+					$this->fc->addGanttMilestone($d->__pk_val, 'date=' . $enddate->format('Y/m/d') . ';radius=10;color=333333;shape=Star;numSides=5;borderThickness=1');
 				}
 	
-				if ($connector !== '' && $d->$connectorraw !== '') {
+				if ($connector !== '' && $d->$connectorraw !== '')
+				{
 					$this->fc->addGanttConnector($d->$connectorraw, $d->__pk_val, "color=99cc00;thickness=2;");
 				}
 				#apply processes
-				if (!in_array($processid, $usedProcesses) && $process !== '') {
+				if (!in_array($processid, $usedProcesses) && $process !== '')
+				{
 					$usedProcesses[] = $processid;
-					$this->fc->addGanttProcess($this->prepData($d->$process), "id={$processid};");
+					$this->fc->addGanttProcess($this->prepData($d->$process), 'id=' . $processid . ';');
 				}
 				#increaes max/min date range
-				if (is_null($mindate)) {
+				if (is_null($mindate))
+				{
 					$mindate = $startdate;
 					$maxdate = $enddate;
-				} else {
-					if (JFactory::getDate($d->$startraw)->toUnix() < $mindate->toUnix()) {
+				}
+				else
+				{
+					if (JFactory::getDate($d->$startraw)->toUnix() < $mindate->toUnix())
+					{
 						$mindate = JFactory::getDate($d->$startraw);
 					}
-	
-					if ($enddate->toUnix() > $maxdate->toUnix()) {
+					if ($enddate->toUnix() > $maxdate->toUnix())
+					{
 						$maxdate = $enddate;
 					}
-					
 				}
 				$c ++;
 			}
@@ -157,22 +172,24 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 
 		$monthdisplay = $params->get('fusion_gannt_chart_monthdisplay');
 		$this->fc->addGanttCategorySet("bgColor=333333;fontColor=99cc00;isBold=1;fontSize=14");
-		for ($y = $startyear; $y <= $endyear; $y++) {
-			$firstmonth = ($y == $startyear) ? (int)$mindate->toFormat('%m') : 1;
-			$lastmonth = ($y == $endyear) ? $maxdate->toFormat('%m')+1 : 13;
+		for ($y = $startyear; $y <= $endyear; $y++)
+		{
+			$firstmonth = ($y == $startyear) ? (int)$mindate->format('m') : 1;
+			$lastmonth = ($y == $endyear) ? $maxdate->format('m') + 1 : 13;
 
 			$start = date('Y/m/d', mktime(0, 0, 0, $firstmonth, 1, $y));
 			$end = date('Y/m/d', mktime(0, 0, 0, $lastmonth, 0, $y));
 
-			$strParam = "start=". $start.";end=".$end.";";
+			$strParam = 'start=' . $start . ';end=' . $end . ';';
 			$this->fc->addGanttCategory($y, $strParam);
 		}
-		$this->fc->addGanttCategorySet("bgColor=99cc00;fontColor=333333;isBold=1;fontSize=10;bgAlpha=40;align=center");
-		//echo "start year = $startyear end yera = $endyear ";exit;
-		for ($y = $startyear; $y <= $endyear; $y++) {
-			$lastmonth = ($y == $endyear) ? $maxdate->toFormat('%m')+1 : 13;
-			$firstmonth = ($y == $startyear) ? (int)$mindate->toFormat('%m') : 1;
-			for ($m = $firstmonth; $m < $lastmonth; $m++) {
+		$this->fc->addGanttCategorySet('Color=99cc00;fontColor=333333;isBold=1;fontSize=10;bgAlpha=40;align=center');
+		for ($y = $startyear; $y <= $endyear; $y++)
+		{
+			$lastmonth = ($y == $endyear) ? $maxdate->format('m') + 1 : 13;
+			$firstmonth = ($y == $startyear) ? (int)$mindate->format('m') : 1;
+			for ($m = $firstmonth; $m < $lastmonth; $m ++)
+			{
 				$starttime = mktime(0, 0, 0, $m, 1, $y);
 				$start = date('Y/m/d', $starttime);
 				$end = date('Y/m/d', mktime(0, 0, 0, $m+1, 0, $y));//use day = 0 to load last day of next month
@@ -193,9 +210,10 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 
 	function setListIds()
 	{
-		if (!isset($this->listids)) {
+		if (!isset($this->listids))
+		{
 			$params = $this->getParams();
-			$this->listids = $params->get('fusion_gantt_chart_table', array(), '_default', 'array');
+			$this->listids = (array)$params->get('fusion_gantt_chart_table');
 		}
 	}
 

@@ -34,17 +34,21 @@ class FabrikViewList extends JView{
 		
 		$total = $model->getTotalRecords();
 
-		$key = 'fabrik.table.'.$model->getId().'csv.total';
-		if (is_null($session->get($key))) {
+		$key = 'fabrik.list.' . $model->getId() . 'csv.total';
+		if (is_null($session->get($key)))
+		{
 			$session->set($key, $total);
 		}
 
 		$start = JRequest::getInt('start', 0);
 		//echo "<!-- $start <= $total -->";
-		if ($start <= $total) {
+		if ($start <= $total)
+		{
 			$exporter->writeFile($total);
-		} else {
-			JRequest::setVar('limitstart'.$model->getId(), 0);
+		}
+		else
+		{
+			JRequest::setVar('limitstart' . $model->getId(), 0);
 			$session->clear($key);
 			$exporter->downloadFile();
 		}

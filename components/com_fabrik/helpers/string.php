@@ -241,14 +241,14 @@ class FabrikString extends JString{
 		$wordCount = JArrayHelper::getValue($opts, 'wordcount', 10);
 		$showTip = JArrayHelper::getValue($opts, 'tip', true);
 		$title = JArrayHelper::getValue($opts, 'title', "");
-		$text = explode(" ", $text);
+		$text = explode(' ', $text);
 		$summary = array_slice($text, 0, $wordCount);
 
 		if (count($text) > $wordCount)
 		{
 			$summary[] = " ...";
 		}
-		$summary = implode(" ", $summary);
+		$summary = implode(' ', $summary);
 		if ($showTip && count($text) > $wordCount)
 		{
 			FabrikHelperHTML::tips();

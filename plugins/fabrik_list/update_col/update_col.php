@@ -149,7 +149,7 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 						$thismessage = @eval($thismessage);
 						FabrikWorker::logEval($thismessage, 'Caught exception on eval in updatecol::process() : %s');
 					}
-					$res = JUtility::sendMail($from, $fromname, $to, $thissubject, $thismessage, true);
+					$res =  JFactory::getMailer()->sendMail($from, $fromname, $to, $thissubject, $thismessage, true);
 					if ($res)
 					{
 						$this->_sent ++;
@@ -169,7 +169,7 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 		if (!empty($dateCol))
 		{
 			$date = JFactory::getDate();
-			$this->_process($model, $dateCol, $date->toMySQL());
+			$this->_process($model, $dateCol, $date->toSql());
 		}
 
 		if (!empty($userCol))

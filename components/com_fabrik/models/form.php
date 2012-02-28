@@ -333,12 +333,12 @@ class FabrikFEModelForm extends FabModelForm
 			}
 			else
 			{
-				$title = ($title == "") ? $label : $title . " ";
+				$title = ($title == "") ? $label : $title . ' ';
 			}
 		}
 		else
 		{
-			$title = ($title == "") ? $label : $title . " ";
+			$title = ($title == "") ? $label : $title . ' ';
 		}
 		$groups = $this->getGroupsHiarachy();
 		foreach ($groups as $groupModel)
@@ -350,7 +350,7 @@ class FabrikFEModelForm extends FabModelForm
 				if ($element->use_in_page_title == '1')
 				{
 					$default = $elementModel->getTitlePart($this->_data);
-					$s = is_array($default) ? implode(', ', $default) . " " : $default . " ";
+					$s = is_array($default) ? implode(', ', $default) . ' ' : $default . ' ';
 					$title .= ' ' . $s;
 				}
 			}
@@ -572,7 +572,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		ON #__{package}_formgroup.group_id = #__{package}_groups.id
 		LEFT JOIN #__{package}_elements
 		ON #__{package}_groups.id = #__{package}_elements.group_id
-		WHERE #__{package}_formgroup.form_id = " . (int)$this->getState('form.id') . " ";
+		WHERE #__{package}_formgroup.form_id = " . (int)$this->getState('form.id') . ' ';
 		if ($excludeUnpublished)
 		{
 			$sql .= " AND #__{package}_elements.published = '1' ";
@@ -771,8 +771,9 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 
 		error_reporting( error_reporting() ^ (E_WARNING | E_NOTICE) );
 		@set_time_limit(300);
+
 		require_once(COM_FABRIK_FRONTEND . '/helpers/uploader.php');
-		$form	= $this->getForm();
+		$form = $this->getForm();
 		$pluginManager = FabrikWorker::getPluginManager();
 		$params = $this->getParams();
 
@@ -1003,7 +1004,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		$ajaxPost = JRequest::getBool('fabrik_ajax');
 		// $$$ hugh - @TODO extract the actual decoding into a private method, so we don't repeat essentially
 		// the same code a bazillion times!
-		foreach ($_REQUEST as $key=>$val)
+		foreach ($_REQUEST as $key => $val)
 		{
 			// handle join data separately
 			if ($key === 'join')
@@ -1178,11 +1179,6 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 	private function callElementPreprocess()
 	{
 		$repeatTotals = JRequest::getVar('fabrik_repeat_group', array(0), 'post', 'array');
-		// $$$ hugh - if we assign by reference, the foreach loop goes loopy if there is a joined
-		// group.  For some reason, the array pointer gets stuck and it keeps igterating through
-		// the first group forever.  This seems to happen only with getGroupsHierachy, we've
-		// run across this before.  Still no idea what is going on.
-		//$groups = $this->getGroupsHiarachy();
 		$groups = $this->getGroupsHiarachy();
 		//curerntly this is just used by calculation elements
 		foreach ($groups as $groupModel)
@@ -1305,8 +1301,15 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		//save join data
 		$this->_removeIgnoredData($this->_formData);
 		$aDeleteRecordId = '';
-		if (array_key_exists('join', $this->_formData))
-		{
+
+		// $$$ hugh - can't do this, as might be repeat element with no data,
+		// like checkbox join with no selections, and no other joins on form
+		//if (array_key_exists('join', $this->_formData)) {
+			if (!isset($this->_formData['join']))
+			{
+				$this->_formData['join'] = array();
+			}
+
 			foreach ($aPreProcessedJoins as $aPreProcessedJoin)
 			{
 				$oJoin = $aPreProcessedJoin['join'];
@@ -1319,9 +1322,9 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 				// $$$ rob 22/02/2011 could be a mutlfileupload with no images selected?
 				if (!array_key_exists($oJoin->id, $this->_formData['join']))
 				{
-					continue;
+					//continue;
 				}
-				$data = $this->_formData['join'][$oJoin->id];
+				$data = FArrayHelper::getValue($this->_formData['join'], $oJoin->id, array(), 'array');
 
 				// $$$ rob ensure that the joined data is keyed starting at 0 (could be greated if first group deleted)
 				// $$$ hugh - FIXME - this is hosing up checkboxes and radios, for rows that have no selection, and hence no
@@ -1359,6 +1362,12 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 				{
 					//repeat element join
 					$elementModel = $this->getElement($oJoin->element_id, true);
+					// $$$ hugh - covers case where repeat element is read only,
+					// so isn't submitting any join data, versus editable element
+					// which is empty (like checkbox join), so isn't submitting any data.
+					if (!$elementModel->canUse()) {
+						continue;
+					}
 					$joinGroup = JModel::getInstance('Group', 'FabrikFEModel');
 
 					//need to set the fake group's form and id to that of the current elements form/group
@@ -1657,7 +1666,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 					$joinDb->query();
 				}
 			}
-		}
+		//}
 		//testing for saving pages/
 		JRequest::setVar('rowid', $insertId);
 		if (in_array(false, $pluginManager->runPlugins('onBeforeCalculations', $this)))
@@ -1958,11 +1967,8 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		}
 		require_once(COM_FABRIK_FRONTEND . '/helpers/uploader.php');
 		$pluginManager = JModel::getInstance('Pluginmanager', 'FabrikFEModel');
-		$oValidationRules = $pluginManager->getPlugInGroup('validationrule');
-		//$post	=& JRequest::get('post', 4); //4 allows html
-		// $$$ rob added coptToRow here so that calcs run in setFormData, element preProcess()
-		//can access raw values
-		//$this->copyToRaw( $_REQUEST);
+		$validationRules = $pluginManager->getPlugInGroup('validationrule');
+
 		$post = $this->setFormData();
 		//contains any data modified by the validations
 		$this->_modifiedValidationData = array();
@@ -3021,11 +3027,11 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 					}
 					if ($comparison == '=')
 					{
-						$parts[] = " ".$usekey[$k]." = ".$db->Quote($aRowIds[$k]);
+						$parts[] = ' ' . $usekey[$k] . ' = ' .$db->Quote($aRowIds[$k]);
 					}
 					else
 					{
-						$parts[] = " ".$usekey[$k]." LIKE ". $db->Quote("%".$aRowIds[$k]."%");
+						$parts[] = ' ' . $usekey[$k] . ' LIKE ' . $db->Quote("%" . $aRowIds[$k] . "%");
 					}
 				}
 				$sql .= implode(" AND ", $parts);
@@ -4070,6 +4076,10 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		$html .= $doCalcs;
 		$html .= "</script>\n";
 		return $html;
+	}
+
+	public function isEditable() {
+		return $this->_editable;
 	}
 }
 

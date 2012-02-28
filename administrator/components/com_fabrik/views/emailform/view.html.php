@@ -96,7 +96,7 @@ class fabrikViewEmailform extends JView
 		$msg =JText::sprintf('COM_FABRIK_EMAIL_MSG', $sitename, $yourname, $youremail, $link);
 
 		// mail function
-		JUTility::sendMail($youremail, $yourname, $email, $subject, $msg);
+		 JFactory::getMailer()->sendMail($youremail, $yourname, $email, $subject, $msg);
 
 	}
 

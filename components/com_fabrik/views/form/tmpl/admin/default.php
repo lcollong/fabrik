@@ -63,7 +63,7 @@ echo "<div class=\"fabrikMainError fabrikError$active\">$form->error</div>";?>
 	<div class="fabrikActions"><?php echo $form->resetButton;?> <?php echo $form->submitButton;?>
 	<?php echo $form->nextButton?> <?php echo $form->prevButton?>
 	 <?php echo $form->applyButton;?>
-	<?php echo $form->copyButton  . " " . $form->gobackButton . ' ' . $form->deleteButton . ' ' . $this->message ?>
+	<?php echo $form->copyButton  . ' ' . $form->gobackButton . ' ' . $form->deleteButton . ' ' . $this->message ?>
 	</div>
 <?php
 echo $form->endTag;

@@ -16,8 +16,6 @@ class fabrikViewForm extends JView
 
 	public $isMambot = null;
 
-	var $repeatableJoinGroupCount = 0;
-
 	public $access = null;
 
 	/**
@@ -37,7 +35,8 @@ class fabrikViewForm extends JView
 
 		$model->isMambot = $this->isMambot;
 		$form = $model->getForm();
-		if ($model->render() === false) {
+		if ($model->render() === false)
+		{
 			return false;
 		}
 		$this->isMultiPage = $model->isMultiPage();
@@ -45,19 +44,23 @@ class fabrikViewForm extends JView
 
 		$listModel = $model->getlistModel();
 		$table = $listModel->noTable() ? null : $listModel->getTable();
-		if (!$model->canPublish()) {
-			if (!$app->isAdmin()) {
+		if (!$model->canPublish())
+		{
+			if (!$app->isAdmin())
+			{
 				echo JText::_('COM_FABRIK_FORM_NOT_PUBLISHED');
 				return false;
 			}
 		}
 		$this->assign('rowid', $model->rowId);
 		$this->assign('access', $model->checkAccessFromListSettings());
-		if ($this->access == 0) {
+		if ($this->access == 0)
+		{
 			return JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
 		}
 		JDEBUG ? $profiler->mark('form view before join group ids got') : null;
-		if (!$listModel->noTable()) {
+		if (!$listModel->noTable())
+		{
 			$joins = $listModel->getJoins();
 			$model->getJoinGroupIds($joins);
 		}
@@ -161,17 +164,20 @@ class fabrikViewForm extends JView
 	private function setMessage()
 	{
 		$model = $this->getModel();
-		if (!$model->isMultiPage()) {
+		if (!$model->isMultiPage())
+		{
 			$this->assign('message', '');
 			return;
 		}
 		$message = '';
-		if ($model->sessionModel) {
+		if ($model->sessionModel)
+		{
 			$this->message = $model->sessionModel->status;
 			//see http://fabrikar.com/forums/showpost.php?p=73833&postcount=14
 			//if ($model->sessionModel->statusid == _FABRIKFORMSESSION_LOADED_FROM_COOKIE) {
-			if ($model->sessionModel->last_page > 0) {
-				$message .= ' <a href="#" class="clearSession">'.JText::_('COM_FABRIK_CLEAR').'</a>';
+			if ($model->sessionModel->last_page > 0)
+			{
+				$message .= ' <a href="#" class="clearSession">' . JText::_('COM_FABRIK_CLEAR') . '</a>';
 			}
 		}
 
@@ -196,7 +202,7 @@ class fabrikViewForm extends JView
 			//if there is a menu item available AND the form is not rendered in a content plugin or module
 			if (is_object($menu) && !$this->isMambot)
 			{
-				$menu_params = new JParameter($menu->params);
+				$menu_params = new JForm($menu->params);
 				if (!$menu_params->get('page_title') || $menu_params->get('show_page_title') == 0)
 				{
 					$params->set('page_title', $title);
@@ -225,7 +231,8 @@ class fabrikViewForm extends JView
 		}
 
 		$model = $this->getModel();
-		if (!$this->isMambot) {
+		if (!$this->isMambot)
+		{
 			//echo "not a mambot !<br>";
 			$title = $model->getPageTitle($params->get('page_title'));
 			$document->setTitle($w->parseMessageForPlaceHolder($title, $_REQUEST));
@@ -249,7 +256,7 @@ class fabrikViewForm extends JView
 		if ($this->showPrint)
 		{
 			$text = JHTML::_('image.site',  'printButton.png', '/images/', NULL, NULL, JText::_('Print'));
-			$this->printLink = '<a href="#" onclick="window.print();return false;">'.$text.'</a>';
+			$this->printLink = '<a href="#" onclick="window.print();return false;">' . $text . '</a>';
 		}
 		if (JRequest::getVar('tmpl') != 'component')
 		{
@@ -461,7 +468,9 @@ class fabrikViewForm extends JView
 				$id = $elementModel->getHTMLId();
 				$elementModel->editable = ($model->editable);
 
-				if ($elementModel->canUse() || $elementModel->canView())
+				// if the view is a form then we should always add the js as long as the element is editable or viewable
+				// if the view is details then we should only add hte js if the element is viewable.
+				if (($elementModel->canUse() && $model->_editable) || $elementModel->canView())
 				{
 					for ($c = 0; $c < $max; $c ++)
 					{

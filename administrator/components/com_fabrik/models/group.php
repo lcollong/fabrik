@@ -94,7 +94,7 @@ class FabrikModelGroup extends FabModelAdmin
 		$query = $db->getQuery(true);
 		$query->select('group_id')->from('#__{package}_formgroup')->where('form_id IN ('. implode(',', $ids).')');
 		$db->setQuery($query);
-		$res = $db->loadResultArray();
+		$res = $db->loadColumn();
 		return $res;
 	}
 	
@@ -124,7 +124,7 @@ class FabrikModelGroup extends FabModelAdmin
 			$user = JFactory::getUser();
 			$data['created_by'] = $user->get('id');
 			$data['created_by_alias'] = $user->get('username');
-			$data['created'] = JFactory::getDate()->toMySQL();
+			$data['created'] = JFactory::getDate()->toSql();
 
 		}
 		if ($this->checkRepeatAndPK($data)) {
@@ -233,7 +233,7 @@ class FabrikModelGroup extends FabModelAdmin
 				$str = FabrikString::safeColName($fname);
 				$field = JArrayHelper::getValue($fields, $fname);
 				if (is_object($field)) {
-					$str .= " ".$field->Type." ";
+					$str .= ' ' . $field->Type . ' ';
 					if ($field->Null == 'NO') {
 						$str .= "NOT NULL ";
 					}
@@ -246,7 +246,7 @@ class FabrikModelGroup extends FabModelAdmin
 		}
 		$db->setQuery("show tables");
 		$newTableName = $list->db_table_name.'_'.$data['id'].'_repeat';
-		$existingTables = $db->loadResultArray();
+		$existingTables = $db->loadColumn();
 		if (!in_array($newTableName, $existingTables)) {
 			// no existing repeat group table found so lets create it
 			$query = "CREATE TABLE IF NOT EXISTS ".$db->quoteName($newTableName)." (".implode(",", $names).")";
@@ -332,7 +332,7 @@ class FabrikModelGroup extends FabModelAdmin
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__{package}_elements')->where('group_id IN ('.implode(',', $pks).')');
 		$db->setQuery($query);
-		$elids = $db->loadResultArray();
+		$elids = $db->loadColumn();
 		$elementModel = JModel::getInstance('Element', 'FabrikModel');
 		return $elementModel->delete($elids);
 	}

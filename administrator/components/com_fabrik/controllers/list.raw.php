@@ -53,7 +53,7 @@ class FabrikControllerList extends JControllerForm
 				}
 			}
 		}
-		$fieldDropDown = JHTML::_('select.genericlist', $fieldNames, $name, "class=\"inputbox\"  size=\"1\" ", 'value', 'text', '');
+		$fieldDropDown = JHTML::_('select.genericlist', $fieldNames, $name, 'class="inputbox"  size="1" ', 'value', 'text', '');
 		echo $fieldDropDown;
 	}
 	

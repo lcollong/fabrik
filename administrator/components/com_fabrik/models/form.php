@@ -90,7 +90,7 @@ class FabrikModelForm extends FabModelAdmin
 	public function getAbstractPlugins()
 	{
 		if (isset($this->abstractPlugins))
-		 {
+		{
 			return $this->abstractPlugins;
 		}
 
@@ -111,10 +111,12 @@ class FabrikModelForm extends FabModelAdmin
 		foreach ($plugins as $x => $plugin)
 		{
 			$data = array();
+
 			$o = $pluginManager->getPlugIn($plugin->name, 'Form');
 			if ($o !== false)
 			{
 				$o->getJForm()->model = $feFormModel;
+
 				// $$$ rob 0 was $x below but that rendered first set of plugins with indexes 1,2,3
 				// think they should all be indexed 0
 				$str = $o->onRenderAdminSettings($data, 0);
@@ -253,7 +255,8 @@ class FabrikModelForm extends FabModelAdmin
 				$query->select('plugin, name')->from('#__fabrik_elements')->where('group_id IN ('.implode(',', $groups).')');
 				$db->setQuery($query);
 				$rows = $db->loadObjectList();
-				foreach ($rows as $row) {
+				foreach ($rows as $row)
+				{
 					$fields[$row->name] = $row->plugin;
 				}
 			}
@@ -274,13 +277,13 @@ class FabrikModelForm extends FabModelAdmin
 			$item = $listModel->loadFromFormId($formid);
 			if ($isnew)
 			{
-				$dbTableName = $data['db_table_name'] !== '' ? $data['db_table_name'] : FabrikString::clean($data['label']);
+				$dbTableName = $data['db_table_name'] !== '' ? $data['db_table_name'] : $data['label'];
+				$dbTableName = preg_replace('#[^0-9a-zA-Z_]#', '', $dbTableName);
 			}
 			else
 			{
 				$dbTableName = $item->db_table_name == '' ? $data['database_name'] : $item->db_table_name;
 			}
-
 			$dbTableExists = $listModel->databaseTableExists($dbTableName);
 			if (!$dbTableExists)
 			{
@@ -290,7 +293,8 @@ class FabrikModelForm extends FabModelAdmin
 				// need to do some more testing on MySQL table name case sensitivity
 				// BUT ... as we're potentially changing the table name after testing for existance
 				// we need to test again.
-				$dbTableName = preg_replace('#[^0-9a-zA-Z_]#', '_', $dbTableName);
+				//$$$ rob - was replacing with '_' but if your form name was 'x - y' then this was converted to x___y which then blows up element name code due to '___' being presumed to be the element splitter.
+				$dbTableName = preg_replace('#[^0-9a-zA-Z_]#', '', $dbTableName);
 				if ($listModel->databaseTableExists($dbTableName))
 				{
 					return JError::raiseWarning(500, JText::_("COM_FABRIK_DB_TABLE_ALREADY_EXISTS"));
@@ -302,16 +306,16 @@ class FabrikModelForm extends FabModelAdmin
 			{
 				$connection = FabrikWorker::getConnection(-1);
 				$item->id = null;
-				$item->label = $data['label'];
-				$item->form_id = $formid;
+				$item->label 				= $data['label'];
+				$item->form_id 			= $formid;
 				$item->connection_id = $connection->getConnection()->id;
-				$item->db_table_name = $dbTableName;
-				// store key without quoteNames as thats db specific *which we no longer want
-				$item->db_primary_key = $dbTableName . '.id';
-				$item->auto_inc = 1;
-				$item->published = $data['published'];
-				$item->created = $data['created'];
-				$item->created_by = $data['created_by'];
+				$item->db_table_name	= $dbTableName;
+				// store key without nameQuotes as thats db specific *which we no longer want
+				$item->db_primary_key = $dbTableName.'.id';
+				$item->auto_inc 			= 1;
+				$item->published 		= $data['published'];
+				$item->created				= $data['created'];
+				$item->created_by		= $data['created_by'];
 				$item->access = 1;
 				$item->params = $listModel->getDefaultParams();
 				$res = $item->store();
@@ -344,6 +348,7 @@ class FabrikModelForm extends FabModelAdmin
 		{
 			JError::raiseError(500, $db->stderr());
 		}
+
 		$orderid = 1;
 		$currentGroups = array_unique($currentGroups);
 		foreach ($currentGroups as $group_id)
@@ -372,15 +377,14 @@ class FabrikModelForm extends FabModelAdmin
 
 	public function swapListToFormIds($ids = array())
 	{
-		if (empty($ids))
-		{
+		if (empty($ids)) {
 			return array();
 		}
 		JArrayHelper::toInteger($ids);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('form_id')->from('#__{package}_lists')->where('id IN ('. implode(',', $ids).')');
-		return $db->setQuery($query)->loadResultArray();
+		return $db->setQuery($query)->loadColumn();
 	}
 
 	/**
@@ -400,6 +404,7 @@ class FabrikModelForm extends FabModelAdmin
 			//there is a table view linked to the form so lets load it
 			$listModel = JModel::getInstance('List', 'FabrikModel');
 			$listModel->loadFromFormId($formId);
+			//$listModel->set('form.id', $formId);
 			$listModel->setFormModel($model);
 			$dbExisits = $listModel->databaseTableExists();
 			if (!$dbExisits)
@@ -418,11 +423,10 @@ class FabrikModelForm extends FabModelAdmin
 	 *
 	 * @param	object		$form		The form to validate against.
 	 * @param	array		$data		The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
 	 * @return	mixed		Array of filtered data if valid, false otherwise.
 	 * @since	1.1
 	 */
-	function validate($form, $data, $group = null)
+	function validate($form, $data)
 	{
 		$params = $data['params'];
 		$ok = parent::validate($form, $data);
@@ -443,15 +447,15 @@ class FabrikModelForm extends FabModelAdmin
 	 * @param array $cids to delete
 	 */
 
-	public function delete(&$pks)
+	public function delete($cids)
 	{
-		$res = parent::delete($pks);
+		$res = parent::delete($cids);
 		if ($res)
 		{
-			foreach ($pks as $pk)
+			foreach ($cids as $cid)
 			{
 				$item = FabTable::getInstance('FormGroup', 'FabrikTable');
-				$item->load(array('form_id'=> $pk));
+				$item->load(array('form_id'=> $cid));
 				$item->delete();
 			}
 		}
@@ -459,4 +463,5 @@ class FabrikModelForm extends FabModelAdmin
 	}
 
 }
+
 ?>

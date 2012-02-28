@@ -153,11 +153,11 @@ class FabrikControllerList extends JController
 
 		$total = $oldtotal - count($ids);
 
-		$ref = JRequest::getVar('fabrik_referrer', "index.php?option=com_fabrik&view=list&listid=$listid", 'post');
+		$ref = JRequest::getVar('fabrik_referrer', 'index.php?option=com_fabrik&view=list&listid=' . $listid, 'post');
 		// $$$ hugh - for some reason fabrik_referrer is sometimes empty, so a little defensive coding ...
 		if (empty($ref))
 		{
-			$ref = JRequest::getVar('HTTP_REFERER', "index.php?option=com_fabrik&view=list&listid=$listid", 'server');
+			$ref = JRequest::getVar('HTTP_REFERER', 'index.php?option=com_fabrik&view=list&listid=' . $listid, 'server');
 		}
 		if ($total >= $limitstart) {
 			
@@ -166,9 +166,9 @@ class FabrikControllerList extends JController
 			{
 				$newlimitstart = 0;
 			}
-			$ref = str_replace("limitstart$listid=$limitstart", "limitstart$listid=$newlimitstart", $ref);
-			$context = 'com_fabrik.list.'.$model->getRenderContext().'.';
-			$app->setUserState($context.'limitstart', $newlimitstart);
+			$ref = str_replace('limitstart' . $listid . '=  . $limitstart', 'limitstart' . $listid . '=' . $newlimitstart, $ref);
+			$context = 'com_fabrik.list.' . $model->getRenderContext() . '.';
+			$app->setUserState($context . 'limitstart', $newlimitstart);
 		}
 		if (JRequest::getVar('format') == 'raw')
 		{
@@ -178,7 +178,7 @@ class FabrikControllerList extends JController
 		else
 		{
 			//@TODO: test this
-			$app->redirect($ref, count($ids) . " " . JText::_('COM_FABRIK_RECORDS_DELETED'));
+			$app->redirect($ref, count($ids) . ' ' . JText::_('COM_FABRIK_RECORDS_DELETED'));
 		}
 	}
 
@@ -201,7 +201,8 @@ class FabrikControllerList extends JController
 	{
 		$app = JFactory::getApplication();
 		$cid = JRequest::getVar('cid', array(0), 'method', 'array');
-		if (is_array($cid)) {
+		if (is_array($cid))
+		{
 			$cid = $cid[0];
 		}
 		$model = $this->getModel('list', 'FabrikFEModel');
@@ -230,11 +231,11 @@ class FabrikControllerList extends JController
 		$format = JRequest::getVar('format', 'html');
 		if ($format !== 'raw')
 		{
-			$ref = JRequest::getVar('fabrik_referrer', "index.php?option=com_fabrik&view=list&listid=". $model->getId() . '&format=' . $format, 'post');
+			$ref = JRequest::getVar('fabrik_referrer', 'index.php?option=com_fabrik&view=list&listid=' . $model->getId() . '&format=' . $format, 'post');
 		}
 		else
 		{
-			$ref = "index.php?option=com_fabrik&view=list&listid=". $model->getId() . '&format=' . $format;
+			$ref = 'index.php?option=com_fabrik&view=list&listid=' . $model->getId() . '&format=' . $format;
 		}
 		$app->redirect($ref);
 	}
@@ -246,7 +247,7 @@ class FabrikControllerList extends JController
 	function elementFilter()
 	{
 		$id = JRequest::getInt('id');
-		$model = &$this->getModel('list', 'FabrikFEModel');
+		$model = $this->getModel('list', 'FabrikFEModel');
 		$model->setId($id);
 		echo $model->getAdvancedElementFilter();
 	}

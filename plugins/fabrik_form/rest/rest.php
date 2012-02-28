@@ -34,7 +34,8 @@ class plgFabrik_FormRest extends plgFabrik_Form {
 		$ticket = new SimpleXMLElement("<ticket></ticket>");
 
 		$ignore = array('trkr_tickets___id');
-		if ($formModel->_origRowId == 0) {
+		if ($formModel->_origRowId == 0)
+		{
 			$ingore[] = 'id';
 		}
 		/*foreach($formModel->_formData as $key => $val){
@@ -59,7 +60,8 @@ class plgFabrik_FormRest extends plgFabrik_Form {
 		 */
 
 		$include = array('milestone-id', 'status', 'summary');
-		foreach ($include as $i) {
+		foreach ($include as $i)
+		{
 			echo "$i = " . $formModel->_formData[$i] . "<br>";
 			$ticket->addChild($i, $formModel->_formData[$i]);
 		}

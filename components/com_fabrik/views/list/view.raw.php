@@ -29,21 +29,29 @@ class FabrikViewList extends JView{
 		$data = $model->render();
 		$nav = $model->getPagination();
 		$c = 0;
-		foreach ($data as $groupk => $group) {
-			foreach ($group as $i => $x) {
+		foreach ($data as $groupk => $group)
+		{
+			foreach ($group as $i => $x)
+			{
 				$o = new stdClass();
-				if (is_object($data[$groupk])) {
+				if (is_object($data[$groupk]))
+				{
 					$o->data = JArrayHelper::fromObject($data[$groupk]);
-				} else {
+				}
+				else
+				{
 					$o->data = $data[$groupk][$i];
 				}
 				$o->cursor = $i + $nav->limitstart;
 				$o->total = $nav->total;
-				$o->id = "list_".$table->id."_row_".@$o->data->__pk_val;
-				$o->class = "fabrik_row oddRow".$c;
-				if (is_object($data[$groupk])) {
+				$o->id = 'list_' . $table->id . '_row_' . @$o->data->__pk_val;
+				$o->class = 'fabrik_row oddRow' . $c;
+				if (is_object($data[$groupk]))
+				{
 					$data[$groupk] = $o;
-				} else {
+				}
+				else
+				{
 					$data[$groupk][$i] = $o;
 				}
 				$c = 1-$c;
@@ -72,12 +80,16 @@ class FabrikViewList extends JView{
 		$model = $this->getModel();
 		$table = $model->getTable();
 		$params = $model->getParams();
-		if ($app->isAdmin()) {
+		if ($app->isAdmin())
+		{
 			$tmpl = $params->get('admin_template');
-			if ($tmpl == -1 || $tmpl == '') {
+			if ($tmpl == -1 || $tmpl == '')
+			{
 				$tmpl = JRequest::getVar('layout', $table->template);
 			}
-		} else {
+		}
+		else
+		{
 			$tmpl = JRequest::getVar('layout', $table->template);
 		}
 		return $tmpl;

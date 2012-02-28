@@ -211,7 +211,7 @@ class FabrikControllerDetails extends JController
 	{
 		$session = JFactory::getSession();
 		$formdata = $session->get('com_fabrik.form.data');
-		$context = 'com_fabrik.form.'.$formdata['fabrik'].'.redirect.';
+		$context = 'com_fabrik.form.' . $formdata['fabrik'] . '.redirect.';
 		//if the redirect plug-in has set a url use that in preference to the default url
 		$surl = $session->get($context.'url', array($url));
 		if (!is_array($surl))
@@ -322,7 +322,7 @@ class FabrikControllerDetails extends JController
 
 	function ajax_validate()
 	{
-		$model	= &$this->getModel('form', 'FabrikFEModel');
+		$model = $this->getModel('form', 'FabrikFEModel');
 		$model->setId(JRequest::getInt('formid', 0));
 		$model->getForm();
 		$model->rowId = JRequest::getVar('rowid', '');
@@ -413,7 +413,7 @@ class FabrikControllerDetails extends JController
 		else
 		{
 			//@TODO: test this
-			$app->redirect($ref, count($ids) . " " . JText::_('COM_FABRIK_RECORDS_DELETED'));
+			$app->redirect($ref, count($ids) . ' ' . JText::_('COM_FABRIK_RECORDS_DELETED'));
 		}
 	}
 }

@@ -27,8 +27,8 @@ class plgFabrik_FormSalesforce extends plgFabrik_Form {
 		$toolkit_path = JPATH_SITE . '/components/com_fabrik/libs/salesforce';
 
 		//Ok, now use SOAP to send the information to SalesForce
-		require_once($toolkit_path .'/soapclient/SforcePartnerClient.php');
-		require_once($toolkit_path.'/soapclient/SforceHeaderOptions.php');
+		require_once($toolkit_path . '/soapclient/SforcePartnerClient.php');
+		require_once($toolkit_path . '/soapclient/SforceHeaderOptions.php');
 
 		// Salesforce Login information
 		$wsdl = $toolkit_path . '/soapclient/partner.wsdl.xml';

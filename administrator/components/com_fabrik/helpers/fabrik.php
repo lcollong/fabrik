@@ -43,7 +43,7 @@ class FabrikHelper
 				$strdate .= ' 00:00:00';
 			}
 			$date = JFactory::getDate($strdate, $tzoffset);
-			$strdate = $date->toMySQL();
+			$strdate = $date->toSql();
 		}
 	}
 

@@ -42,28 +42,38 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 		$condition = $params->get('cronemail_condition', '');
 		$updates = array();
 		$this->log = '';
-		foreach ($data as $group) {
-			if (is_array($group)) {
-				foreach ($group as $row) {
-					if (!empty($condition)) {
+		foreach ($data as $group)
+		{
+			if (is_array($group))
+			{
+				foreach ($group as $row)
+				{
+					if (!empty($condition))
+					{
 						$this_condition = $w->parseMessageForPlaceHolder($condition, $row);
-						if (eval($this_condition === false)) {
+						if (eval($this_condition === false))
+						{
 							continue;
 						}
 					}
 					$row = JArrayHelper::fromObject($row);
 					$thisto = $w->parseMessageForPlaceHolder($to, $row);
-					if (JMailHelper::isEmailAddress($thisto)) {
+					if (JMailHelper::isEmailAddress($thisto))
+					{
 						$thismsg = $w->parseMessageForPlaceHolder($msg, $row);
-						if ($eval) {
+						if ($eval)
+						{
 							$thismsg = eval($thismsg);
 						}
 						$thissubject = $w->parseMessageForPlaceHolder($subject, $row);
-						$res = JUTility::sendMail($MailFrom, $FromName, $thisto, $thissubject, $thismsg, true);
-						if (!$res) {
+						$res =  JFactory::getMailer()->sendMail($MailFrom, $FromName, $thisto, $thissubject, $thismsg, true);
+						if (!$res)
+						{
 							$this->log .= "\n failed sending to $thisto";
 						}
-					} else {
+					}
+					else
+					{
 						$this->log .= "\n $thisto is not an email address";
 					}
 					$updates[] = $row['__pk_val'];
@@ -72,7 +82,8 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 			}
 		}
 		$field = $params->get('cronemail-updatefield');
-		if (!empty( $updates) && trim($field ) != '') {
+		if (!empty( $updates) && trim($field ) != '')
+		{
 			//do any update found
 			$listModel = JModel::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($params->get('table'));
@@ -82,7 +93,7 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 			$field = $params->get('cronemail-updatefield');
 			$value = $params->get('cronemail-updatefield-value');
 
-			$field = str_replace('___', ".", $field);
+			$field = str_replace('___', '.', $field);
 			$query = "UPDATE $table->db_table_name set $field = " . $fabrikDb->Quote($value) . " WHERE $table->db_primary_key IN (" . implode(',', $updates) . ")";
 			$this->log .= "\n update query: $query";
 			$fabrikDb = $listModel->getDb();

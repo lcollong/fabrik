@@ -47,24 +47,26 @@ class plgFabrik_ListCopy extends plgFabrik_List {
 
 	/**
 	 * do the plugin action
-	 * @param object parameters
-	 * @param object table model
-	 * @return string message
+	 * @param	object	parameters
+	 * @param	object	table model
+	 * @return	string	message
 	 */
 
 	function process(&$params, &$model)
 	{
-		$ids	= JRequest::getVar('ids', array(), 'method', 'array');
+		$ids = JRequest::getVar('ids', array(), 'method', 'array');
 		$item = $model->getTable();
 		$formModel = $model->getFormModel();
 		$origPost = JRequest::get('post', 2);
 		JRequest::set(array(), 'post');
-		foreach ($ids as $id) {
+		foreach ($ids as $id)
+		{
 			$formModel->rowId = $id;
 			$row = $formModel->getData();
 			$row['Copy'] = '1';
 			$row['fabrik_copy_from_table'] = 1;
-			foreach ($row as $key=>$val) {
+			foreach ($row as $key=>$val)
+			{
 				JRequest::setVar($key, $val, 'post');
 			}
 			$formModel->setFormData();
@@ -79,16 +81,16 @@ class plgFabrik_ListCopy extends plgFabrik_List {
 
 	function process_result()
 	{
-		$ids	= JRequest::getVar('ids', array(), 'method', 'array');
+		$ids = JRequest::getVar('ids', array(), 'method', 'array');
 		return JText::sprintf('PLG_LIST_ROWS_COPIED', count($ids));
 	}
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @param object parameters
-	 * @param object table model
-	 * @param array [0] => string table's form id to contain plugin
-	 * @return bool
+	 * @param	object	parameters
+	 * @param	object	table model
+	 * @param 	array	[0] => string table's form id to contain plugin
+	 * @return	bool
 	 */
 
 	function onLoadJavascriptInstance($params, $model, $args)

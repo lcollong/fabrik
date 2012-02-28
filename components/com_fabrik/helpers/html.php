@@ -315,7 +315,7 @@ EOD;
 		$conditions = array();
 		$conditions[] = JHTML::_('select.option', 'AND', JText::_('COM_FABRIK_AND'));
 		$conditions[] = JHTML::_('select.option', 'OR', JText::_('COM_FABRIK_OR'));
-		return JHTML::_('select.genericlist', $conditions, 'fabrik___filter[list_'.$listid.'][join][]', "class=\"inputbox\" size=\"1\" ", 'value', 'text', $sel);
+		return JHTML::_('select.genericlist', $conditions, 'fabrik___filter[list_' . $listid . '][join][]', 'class="inputbox" size="1" ', 'value', 'text', $sel);
 	}
 
 
@@ -1139,9 +1139,9 @@ EOD;
 		$p = '';
 		foreach ($bits as $key => $val)
 		{
-			$p .= "$key=\"$val\" ";
+			$p .= $key . '="' . $val . '" ';
 		}
-		return $src == '' ? '' : "<img src=\"$src\" $p/>";
+		return $src == '' ? '' : '<img src="' . $src . '" '. $p. '/>';
 	}
 
 	/**

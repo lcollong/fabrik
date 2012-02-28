@@ -15,61 +15,64 @@ require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 class plgFabrik_ElementFolder extends plgFabrik_Element {
 
 	/**
-	 * draws the form element
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::render()
 	 */
 
 	function render($data, $repeatCounter = 0)
 	{
-		$name 		= $this->getHTMLName($repeatCounter);
-		$id 			= $this->getHTMLId($repeatCounter);
-		$element 	= $this->getElement();
-		$params 	=& $this->getParams();
+		$name = $this->getHTMLName($repeatCounter);
+		$id = $this->getHTMLId($repeatCounter);
+		$element = $this->getElement();
+		$params = $this->getParams();
 		$allowAdd = $params->get('allow_frontend_addtodropdown', false);
 		$selected = $this->getValue($data, $repeatCounter);
-
 		$errorCSS = (isset($this->_elementError) &&  $this->_elementError != '') ? " elementErrorHighlight" : '';
-		$attribs 	= 'class="fabrikinput inputbox'.$errorCSS."\"";
-
-
+		$attribs = 'class="fabrikinput inputbox'.$errorCSS."\"";
 		$aRoValues 	= array();
-		$path		= JPATH_ROOT. '/' .$params->get('fbfolder_path');
+		$path = JPATH_ROOT. '/' .$params->get('fbfolder_path');
 		$opts = array();
-		if ($params->get('folder_allownone', true)) {
+		if ($params->get('folder_allownone', true))
+		{
 			$opts[] = JHTML::_('select.option', '', JText::_('NONE'));
 		}
-		if ($params->get('folder_listfolders', true)) {
-			$folders	= JFolder::folders($path);
-
-			foreach ($folders as $folder) {
+		if ($params->get('folder_listfolders', true))
+		{
+			$folders = JFolder::folders($path);
+			foreach ($folders as $folder)
+			{
 				$opts[] = JHTML::_('select.option', $folder, $folder);
-				if (is_array($selected) and in_array($folder, $selected)) {
+				if (is_array($selected) and in_array($folder, $selected))
+				{
 					$aRoValues[] = $folder;
 				}
 			}
 		}
 
-	if ($params->get('folder_listfiles', false)) {
-			$files	= JFolder::files($path);
-			foreach ($files as $file) {
+	if ($params->get('folder_listfiles', false))
+	{
+			$files = JFolder::files($path);
+			foreach ($files as $file)
+			{
 				$opts[] = JHTML::_('select.option', $file, $file);
-				if (is_array($selected) and in_array($file, $selected)) {
+				if (is_array($selected) and in_array($file, $selected))
+				{
 					$aRoValues[] = $file;
 				}
 			}
 		}
 
 		$str = JHTML::_('select.genericlist', $opts, $name, $attribs, 'value', 'text', $selected, $id);
-		if (!$this->editable) {
+		if (!$this->editable)
+		{
 			return implode(', ', $aRoValues);
 		}
 		return $str;
 	}
 
 	/**
-	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::elementJavascript()
 	 */
 
 	function elementJavascript($repeatCounter)

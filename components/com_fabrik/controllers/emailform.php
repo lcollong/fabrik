@@ -31,18 +31,18 @@ class FabrikControllerEmailform extends JController
 	function display()
 	{
 		$document = JFactory::getDocument();
-
-		$viewName	= JRequest::getVar('view', 'emailform', 'default', 'cmd');
+		$viewName = JRequest::getVar('view', 'emailform', 'default', 'cmd');
 		$modelName = 'form';
 
-		$viewType	= $document->getType();
+		$viewType = $document->getType();
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
 		$model = $this->getModel($modelName, 'FabrikFEModel');
 		//test for failed validation then page refresh
 		$model->getErrors();
-		if (!JError::isError($model) && is_object($model)) {
+		if (!JError::isError($model) && is_object($model))
+		{
 			$view->setModel($model, true);
 		}
 		// Display the view

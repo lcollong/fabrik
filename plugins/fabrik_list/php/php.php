@@ -62,11 +62,14 @@ class plgFabrik_ListPhp extends plgFabrik_List {
 	function process(&$params, &$model, $opts = array())
 	{
 		$file = JFilterInput::clean($params->get('table_php_file'), 'CMD');
-		if ($file == -1 || $file == '') {
+		if ($file == -1 || $file == '')
+		{
 			$code = $params->get('table_php_code');
 			@eval($code);
-		} else {
-			require_once(JPATH_ROOT. '/' .'plugins/fabrik_list/php/scripts'. '/' .$file);
+		}
+		else
+		{
+			require_once(JPATH_ROOT. '/plugins/fabrik_list/php/scripts/' .$file);
 		}
 		return true;
 	}

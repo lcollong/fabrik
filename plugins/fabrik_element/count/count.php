@@ -30,16 +30,17 @@ class plgFabrik_ElementCount extends plgFabrik_Element {
 	}
 
 	/**
-	 * @param array
-	 * @param array
-	 * @param string table name (depreciated)
+	 * @param	array
+	 * @param	array
+	 * @param	array options
 	 */
 
 	function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
 		$dbtable = $this->actualTableName();
 		$db = FabrikWorker::getDbo();
-		if (JRequest::getVar('c') != 'form') {
+		if (JRequest::getVar('c') != 'form')
+		{
 			$params = $this->getParams();
 			$fullElName = JArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___'.$this->_element->name));
 			$r = "COUNT(".$params->get('count_field', '*').")";

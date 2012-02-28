@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 class plgFabrik_ElementDisplay extends plgFabrik_Element
 {
 
-	protected  $fieldDesc = 'TEXT';
+	protected $fieldDesc = 'TEXT';
 
 	function setIsRecordedInDatabase()
 	{

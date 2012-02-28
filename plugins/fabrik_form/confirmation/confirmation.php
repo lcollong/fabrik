@@ -26,7 +26,8 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 
 	public function runAway($method)
 	{
-		if ($method == 'onBeforeStore') {
+		if ($method == 'onBeforeStore')
+		{
 			return $this->runAway;
 		}
 		return false;
@@ -45,7 +46,7 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 		$session->clear('com_fabrik.form.'.$id.'.session.on');
 		$session->clear('com_fabrik.form.'.$id.'.session.hash');
 	}
-	
+
 	/**
 	 * Before the record is stored, this plugin will see if it should process
 	 * and if so store the form data in the session.
@@ -56,17 +57,20 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 
 	function onBeforeStore(&$params, &$formModel)
 	{
-		if (JRequest::getInt('fabrik_ignorevalidation') === 1 || JRequest::getInt('fabrik_ajax') === 1) {
+		if (JRequest::getInt('fabrik_ignorevalidation') === 1 || JRequest::getInt('fabrik_ajax') === 1)
+		{
 			//saving via inline edit - dont want to confirm
 			return true;
 		}
 		$this->runAway = false;
 		$this->data = $formModel->_formData;
-		if (!$this->shouldProcess('confirmation_condition')) {
+		if (!$this->shouldProcess('confirmation_condition'))
+		{
 			$this->clearSession($formModel->getId());
 			return true;
 		}
-		if (JRequest::getVar('fabrik_confirmation') == 2) {
+		if (JRequest::getVar('fabrik_confirmation') == 2)
+		{
 			//if we were already on the confirmation page
 			// return and set to 2 to ignore?
 			// $$$ hugh - I don't think it really matters,
@@ -80,7 +84,7 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 		// Initialize some variables
 		$form = $formModel->getForm();
 		//save the posted form data to the form session, for retrival later
- 		$sessionModel = JModel::getInstance('Formsession', 'FabrikFEModel');
+		$sessionModel = JModel::getInstance('Formsession', 'FabrikFEModel');
 		$sessionModel->setFormId($formModel->getId());
 		$rowid = JRequest::getVar('rowid', 0);
 		$sessionModel->setRowId($rowid);
@@ -107,9 +111,11 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 
 		//set the element access to read only??
 		$groups = $formModel->getGroupsHiarachy();
-		foreach ($groups as $groupModel) {
+		foreach ($groups as $groupModel)
+		{
 			$elementModels = $groupModel->getPublishedElements();
-			foreach ($elementModels as $elementModel) {
+			foreach ($elementModels as $elementModel)
+			{
 				$elementModel->getElement()->access = 26;
 			}
 		}
@@ -128,52 +134,58 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 	{
 		//if we have already processed the form
 		$this->html = '';
-		if (JRequest::getVar('fabrik_confirmation') == 1) {
+		if (JRequest::getVar('fabrik_confirmation') == 1)
+		{
 			$session = JFactory::getSession();
 			//unset this flag
 			JRequest::setVar('fabrik_confirmation', 2);
 			$post = JRequest::get('post', 4);
 			//load in the posted values as hidden fields so that if we
 			//return to the form to edit it it will populate with our data
-			
+				
 			// $$$ 24/10/2011 testing removing this as data is retrieved via the session not thorugh posted data
-		 	foreach ($post as $key => $val) {
-		 		
-			
+			foreach ($post as $key => $val)
+			{
 				$noneraw = substr($key, 0, strlen($key) - 4);
-				if ($key == 'join' || $key == 'fabrik_vars') {
+				if ($key == 'join' || $key == 'fabrik_vars')
+				{
 					continue;
 				}
-				if ($formModel->hasElement($key) || $formModel->hasElement($noneraw)) {
+				if ($formModel->hasElement($key) || $formModel->hasElement($noneraw))
+				{
 					//return;
 				}
-				if ($formModel->hasElement($noneraw)) {
-				$key = $formModel->getElement($noneraw)->getHTMLName(0);
-				
-				// $$$ rob include both raw and non-raw keys (non raw for radios etc, _raw for db joins)
-				if (is_array($val)) {
-					foreach ($val as $val2) {
-						if (!FabrikWorker::isReserved($key)) {
-							if (!strstr($key, '[]')) {
-								$key .= '[]';
+				if ($formModel->hasElement($noneraw))
+				{
+					$key = $formModel->getElement($noneraw)->getHTMLName(0);
+
+					// $$$ rob include both raw and non-raw keys (non raw for radios etc, _raw for db joins)
+					if (is_array($val)) {
+						
+						foreach ($val as $val2)
+						{
+							if (!FabrikWorker::isReserved($key))
+							{
+								if (!strstr($key, '[]'))
+								{
+									$key .= '[]';
+								}
+								$fields[] = '<input type="hidden" name="'.$key.'" value="'.($val2).'" />';
 							}
-							//$fields[] = '<input type="hidden" name="'.str_replace('_raw','',$key).'[]" value="'.urlencode($val2).'" />';
-							//$fields[] = '<input type="hidden" name="'.$key.'" value="'.urlencode($val2).'" />';
-							$fields[] = '<input type="hidden" name="'.$key.'" value="'.($val2).'" />';
 						}
 					}
-				} else {
-					if (!FabrikWorker::isReserved($key)) {
-						//$fields[] = '<input type="hidden" name="'.str_replace('_raw','',$key).'" value="'.urlencode($val).'" />';
-						//$fields[] = '<input type="hidden" name="'.$key.'" value="'.urlencode($val).'" />';
-						$fields[] = '<input type="hidden" name="'.$key.'" value="'.($val).'" />';
+					else
+					{
+						if (!FabrikWorker::isReserved($key))
+						{
+							$fields[] = '<input type="hidden" name="'.$key.'" value="'.($val).'" />';
+						}
 					}
 				}
-			}  
-		 	}
+			}
 			//add in a view field as the form doesn't normally contain one
 			$fields[] = '<input type="hidden" name="view" value="form" />';
-			
+				
 			$fields[] = '<input type="hidden" name="fabrik_confirmation" value="2" />';
 
 			//add in a button to allow you to go back to the form and edit your data
@@ -182,13 +194,13 @@ class plgFabrik_FormConfirmation extends plgFabrik_Form {
 			FabrikHelperHTML::addScriptDeclaration(
 				"head.ready(function() {".
 				"$('fabrik_redoconfirmation').addEvent('click', function(e) {;\n".
-				//	unset the task otherwise we will submit the form to be processed.
+			//	unset the task otherwise we will submit the form to be processed.
 				"  this.form.task.value = '';\n".
 				"  this.form.submit.click();\n".
 				"	});\n".
 				"});"
-				);
-				$this->html = implode("\n", $fields);
+			);
+			$this->html = implode("\n", $fields);
 		}
 	}
 

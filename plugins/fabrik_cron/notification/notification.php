@@ -69,7 +69,7 @@ class plgFabrik_Cronnotification extends plgFabrik_Cron {
 		foreach ($usermsgs as $email => $messages)
 		{
 			$msg = implode( ' ', $messages);
-			$res = JUtility::sendMail( $email_from, $email_from, $email, $subject, $msg, true);
+			$res =  JFactory::getMailer()->sendMail( $email_from, $email_from, $email, $subject, $msg, true);
 		}
 		if (!empty($sent))
 		{

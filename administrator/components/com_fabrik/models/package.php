@@ -726,7 +726,7 @@ class FabrikModelPackage extends FabModelAdmin
 	type="component">
 
 	<name>'.$row->component_name.'</name>
-	<creationDate>'.$date->toMySQL().'</creationDate>
+	<creationDate>'.$date->toSql().'</creationDate>
 	<author>Fabrik</author>
 	<copyright>Pollen 8 Design Ltd</copyright>
 	<license>GNU/GPL</license>

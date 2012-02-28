@@ -14,7 +14,9 @@ defined('_JEXEC') or die();
  */
 class fabrikModifier {
 
-	function truncate( $text, $opts = array() ) {
+	function truncate(
+	$text, $opts = array())
+	{
 		return fabrikString::truncate( $data, $opts);
 	}
 

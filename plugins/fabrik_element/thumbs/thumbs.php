@@ -245,7 +245,7 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element {
 		$config = JFactory::getConfig();
 		$tzoffset = $config->get('offset');
 		$date = JFactory::getDate('now', $tzoffset);
-		$strDate = $db->Quote($date->toMySQL());
+		$strDate = $db->Quote($date->toSql());
 
 		$user = JFactory::getUser();
 		$userid = (int)$user->get('id');

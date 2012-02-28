@@ -225,9 +225,9 @@ class plgFabrik_Form extends FabrikPlugin
 						$smallerElHTMLName = $tmpElement->getFullName(false, true, false);
 						if (is_array($model->_formDataWithTableName))
 						{
-							if (array_key_exists($smallerElHTMLName."_raw", $model->_formDataWithTableName))
+							if (array_key_exists($smallerElHTMLName.'_raw', $model->_formDataWithTableName))
 							{
-								$d = $model->_formDataWithTableName[$smallerElHTMLName."_raw"];
+								$d = $model->_formDataWithTableName[$smallerElHTMLName.'_raw'];
 							}
 							else
 							{
@@ -265,15 +265,15 @@ class plgFabrik_Form extends FabrikPlugin
 					if ($elementModel->_inJoin)
 					{
 						if ($elementModel->_inRepeatGroup) {
-							if (!array_key_exists($k . "_raw", $this->emailData))
+							if (!array_key_exists($k . '_raw', $this->emailData))
 							{
-								$this->emailData[$k."_raw"] = array();
+								$this->emailData[$k.'_raw'] = array();
 							}
-							$this->emailData[$k."_raw"][] = JArrayHelper::getValue($model->_formDataWithTableName['join'][$group->join_id][$k], $c);
+							$this->emailData[$k.'_raw'][] = JArrayHelper::getValue($model->_formDataWithTableName['join'][$group->join_id][$k], $c);
 						}
 						else
 						{
-							$this->emailData[$k."_raw"] = $model->_formDataWithTableName['join'][$group->join_id][$k];
+							$this->emailData[$k.'_raw'] = $model->_formDataWithTableName['join'][$group->join_id][$k];
 						}
 					}
 					else
@@ -281,17 +281,17 @@ class plgFabrik_Form extends FabrikPlugin
 						//@TODO do we need to check if none -joined repeat groups have their data set out correctly?
 						if (array_key_exists($key, $model->_formDataWithTableName))
 						{
-							$rawval = JArrayHelper::getValue($model->_formDataWithTableName, $k."_raw", '');
+							$rawval = JArrayHelper::getValue($model->_formDataWithTableName, $k.'_raw', '');
 							if ($rawval == '')
 							{
-								$this->emailData[$k."_raw"] = $model->_formDataWithTableName[$key];
+								$this->emailData[$k.'_raw'] = $model->_formDataWithTableName[$key];
 							}
 							else
 							{
 								// things like the user element only have their raw value filled in at this point
 								// so don't overwrite that with the blank none-raw value
 								// the none-raw value is add in getEmailValue()
-								$this->emailData[$k."_raw"] = $rawval;
+								$this->emailData[$k.'_raw'] = $rawval;
 							}
 						}
 					}
@@ -304,9 +304,9 @@ class plgFabrik_Form extends FabrikPlugin
 					// $$$ hugh - for some reason, CDD keys themselves are missing form emailData, if no selection was made?
 					// (may only be on AJAX submit)
 					$email_value = '';
-					if (array_key_exists($k."_raw", $this->emailData))
+					if (array_key_exists($k.'_raw', $this->emailData))
 					{
-						$email_value = $this->emailData[$k."_raw"];
+						$email_value = $this->emailData[$k.'_raw'];
 					}
 					else if (array_key_exists($k, $this->emailData))
 					{
@@ -323,7 +323,7 @@ class plgFabrik_Form extends FabrikPlugin
 		}
 		$pk = FabrikString::safeColNameToArrayKey($listModel->getTable()->db_primary_key);
 		$this->emailData[$pk] = $listModel->lastInsertId;
-		$this->emailData[$pk."_raw"] = $listModel->lastInsertId;
+		$this->emailData[$pk.'_raw'] = $listModel->lastInsertId;
 		return $this->emailData;
 	}
 

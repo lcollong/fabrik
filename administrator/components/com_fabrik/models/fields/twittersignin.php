@@ -44,7 +44,7 @@ class JFormFieldTwittersignin extends JFormField
 		//$id 			= ElementHelper::getId($this, $control_name, $name);
 		//$fullName = ElementHelper::getFullName($this, $control_name, $name);
 		$iframeid = $this->id.'_iframe';
-		$cid = JRequest::getVar('cid', array(), 'array');
+		$cid = JRequest::getVar('id', array(), 'array');
 		// $$$ hugh - when creating a new form, no 'cid' ... not sure what to do, so just set it to 0.  Should
 		// prolly just return something like 'available after save' ?
 		if (!empty($cid)) {
@@ -60,15 +60,25 @@ class JFormFieldTwittersignin extends JFormField
 		//$href = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&controller=plugin&task=pluginAjax&plugin=fabriktwitter&g=form&method=authenticateAdmin&tmpl=component&formid='.$cid.'&repeatCounter='.$c;
 		$href = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=twitter&g=form&method=authenticateAdmin&tmpl=component&formid='.$cid.'&repeatCounter='.$c;
 
-		$clearjs = '$(\'jform_params_twitter_oauth_token-'.$c.'\').value = \'\';';
-		$clearjs .= '$(\'jform_params_twitter_oauth_token_secret-'.$c.'\').value = \'\';';
-		$clearjs .= '$(\'jform_params_twitter_oauth_user-'.$c.'\').value = \'\';';
+		$img_src = COM_FABRIK_LIVESITE."components/com_fabrik/libs/abraham-twitteroauth/images/lighter.png";
+		//$img_src = '';
+
+		$clearjs = "$('jform_params_twitter_oauth_token-".$c."').value = '';";
+		$clearjs .= "$('jform_params_twitter_oauth_token_secret-".$c."').value = '';";
+		$clearjs .= "$('jform_params_twitter_oauth_user-".$c."').value = '';";
 		$clearjs .= "return false;";
+		//$clearjs = '';
 
 		$js = "window.open('$href', 'twitterwins', 'width=800,height=460,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes');return false;";
-		$str =  '<a href="#" onclick="'.$js.'"><img src="'.COM_FABRIK_LIVESITE.'components/com_fabrik/libs/abraham-twitteroauth/images/lighter.png" alt="Sign in with Twitter"/></a>';
-		$str .= " | <a href=\"#\" onclick=\"$clearjs\">" .    JText::_('PLG_FORM_TWITTER_CLEAR_CREDENTIALS') . "</a><br/>";
-		$str .= "<br /><input type=\"text\" readonly=\"readonly\" name=\"". $this->name . "\" id=\"" .$this->id . "\" value=\"" . $this->value . "\" />";
+		//$js = '';
+		$str =  "<span>";
+		$str .= "<a href='#' onclick=\"".$js."\"><img src='".$img_src."' alt='Sign in with Twitter' /></a>";
+		$str .= " | ";
+		$str .= "<a href='#' onclick=\"".$clearjs."\">" . JText::_('PLG_FORM_TWITTER_CLEAR_CREDENTIALS') . "</a>";
+		$str .= "</span>";
+		$str .= "<br /><br />";
+		//$str .= "<input type='text' readonly='readonly' name='". $this->name . "' id='" .$this->id . "' value='" . $this->value . "' />";
+		$str .= "<input type='text' name='". $this->name . "' id='" .$this->id . "' value='" . $this->value . "' />";
 		return $str;
 	}
 }

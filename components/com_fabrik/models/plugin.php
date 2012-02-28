@@ -59,7 +59,7 @@ class FabrikPlugin extends JPlugin
 	 * @param       array   $config  An array that holds the plugin configuration
 	 * @since       1.5
 	 */
-	public function __construct(& $subject, $config = array())
+	public function __construct(&$subject, $config = array())
 	{
 		parent::__construct($subject, $config);
 		$this->loadLanguage();
@@ -72,10 +72,11 @@ class FabrikPlugin extends JPlugin
 
 	function getJForm()
 	{
-		if (!isset($this->jform)) {
+		if (!isset($this->jform))
+		{
 			$type = str_replace('fabrik_', '', $this->_type);
 			$formType = $type . '-options';
-			$formName = 'com_fabrik.'.$formType;
+			$formName = 'com_fabrik.' . $formType;
 			//$controlName = 'jform[plugin-options]';
 			// $$$ rob - NO! the params option should be set in the plugin fields.xml file <fields name="params">
 			// allows for params which update actual db fields
@@ -155,7 +156,7 @@ class FabrikPlugin extends JPlugin
 			$form->repeat = $repeat;
 			if ($repeat)
 			{
-				$str .= '<a class="addButton" href="#">'.JText::_('COM_FABRIK_ADD').'</a> | ';
+				$str .= '<a class="addButton" href="#">' . JText::_('COM_FABRIK_ADD') . '</a>';
 			}
 			$str .= '
 			<legend>' . JText::_($fieldset->label) . '</legend>';

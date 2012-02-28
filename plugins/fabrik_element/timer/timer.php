@@ -86,7 +86,7 @@ class plgFabrik_ElementTimer extends plgFabrik_Element {
 		}
 		else
 		{
-			$value = explode(" ", $value);
+			$value = explode(' ', $value);
 			$value = array_pop($value);
 		}
 		$type = "text";

@@ -45,7 +45,7 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 		$params = $this->getParams();
 		$gmt_or_local = $params->get('gmt_or_local');
 		$gmt_or_local += 0;
-		return '<input name="'.$name.'" id="'.$id.'" type="hidden" value="' . $oDate->toMySQL($gmt_or_local) .'" />';
+		return '<input name="'.$name.'" id="'.$id.'" type="hidden" value="' . $oDate->toSql($gmt_or_local) .'" />';
 	}
 
 	/**

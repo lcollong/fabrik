@@ -52,7 +52,7 @@ class FabrikControllerForm extends JController
     $view = $this->getView($viewName, $viewType);
 
     // Push a model into the view
-    $model	= $this->getModel($modelName, 'FabrikFEModel');
+    $model = $this->getModel($modelName, 'FabrikFEModel');
     //if errors made when submitting from a J plugin they are stored in the session
     //lets get them back and insert them into the form model
   	if (empty($model->_arErrors))
@@ -190,11 +190,11 @@ class FabrikControllerForm extends JController
 		{
 			if (array_key_exists('apply', $model->_formData))
 			{
-				$url = "index.php?option=com_fabrik&c=form&task=form&formid=".JRequest::getInt('formid')."&listid=".JRequest::getInt('listid')."&rowid=".JRequest::getInt('rowid');
+				$url = 'index.php?option=com_fabrik&c=form&task=form&formid=' . JRequest::getInt('formid') . '&listid=' . JRequest::getInt('listid') . '&rowid=' . JRequest::getInt('rowid');
 			}
 			else
 			{
-				$url = "index.php?option=com_fabrik&c=table&task=viewTable&cid[]=".$model->_table->id;
+				$url = 'index.php?option=com_fabrik&c=table&task=viewTable&cid[]=' . $model->_table->id;
 			}
 			$this->setRedirect($url, $msg);
 		}
@@ -202,7 +202,7 @@ class FabrikControllerForm extends JController
 		{
 			if (array_key_exists('apply', $model->_formData))
 			{
-				$url = "index.php?option=com_fabrik&c=form&view=form&formid=".JRequest::getInt('formid')."&rowid=".JRequest::getInt('rowid')."&listid=".JRequest::getInt('listid');
+				$url = 'index.php?option=com_fabrik&c=form&view=form&formid=' . JRequest::getInt('formid') . '&rowid=' . JRequest::getInt('rowid') . '&listid=' . JRequest::getInt('listid');
 			}
 			else
 			{
@@ -220,7 +220,7 @@ class FabrikControllerForm extends JController
 				$Itemid	= $app->getMenu('site')->getActive()->id;
 				if ($url == '')
 				{
-					$url = "index.php?option=com_fabrik&Itemid=$Itemid";
+					$url = 'index.php?option=com_fabrik&Itemid=' . $Itemid;
 				}
 			}
 			$config = JFactory::getConfig();

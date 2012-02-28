@@ -17,7 +17,7 @@ class FabrikViewList extends JView{
 	function display()
 	{
 		$document = JFactory::getDocument();
-		$model		=& $this->getModel();
+		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 
 		$model->setId(JRequest::getVar('listid', $usersConfig->get('listid')));
