@@ -209,7 +209,7 @@ class fabrikParams extends JParameter
 	function render($name = 'params', $group = '_default', $write = true, $repeatSingleVal = null)
 	{
 		$return = '';
-		$this->_group = $group;
+		$this->group = $group;
 		//$$$rob experimental again
 		//problem - when rendering plugin params - e.g. calendar vis - params like the table drop down
 		// are repeated n times. I think the best way to deal with this is to get the data recorded for

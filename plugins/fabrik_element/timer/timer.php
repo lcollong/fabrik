@@ -148,7 +148,7 @@ class plgFabrik_ElementTimer extends plgFabrik_Element {
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		//$$$rob not actaully likely to work due to the query easily exceeding mySQL's  TIMESTAMP_MAX_VALUE value but the query in itself is correct
 		return 'SELECT DATE_FORMAT(FROM_UNIXTIME(SUM(UNIX_TIMESTAMP($name))), "%H:%i:%s") AS value, ' . $label . ' AS label FROM ' . $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
@@ -166,7 +166,7 @@ class plgFabrik_ElementTimer extends plgFabrik_Element {
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		return 'SELECT DATE_FORMAT(FROM_UNIXTIME(AVG(UNIX_TIMESTAMP($name))), "%H:%i:%s") AS value, ' . $label . ' AS label FROM ' . $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
 	}
@@ -183,7 +183,7 @@ class plgFabrik_ElementTimer extends plgFabrik_Element {
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		return 'SELECT DATE_FORMAT(FROM_UNIXTIME((UNIX_TIMESTAMP($name))), "%H:%i:%s") AS value, ' . $label . ' AS label FROM ' . $db->quoteName($table->db_table_name) . ' ' . $joinSQL . ' ' . $whereSQL;
 	}

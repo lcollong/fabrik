@@ -16,13 +16,13 @@ jimport('joomla.filesystem.file');
 class plgFabrik_Element extends FabrikPlugin
 {
 	/** @var int element id */
-	var $_id = null;
+	protected $id = null;
 
 	/** @var array javascript actions to attach to element */
 	protected $jsActions = null;
 
 	/** @var array validation objects associated with the element */
-	var $_aValidations = null;
+	protected $validations = null;
 
 	/** @var bol */
 	public $editable = null;
@@ -34,16 +34,16 @@ class plgFabrik_Element extends FabrikPlugin
 	protected $recordInDatabase = true;
 
 	/** @var object to contain access rights **/
-	var $_access = null;
+	protected $access = null;
 
 	/**@var string validation error **/
-	var $_validationErr = null;
+	protected $validationError = null;
 
 	/** @var array stores possible element names to avoid repeat db queries **/
-	var $_aFullNames = array();
+	public $fullNames = array();
 
 	/** @var object group model*/
-	var $_group = null;
+	protected $group = null;
 
 	/** @var object form model*/
 	protected $form = null;
@@ -101,7 +101,7 @@ class plgFabrik_Element extends FabrikPlugin
 	public function setId($id)
 	{
 		// Set new element ID
-		$this->_id = $id;
+		$this->id = $id;
 	}
 
 	/**
@@ -117,7 +117,7 @@ class plgFabrik_Element extends FabrikPlugin
 		{
 			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 			$row = FabTable::getInstance('Element', 'FabrikTable');
-			$row->load($this->_id);
+			$row->load($this->id);
 			$this->_element = $row;
 		}
 		return $this->_element;
@@ -177,7 +177,7 @@ class plgFabrik_Element extends FabrikPlugin
 	function setContext($groupModel, $formModel, &$listModel)
 	{
 		//dont assign these with &= as they already are when passed into the func
-		$this->_group =& $groupModel;
+		$this->group =& $groupModel;
 		$this->form =& $formModel;
 		$this->_list =& $listModel;
 	}
@@ -205,7 +205,7 @@ class plgFabrik_Element extends FabrikPlugin
 	 * @return object group model
 	 */
 
-	function &getGroup($group_id = null)
+	public function &getGroup($group_id = null)
 	{
 
 		if (is_null($group_id))
@@ -213,14 +213,25 @@ class plgFabrik_Element extends FabrikPlugin
 			$element = $this->getElement();
 			$group_id = $element->group_id;
 		}
-		if (is_null($this->_group) || $this->_group->getId() != $group_id)
+		if (is_null($this->group) || $this->group->getId() != $group_id)
 		{
 			$model = JModel::getInstance('Group', 'FabrikFEModel');
 			$model->setId($group_id);
 			$model->getGroup();
-			$this->_group = $model;
+			$this->group = $model;
 		}
-		return $this->_group;
+		return $this->group;
+	}
+	
+	/**
+	* @since 3.0.5
+	* set the group model
+	* @param	object	group model
+	*/
+	
+	function setGroupModel($group)
+	{
+		$this->group = $group;
 	}
 
 	/**
@@ -460,13 +471,13 @@ class plgFabrik_Element extends FabrikPlugin
 
 	function canView()
 	{
-		if (!is_object($this->_access) || !array_key_exists('view', $this->_access))
+		if (!is_object($this->access) || !array_key_exists('view', $this->access))
 		{
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
-			$this->_access->view = in_array($this->getParams()->get('view_access'), $groups);
+			$this->access->view = in_array($this->getParams()->get('view_access'), $groups);
 		}
-		return $this->_access->view;
+		return $this->access->view;
 	}
 
 	/**
@@ -480,13 +491,13 @@ class plgFabrik_Element extends FabrikPlugin
 	public function canUse(&$model = null, $location = null, $event = null)
 	{
 		$element = $this->getElement();
-		if (!is_object($this->_access) || !array_key_exists('use', $this->_access))
+		if (!is_object($this->access) || !array_key_exists('use', $this->access))
 		{
 			$user = JFactory::getUser();
 			$groups = $user->getAuthorisedViewLevels();
-			$this->_access->use = in_array($this->getElement()->access, $groups);
+			$this->access->use = in_array($this->getElement()->access, $groups);
 		}
-		return $this->_access->use;
+		return $this->access->use;
 	}
 
 	/**
@@ -499,13 +510,13 @@ class plgFabrik_Element extends FabrikPlugin
 	{
 		$params = $this->getParams();
 		$element = $this->getElement();
-		if (!is_object($this->_access) || !array_key_exists('filter', $this->_access))
+		if (!is_object($this->access) || !array_key_exists('filter', $this->access))
 		{
 			$user = JFactory::getUser();
 			$groups = $user->authorisedLevels();
-			$this->_access->filter = in_array($this->getParams()->get('filter_access'), $groups);
+			$this->access->filter = in_array($this->getParams()->get('filter_access'), $groups);
 		}
-		return $this->_access->filter;
+		return $this->access->filter;
 	}
 
 	/* overwritten in add on classes */
@@ -524,7 +535,7 @@ class plgFabrik_Element extends FabrikPlugin
 
 	function getValidationErr()
 	{
-		return $this->_validationErr;
+		return $this->validationError;
 	}
 
 	/**
@@ -1055,10 +1066,10 @@ class plgFabrik_Element extends FabrikPlugin
 		$listModel = $this->getListModel();
 		$element = $this->getElement();
 
-		$key = $element->name . $groupModel->get('id') . "_" . $formModel->getId() . "_" . $includeJoinString . "_" . $useStep . "_" . $incRepeatGroup;
-		if (isset($this->_aFullNames[$key]))
+		$key = $element->name . $groupModel->get('id') . '_' . $formModel->getId() . '_' . $includeJoinString . '_' . $useStep . '_' . $incRepeatGroup;
+		if (isset($this->fullNames[$key]))
 		{
-			return $this->_aFullNames[$key];
+			return $this->fullNames[$key];
 		}
 		$table = $listModel->getTable();
 		$db_table_name = $table->db_table_name;
@@ -1100,7 +1111,7 @@ class plgFabrik_Element extends FabrikPlugin
 		{
 			$fullName .= "[]";
 		}
-		$this->_aFullNames[$key] = $fullName;
+		$this->fullNames[$key] = $fullName;
 		return $fullName;
 	}
 
@@ -1694,11 +1705,11 @@ class plgFabrik_Element extends FabrikPlugin
 			//change the id for detailed view elements
 			if ($this->_inDetailedView)
 			{
-				$fullName .= "_ro";
+				$fullName .= '_ro';
 			}
 			if ($groupModel->canRepeat())
 			{
-				$fullName .= "_" . $repeatCounter;
+				$fullName .= '_' . $repeatCounter;
 			}
 			$this->_HTMLids[$repeatCounter] = $fullName;
 		}
@@ -1794,9 +1805,9 @@ class plgFabrik_Element extends FabrikPlugin
 
 	public function getValidations()
 	{
-		if (isset($this->_aValidations))
+		if (isset($this->validations))
 		{
-			return $this->_aValidations;
+			return $this->validations;
 		}
 		$element = $this->getElement();
 		$params = $this->getParams();
@@ -1805,7 +1816,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$pluginManager = FabrikWorker::getPluginManager();
 		$pluginManager->getPlugInGroup('validationrule');
 		$c = 0;
-		$this->_aValidations = array();
+		$this->validations = array();
 
 		$dispatcher = JDispatcher::getInstance();
 		$ok = JPluginHelper::importPlugin('fabrik_validationrule');
@@ -1820,11 +1831,11 @@ class plgFabrik_Element extends FabrikPlugin
 				$plugIn = new $class($dispatcher, $conf);
 				$oPlugin = JPluginHelper::getPlugin('fabrik_validationrule', $usedPlugin);
 				$plugIn->elementModel = $this;
-				$this->_aValidations[] = $plugIn;
+				$this->validations[] = $plugIn;
 				$c ++;
 			}
 		}
-		return $this->_aValidations;
+		return $this->validations;
 	}
 
 	/**
@@ -1837,7 +1848,7 @@ class plgFabrik_Element extends FabrikPlugin
 		if (!isset($this->jsActions))
 		{
 			$query = $this->_db->getQuery(true);
-			$query->select('*')->from('#__{package}_jsactions')->where('element_id = '. (int)$this->_id);
+			$query->select('*')->from('#__{package}_jsactions')->where('element_id = '. (int)$this->id);
 			$this->_db->setQuery($query);
 			$this->jsActions = $this->_db->loadObjectList();
 		}
@@ -2866,7 +2877,7 @@ class plgFabrik_Element extends FabrikPlugin
 	{
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		$groupModel = $this->getGroup();
 		$roundTo = (int)$this->getParams()->get('avg_round');
@@ -2888,7 +2899,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	{
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		$groupModel = $this->getGroup();
 		if ($groupModel->isJoin())
@@ -2910,7 +2921,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$custom_query = $params->get('custom_calc_query', '');
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		$groupModel = $this->getGroup();
 		if ($groupModel->isJoin())
@@ -2934,7 +2945,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	{
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		return "SELECT {$this->getFullName(false, false, false)} AS value, $label AS label FROM ".FabrikString::safeColName($item->db_table_name)." $joinSQL $whereSQL ";
 	}
 
@@ -2943,7 +2954,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$db = FabrikWorker::getDbo();
 		$item = $listModel->getTable();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		// $$$ hugh - need to account for 'count value' here!
 		$params = $this->getParams();
@@ -3101,7 +3112,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$item = $listModel->getTable();
 		$element = $this->getElement();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$params = $this->getParams();
 		$splitMedian = $params->get('median_split', '');
 		$split = $splitMedian == '' ? false : true;
@@ -3803,7 +3814,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$element = $this->getElement();
 		$table = $listModel->getTable();
 		$elFullName = $this->getFullName(true, false, false);
-		if ($listModel->_outPutFormat == 'rss')
+		if ($listModel->getOutPutFormat() == 'rss')
 		{
 			$bAddElement = ($params->get('show_in_rss_feed') == '1');
 			/* if its the date ordering col we should add it to the list of allowed elements */
@@ -4178,7 +4189,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	public function onAutocomplete_options()
 	{
 		//needed for ajax update (since we are calling this method via dispatcher element is not set
-		$this->_id = JRequest::getInt('element_id');
+		$this->id = JRequest::getInt('element_id');
 		$this->getElement(true);
 		$listModel = $this->getListModel();
 		$db = $listModel->getDb();
@@ -4186,7 +4197,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		// $$$ rob - previous method to make query did not take into account prefilters on main table
 		$tableName = $listModel->getTable()->db_table_name;
 		$this->encryptFieldName($name);
-		$where = trim($listModel->_buildQueryWhere(false));
+		$where = trim($listModel->buildQueryWhere(false));
 		$where .= ($where == '') ? ' WHERE ' : ' AND ';
 		$join = $listModel->buildQueryJoin();
 		$where .= "$name LIKE " . $db->Quote(addslashes('%'.JRequest::getVar('value').'%'));
@@ -4249,9 +4260,9 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$where = '';
 		if ($params->get('append_table_where', false))
 		{
-			if (method_exists($this, '_buildQueryWhere'))
+			if (method_exists($this, 'buildQueryWhere'))
 			{
-				$where = trim($this->_buildQueryWhere(array()));
+				$where = trim($this->buildQueryWhere(array()));
 				if ($where != '')
 				{
 					$where = substr($where, 5, strlen($where) - 5);
@@ -4360,7 +4371,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	{
 		if (empty($id))
 		{
-			$id = $this->_id;
+			$id = $this->id;
 		}
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);

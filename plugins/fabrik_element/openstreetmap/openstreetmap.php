@@ -269,13 +269,13 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 		require_once(COM_FABRIK_FRONTEND . '/libs/mobileuseragent/mobileuseragent.php');
 		require_once(COM_FABRIK_FRONTEND . '/helpers/string.php');
 		$ua = new MobileUserAgent();
-		$id		= $this->getHTMLId($repeatCounter);
+		$id = $this->getHTMLId($repeatCounter);
 		$name = $this->getHTMLName($repeatCounter);
-		$groupModel = $this->_group;
+		$groupModel = $this->getGroup();
 		$element = $this->getElement();
 		$val = $element->default;
 
-		$params 	=& $this->getParams();
+		$params = $this->getParams();
 		$w = $params->get('fb_osm_mapwidth');
 		$h = $params->get('fb_osm_mapheight');
 		if ($this->_useStaticMap())
@@ -369,7 +369,7 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 		if (!array_key_exists($repeatCounter, $this->defaults))
 		{
 			$name = $this->getHTMLName($repeatCounter);
-			$groupModel = $this->_group;
+			$groupModel = $this->getGroup();
 			$formModel = $this->getFormModel();
 			$element = $this->getElement();
 			$listModel = $this->getlistModel();

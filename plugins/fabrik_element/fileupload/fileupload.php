@@ -51,7 +51,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		}
 		$fullName = $this->getFullName(true, true, false);
 		$params = $this->getParams();
-		$groupModel = $this->_group;
+		$groupModel = $this->getGroup();
 		$return = false;
 		if ($groupModel->canRepeat())
 		{
@@ -590,9 +590,9 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 	function validate($data, $repeatCounter = 0)
 	{
 		$params = $this->getParams();
-		$groupModel = $this->_group;
+		$groupModel = $this->getGroup();
 		$group = $groupModel->getGroup();
-		$this->_validationErr = '';
+		$this->validationError = '';
 		$errors = array();
 		$elName = $this->getFullName();
 		$elName = str_replace('[]', '', $elName); //remove any repeat group labels
@@ -666,7 +666,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 				$ok = false;
 			}
 		}
-		$this->_validationErr = implode('<br />', $errors);
+		$this->validationError = implode('<br />', $errors);
 		return $ok;
 	}
 

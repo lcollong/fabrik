@@ -69,8 +69,8 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 		$db = $listModel->getDb();
 
 		$join = $listModel->buildQueryJoin();
-		$where = $listModel->_buildQueryWhere();
-		$order = $listModel->_buildQueryOrder();
+		$where = $listModel->buildQueryWhere();
+		$order = $listModel->buildQueryOrder();
 
 		// @ rob as we are selecting on primary key we can select all rows - 3000 records load in 0.014 seconds
 		$query = "SELECT $table->db_primary_key FROM $table->db_table_name $join $where $order";

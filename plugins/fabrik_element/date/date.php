@@ -996,7 +996,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 				}
 			}
 		}
-		$where = $listModel->_buildQueryPrefilterWhere($this);
+		$where = $listModel->buildQueryPrefilterWhere($this);
 		$elName = FabrikString::safeColName($elName);
 
 		//dont format here as the format string is different between mysql and php's calendar strftime
@@ -1357,7 +1357,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		return "SELECT FROM_UNIXTIME(AVG(UNIX_TIMESTAMP($name))) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
 	}
@@ -1374,7 +1374,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 		$joinSQL = $listModel->buildQueryJoin();
-		$whereSQL = $listModel->_buildQueryWhere();
+		$whereSQL = $listModel->buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		//$$$rob not actaully likely to work due to the query easily exceeding mySQL's TIMESTAMP_MAX_VALUE value but the query in itself is correct
 		return "SELECT FROM_UNIXTIME(SUM(UNIX_TIMESTAMP($name))) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";

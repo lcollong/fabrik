@@ -254,7 +254,7 @@ class plgFabrik_ElementVideo extends plgFabrik_Element {
 			$myFileDir = $aData[$elName]['ul_end_dir'];
 			$files[] = $this->_processIndUpload($oUploader , $myFileName, $tmpFile, '' , $myFileDir, $aFile);
 		}
-		$group = $this->_group->getGroup();
+		$group = $this->getGroup()->getGroup();
 		if (!$group->is_join)
 		{
 			$aData[$elName] = implode("|", $files);

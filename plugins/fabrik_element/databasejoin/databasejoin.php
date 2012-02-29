@@ -311,7 +311,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			}
 		}
 
-		$sql = $this->_buildQuery($data, $incWhere);
+		$sql = $this->buildQuery($data, $incWhere);
 		if (!$sql)
 		{
 			$this->_optionVals = array();
@@ -449,7 +449,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	 * @return string or false if query can't be built
 	 */
 
-	function _buildQuery($data = array(), $incWhere = true)
+	function buildQuery($data = array(), $incWhere = true)
 	{
 		$db = FabrikWorker::getDbo();
 		if (isset($this->_sql[$incWhere]))
@@ -460,7 +460,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$element = $this->getElement();
 		$formModel = $this->getForm();
 
-		$where = $this->_buildQueryWhere($data, $incWhere);
+		$where = $this->buildQueryWhere($data, $incWhere);
 		//$$$rob not sure these should be used anyway?
 		$table = $params->get('join_db_name');
 		$key = $this->getJoinValueColumn();
@@ -501,7 +501,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	 * @since 3.0rc1
-	 * if _buildQuery needs additional fields then set them here, used in notes plugin
+	 * if buildQuery needs additional fields then set them here, used in notes plugin
 	 * @return string fields to add e.g return ',name, username AS other'
 	 */
 
@@ -512,7 +512,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	* @since 3.0rc1
-	* if _buildQuery needs additional joins then set them here, used in notes plugin
+	* if buildQuery needs additional joins then set them here, used in notes plugin
 	* @return string join statement to add
 	*/
 
@@ -521,7 +521,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		return '';
 	}
 
-	function _buildQueryWhere($data = array(), $incWhere = true)
+	function buildQueryWhere($data = array(), $incWhere = true)
 	{
 		$where = '';
 		$listModel = $this->getlistModel();
@@ -538,7 +538,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		}
 		$join = $this->getJoin();
 
-		// $$$rob 11/10/2011  remove order by statements which will be re-inserted at the end of _buildQuery()
+		// $$$rob 11/10/2011  remove order by statements which will be re-inserted at the end of buildQuery()
 		if (preg_match('/(ORDER\s+BY)(.*)/i', $where, $matches))
 		{
 			//$this->orderBy = $matches[0];
@@ -547,7 +547,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		}
 		if (!empty($this->_autocomplete_where))
 		{
-			$where .= stristr($where, 'WHERE') ? " AND ".$this->_autocomplete_where : ' WHERE '.$this->_autocomplete_where;
+			$where .= stristr($where, 'WHERE') ? ' AND ' . $this->_autocomplete_where : ' WHERE ' . $this->_autocomplete_where;
 		}
 		if ($where == '')
 		{
@@ -1019,7 +1019,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
-		$groupModel = $this->_group;
+		$groupModel = $this->getGroup();
 		$labeldata = array();
 		if (!$groupModel->isJoin() && $groupModel->canRepeat())
 		{
@@ -1208,11 +1208,11 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			$joinTable = $joinTableName;
 		}
 		// $$$ hugh - select all values for performance gain over selecting distinct records from recorded data
-		$sql 	= "SELECT DISTINCT( $joinVal ) AS text, $joinKey AS value \n FROM ".$fabrikDb->quoteName($joinTable)." AS ".$fabrikDb->quoteName($joinTableName)." \n ";
-		$where = $this->_buildQueryWhere();
+		$sql 	= "SELECT DISTINCT( $joinVal ) AS text, $joinKey AS value \n FROM " . $fabrikDb->quoteName($joinTable) . " AS ".$fabrikDb->quoteName($joinTableName)." \n ";
+		$where = $this->buildQueryWhere();
 
 		//ensure table prefilter is applied to query
-		$prefilterWhere = $listModel->_buildQueryPrefilterWhere($this);
+		$prefilterWhere = $listModel->buildQueryPrefilterWhere($this);
 		$elementName = FabrikString::safeColName($this->getFullName(false, false, false));
 		$prefilterWhere = str_replace($elementName, $joinKey, $prefilterWhere);
 		if (trim($where) == '')

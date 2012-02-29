@@ -61,7 +61,7 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 						if ($key == 'group_by')
 						{
 							$query = $db->getQuery(true);
-							$query = $model->_buildQueryWhere(false, $query);
+							$query = $model->buildQueryWhere(false, $query);
 							$element = $model->getFormModel()->getElement($val);
 							if (!$element)
 							{

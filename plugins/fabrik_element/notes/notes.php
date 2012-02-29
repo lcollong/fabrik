@@ -123,7 +123,7 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		return $this->components[$c];
 	}
 	
-	function _buildQueryWhere($data = array(), $incWhere = true)
+	function buildQueryWhere($data = array(), $incWhere = true)
 	{
 		$params = $this->getParams();
 		$db = $this->getDb();
@@ -166,7 +166,7 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 	
 	/**
 	* @since 3.0rc1
-	* if _buildQuery needs additional fields then set them here, used in notes plugin
+	* if buildQuery needs additional fields then set them here, used in notes plugin
 	* @return string fields to add e.g return ',name, username AS other'
 	*/
 	
@@ -189,7 +189,7 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 	
 	/**
 	* @since 3.0rc1
-	* if _buildQuery needs additional joins then set them here, used in notes plugin
+	* if buildQuery needs additional joins then set them here, used in notes plugin
 	* @return string join statement to add
 	*/
 	

@@ -21,7 +21,7 @@ class FabrikFEModelJoin extends FabModel{
 	protected $join = null;
 
 	/** @var int id of join to load */
-	var $_id = null;
+	protected $id = null;
 
 	/** @var array join data to bind to Join table */
 	var $_data = null;
@@ -33,12 +33,12 @@ class FabrikFEModelJoin extends FabModel{
 
 	function setId($id)
 	{
-		$this->_id = $id;
+		$this->id = $id;
 	}
 	
 	function getId()
 	{
-		return $this->_id;
+		return $this->id;
 	}
 
 	function setData($d)
@@ -58,7 +58,8 @@ class FabrikFEModelJoin extends FabModel{
 			else {
 				$this->join->load($this->_id);
 			}
-			if (is_string($this->join->params)) {
+			if (is_string($this->join->params))
+			{
 				$this->join->params = trim($this->join->params) == '' ? '{"type": ""}' : $this->join->params;
 				$this->join->params = json_decode($this->join->params);
 			}

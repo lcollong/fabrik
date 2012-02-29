@@ -170,7 +170,7 @@ class FabrikModelElement extends JModelAdmin
 				$group = $groupModel->getGroup();
 				$o = new stdClass();
 				$o->label = $group->name;
-				$o->value = "fabrik_trigger_group_group".$group->id;
+				$o->value = 'fabrik_trigger_group_group' . $group->id;
 				$aGroups[] = $o;
 				$elementModels =& $groupModel->getMyElements();
 				foreach ($elementModels as $elementModel)
@@ -723,8 +723,9 @@ class FabrikModelElement extends JModelAdmin
 		if ($return)
 		{
 			$this->updateJavascript($data);
-			$elementModel->_id = $this->getState($this->getName().'.id');
-			$row->id = $elementModel->_id;
+			$id = $this->getState($this->getName() . '.id');
+			$elementModel->setId($id);
+			$row->id = $id;
 			$this->createRepeatElement($elementModel, $row);
 			// If new, check if the element's db table is used by other tables and if so add the element
 			// to each of those tables' groups

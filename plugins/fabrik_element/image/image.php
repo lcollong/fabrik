@@ -59,7 +59,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 		}
 		if (!array_key_exists($repeatCounter, $this->defaults))
 		{
-			$groupModel = $this->_group;
+			$groupModel = $this->getGroup();
 			$group = $groupModel->getGroup();
 			$joinid	= $group->join_id;
 			$formModel = $this->getForm();
@@ -334,7 +334,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 				$images[] = JHTML::_('select.option', $n, $n);
 			}
 			// $$$rob not sure about his name since we are adding $repeatCounter to getHTMLName();
-			$imageName = $this->_group->canRepeat() ? FabrikString::rtrimWord($name, "][$repeatCounter]") . "_image][$repeatCounter]" : $id . '_image';
+			$imageName = $this->getGroup()->canRepeat() ? FabrikString::rtrimWord($name, "][$repeatCounter]") . "_image][$repeatCounter]" : $id . '_image';
 			$image = array_pop( explode('/', $value));
 			// $$$ hugh - append $rootFolder to JPATH_SITE, otherwise we're showing folders
 			// they aren't supposed to be able to see.

@@ -84,7 +84,7 @@ class plgSystemFabrikcron extends JPlugin
 
 			$query = "SELECT id, plugin, lastrun, unit, frequency, $nextrun AS nextrun FROM #__{package}_cron\n";
 			$query .= "WHERE published = '1' ";
-			$query .= "AND $nextrun < '". JFactory::getDate()->toMySQL() ."'";
+			$query .= "AND $nextrun < '". JFactory::getDate()->toSql() ."'";
 		}
 		else
 		{
@@ -122,14 +122,12 @@ class plgSystemFabrikcron extends JPlugin
 			$log->id = null;
 			$log->referring_url = '';
 			//load in the plugin
-			//$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
-			//$plugin->setId($row->id);
 			$plugin = $pluginManager->getPluginFromId($row->id, 'Cron');
-			$log->message_type = 'plg.cron.'.$row->plugin;
+			$log->message_type = 'plg.cron.' . $row->plugin;
 			if (!$plugin->queryStringActivated())
 			{
 				// $$$ hugh - don't forget to make it runnable again before continuing
-				$db->setQuery('UPDATE #__{package}_cron SET published="1" WHERE id = '.$row->id);
+				$db->setQuery('UPDATE #__{package}_cron SET published="1" WHERE id = ' . $row->id);
 				$db->query();
 				continue;
 			}
@@ -145,7 +143,7 @@ class plgSystemFabrikcron extends JPlugin
 					$total = $thisListModel->getTotalRecords();
 					$nav = $thisListModel->getPagination($total, 0, $total);
 					$data = $thisListModel->getData();
-					$log->message .= "\n" . $thisListModel->_buildQuery();
+					$log->message .= "\n" . $thisListModel->buildQuery();
 				}
 			}
 			else

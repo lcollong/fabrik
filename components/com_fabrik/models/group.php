@@ -17,10 +17,10 @@ class FabrikFEModelGroup extends FabModel{
 	protected $params = null;
 
 	/** @var int id of group to load */
-	var $_id = null;
+	protected $id = null;
 
 	/** @var object group table */
-	var $_group = null;
+	protected $group = null;
 
 	/** @var object form model */
 	protected $form = null;
@@ -68,7 +68,6 @@ class FabrikFEModelGroup extends FabModel{
 	function setId($id)
 	{
 		// Set new group ID
-		$this->_id = $id;
 		$this->id = $id;
 	}
 
@@ -79,13 +78,24 @@ class FabrikFEModelGroup extends FabModel{
 
 	function &getGroup()
 	{
-		if (is_null($this->_group))
+		if (is_null($this->group))
 		{
 			JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->_group = FabTable::getInstance('Group', 'FabrikTable');
-			$this->_group->load($this->getId());
+			$this->group = FabTable::getInstance('Group', 'FabrikTable');
+			$this->group->load($this->getId());
 		}
-		return $this->_group;
+		return $this->group;
+	}
+	
+	/**
+	 * @since 3.0.5
+	 * set the group row
+	 * @param	object	$group
+	 */
+	
+	function setGroup($group)
+	{
+		$this->group = $group;
 	}
 
 	/**
@@ -362,7 +372,7 @@ class FabrikFEModelGroup extends FabModel{
 
 	function loadParams()
 	{
-		$this->params = new fabrikParams($this->_group->params);
+		$this->params = new fabrikParams($this->group->params);
 		return $this->params;
 	}
 

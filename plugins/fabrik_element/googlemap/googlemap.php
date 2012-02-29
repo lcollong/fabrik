@@ -426,7 +426,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 		$ua = new MobileUserAgent();
 		$id = $this->getHTMLId($repeatCounter);
 		$name = $this->getHTMLName($repeatCounter);
-		$groupModel = $this->_group;
+		$groupModel = $this->getGroup();
 		$element = $this->getElement();
 		$val = $this->getValue($data, $repeatCounter);
 

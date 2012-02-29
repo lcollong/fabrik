@@ -182,13 +182,16 @@ class JElement extends JObject
 	 */
 	function getRepeat()
 	{
-		if (isset($this->_parent->_group)) {
+		if (isset($this->_parent->group))
+		{
 			//funky custom fabrik params (components/com_fabrik/helpers/params)
 			//  have had their _group option set
 			// in render() method
-			$group = $this->_parent->_group;
-		} else {
-			$group = $this->_parent->get('_group', '_default');
+			$group = $this->_parent->group;
+		}
+		else
+		{
+			$group = $this->_parent->get('group', '_default');
 		}
 		return $this->_parent->_xml[$group]->attributes('repeat');
 	}

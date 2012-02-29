@@ -234,12 +234,12 @@ class FabrikFEModelExport {
 							}
 						}
 						$strElementXML .= "\t</element>\n\n";
-
-						foreach ($elementModel->_aValidations as $oValidation)
+						$validations = $elementModel->getValidations();
+						foreach ($validations as $validation)
 						{
-							$vars = get_object_vars($oValidation);
+							$vars = get_object_vars($validation);
 							$strValidationXML .= "\t<validation>\n";
-							foreach ($vars as $key=>$val)
+							foreach ($vars as $key => $val)
 							{
 								if (substr($key, 0, 1) != '_')
 								{
@@ -364,7 +364,7 @@ class FabrikFEModelExport {
 		$listModel = JModel::getInstance('List', 'FabrikFEModel');
 		$id = $this->tableIds[0];
 		$listModel->setId($id);
-		$listModel->_outPutFormat = 'csv';
+		$listModel->setOutPutFormat('csv');
 		$table = $listModel->getTable();
 		header('Content-Type: text/plain');
 		header('Content-Disposition: attachment; filename="' . $table->label . '-export.csv"');

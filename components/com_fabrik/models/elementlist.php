@@ -278,7 +278,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	function onAutocomplete_options()
 	{
 		//needed for ajax update (since we are calling this method via dispatcher element is not set
-		$this->_id = JRequest::getInt('element_id');
+		$this->setId(JRequest::getInt('element_id'));
 		$this->getElement(true);
 		$listModel = $this->getListModel();
 		$rows = $this->filterValueList(true);
@@ -457,7 +457,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 		if (!array_key_exists($valueKey, $this->defaults))
 		{
 			$value = '';
-			$groupModel = $this->_group;
+			$groupModel = $this->group;
 			$group = $groupModel->getGroup();
 			$joinid = $this->isJoin() ? $this->getJoinModel()->getJoin()->id : $group->join_id;
 			$formModel = $this->getForm();

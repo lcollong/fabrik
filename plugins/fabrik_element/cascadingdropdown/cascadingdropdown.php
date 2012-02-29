@@ -361,7 +361,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 			return $this->_optionVals[$repeatCounter];
 		}
 		$db = $this->getDb();
-		$sql = $this->_buildQuery($data, $repeatCounter);
+		$sql = $this->buildQuery($data, $repeatCounter);
 		$db->setQuery($sql);
 		if (JDEBUG && JRequest::getVar('format') == 'raw')
 		{
@@ -432,7 +432,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 	 * @return	string
 	 */
 
-	function _buildQuery($data = array(), $repeatCounter = 0)
+	function buildQuery($data = array(), $repeatCounter = 0)
 	{
 		$db = FabrikWorker::getDbo();
 		if (!isset($this->_sql))

@@ -17,7 +17,7 @@ class FabrikFEModelPluginmanager extends JModel{
 	/** @var array plugins */
 	var $_plugIns = array();
 	var $_loading = null;
-	var $_group = null;
+	protected $group = null;
 	var $_runPlugins = 0;
 
 	var $_paths = array();
@@ -27,6 +27,8 @@ class FabrikFEModelPluginmanager extends JModel{
 
 	/** @var array containing out put from run plugins */
 	public $data = array();
+	
+	protected $formPlugins = array();
 
 	/**
 	 * constructor
@@ -94,12 +96,12 @@ class FabrikFEModelPluginmanager extends JModel{
 	protected function _getList($query, $limitstart = 0, $limit = 0)
 	{
 		$db = FabrikWorker::getDbo(true);
-		if (is_null($this->_group))
+		if (is_null($this->group))
 		{
-			$this->_group = 'element';
+			$this->group = 'element';
 		}
 		$query = $db->getQuery(true);
-		$folder = $db->Quote('fabrik_'.$this->_group);
+		$folder = $db->Quote('fabrik_' . $this->group);
 		$query->select('element AS value, name AS text')->from('#__extensions')->where('folder =' . $folder);
 		$db->setQuery($query);
 		$elementstypes = $db->loadObjectList();
@@ -261,18 +263,18 @@ class FabrikFEModelPluginmanager extends JModel{
 	 * @return array of group objects with plugin objects loaded in group->elements
 	 */
 
-	function getFormPlugins(&$form)
+	public function getFormPlugins(&$form)
 	{
 		$profiler = JProfiler::getInstance('Application');
-		if (!isset($this->formplugins))
+		if (!isset($this->formPlugins))
 		{
-			$this->formplugins = array();
+			$this->formPlugins = array();
 		}
 		$sig = $form->get('id');
 		JDEBUG ? $profiler->mark('pluginmanager:getFormPlugins:start - '.$sig) : null;
-		if (!array_key_exists($sig, $this->formplugins))
+		if (!array_key_exists($sig, $this->formPlugins))
 		{
-			$this->formplugins[$sig] = array();
+			$this->formPlugins[$sig] = array();
 			$lang = JFactory::getLanguage();
 			$folder = 'fabrik_element';
 			$client	= JApplicationHelper::getClientInfo(0);
@@ -313,7 +315,6 @@ class FabrikFEModelPluginmanager extends JModel{
 				{
 					continue;
 				}
-
 				$pluginModel->_xmlPath = COM_FABRIK_FRONTEND . '/plugins/' . $group . '/' . $element->plugin . '/' . $element->plugin . '.xml';
 
 				$pluginModel->setId($element->id);
@@ -324,15 +325,15 @@ class FabrikFEModelPluginmanager extends JModel{
 
 				$pluginModel->setContext($groupModel, $form, $form->_table);
 				$pluginModel->bindToElement($element);
-				$groupModel->elements[$pluginModel->_id] = $pluginModel;
+				$groupModel->elements[$pluginModel->get('id')] = $pluginModel;
 
 			}
 			foreach ($groupModels as $groupid => $g)
 			{
-				$this->formplugins[$sig][$groupid] = $g;
+				$this->formPlugins[$sig][$groupid] = $g;
 			}
 		}
-		return $this->formplugins[$sig];
+		return $this->formPlugins[$sig];
 	}
 
 	function getElementPlugin($id)

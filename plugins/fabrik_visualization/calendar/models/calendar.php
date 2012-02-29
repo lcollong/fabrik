@@ -345,7 +345,7 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 				//$pk = $table->db_table_name.'.'.$pk['colname'];
 				//above wont work in a view
 				$pk = $listModel->getTable()->db_primary_key;
-				$where = $listModel->_buildQueryWhere();
+				$where = $listModel->buildQueryWhere();
 				$join = $listModel->buildQueryJoin();
 				$sql = "SELECT $pk AS id, $startdate AS startdate, $enddate AS enddate, '' AS link, $label AS 'label', '{$data['colour']}' AS colour, 0 AS formid FROM $table->db_table_name $join $where ORDER BY $startdate ASC";
 

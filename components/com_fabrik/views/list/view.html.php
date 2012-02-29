@@ -76,14 +76,14 @@ class FabrikViewList extends JView{
 
 		$opts->labels = $labels;
 		$opts->primaryKey = $item->db_primary_key;
-		$opts->Itemid 		= $tmpItemid;
+		$opts->Itemid = $tmpItemid;
 		$opts->listRef = $listref;
-		$opts->formid 		= $model->getFormModel()->getId();
-		$opts->canEdit 		= $model->canEdit() ? "1" : "0";
-		$opts->canView 		= $model->canView() ? "1" : "0";
-		$opts->page 			= JRoute::_('index.php');
+		$opts->formid = $model->getFormModel()->getId();
+		$opts->canEdit = $model->canEdit() ? "1" : "0";
+		$opts->canView = $model->canView() ? "1" : "0";
+		$opts->page = JRoute::_('index.php');
 		$opts->isGrouped = $this->isGrouped;
-		$opts->formels		= $elementsNotInTable;
+		$opts->formels = $elementsNotInTable;
 		$opts->actionMethod = $params->get('actionMethod');
 		$opts->floatPos = $params->get('floatPos');
 		$opts->csvChoose = (bool)$params->get('csv_frontend_selection');
@@ -201,7 +201,6 @@ class FabrikViewList extends JView{
 		$script[] = $model->filterJs;
 		$script[] = "});";
 		$script = implode("\n", $script);
-
 		FabrikHelperHTML::addScriptDeclaration($script);
 		$this->getElementJs();
 		//reset data back to original settings

@@ -15,16 +15,16 @@ jimport('joomla.application.component.model');
 class FabrikFEModelConnection extends JModel {
 
 	/** @var object table **/
-	protected $_connection = null;
+	protected $connection = null;
 
 	/** @var object default connection table **/
-	protected $_defaultConnection = null;
+	protected $defaultConnection = null;
 
 	/** @var array containing db connections */
-	protected $_dbs = array();
+	protected static $dbs = array();
 
 	/** @var int connection id */
-	protected $_id = null;
+	protected $id = null;
 
 	/**
 	 * Constructor
@@ -45,7 +45,7 @@ class FabrikFEModelConnection extends JModel {
 	function setId($id)
 	{
 		// Set new element ID
-		$this->_id = $id;
+		$this->id = $id;
 	}
 
 	/**
@@ -113,10 +113,10 @@ class FabrikFEModelConnection extends JModel {
 		{
 			$this->setId($id);
 		}
-		if (!is_object($this->_connection))
+		if (!is_object($this->connection))
 		{
 			$session = JFactory::getSession();
-			$key = 'fabrik.connection.' . $this->_id;
+			$key = 'fabrik.connection.' . $this->id;
 			if ($session->has($key))
 			{
 				$connProperties = unserialize($session->get($key));
@@ -127,25 +127,25 @@ class FabrikFEModelConnection extends JModel {
 				}
 				else
 				{
-					$this->_connection = FabTable::getInstance('connection', 'FabrikTable');
-					$this->_connection->bind($connProperties);
-					return $this->_connection;
+					$this->connection = FabTable::getInstance('connection', 'FabrikTable');
+					$this->connection->bind($connProperties);
+					return $this->connection;
 				}
 
 			}
-			if ($this->_id == -1 || $this->_id == '')
+			if ($this->id == -1 || $this->id == '')
 			{
-				$this->_connection = $this->loadDefaultConnection();
+				$this->connection = $this->loadDefaultConnection();
 			}
 			else
 			{
-				$this->_connection = FabTable::getInstance('Connection', 'FabrikTable');
-				$this->_connection->load($this->_id);
+				$this->connection = FabTable::getInstance('Connection', 'FabrikTable');
+				$this->connection->load($this->id);
 			}
 			// $$$ rob store the connection for later use as it may be required by modules/plugins
-			$session->set($key, serialize($this->_connection->getProperties()));
+			$session->set($key, serialize($this->connection->getProperties()));
 		}
-		return $this->_connection;
+		return $this->connection;
 	}
 
 	/**
@@ -155,22 +155,21 @@ class FabrikFEModelConnection extends JModel {
 
 	function &getDb()
 	{
-		static $dbs;
-		if (!isset($dbs))
+		if (!isset(self::$dbs))
 		{
-			$dbs = array();
+			self::$dbs = array();
 		}
 		$cn = $this->getConnection();
 		$session = JFactory::getSession();
 		if (JRequest::getCmd('task') == 'test')
 		{
 			$session->clear('fabrik.connection.'.$cn->id);
-			$dbs = array();
-			$this->_connection = null;
+			self::$dbs = array();
+			$this->connection = null;
 			$cn = $this->getConnection();
 		}
 
-		if (!array_key_exists($cn->id, $dbs))
+		if (!array_key_exists($cn->id, self::$dbs))
 		{
 			//$$$rob lets see if we have an exact config match with J db if so just return that
 			$conf = JFactory::getConfig();
@@ -187,20 +186,20 @@ class FabrikFEModelConnection extends JModel {
 
 			if ($this->compareConnectionOpts($deafult_options, $options))
 			{
-				$dbs[$cn->id] = FabrikWorker::getDbo();
+				self::$dbs[$cn->id] = FabrikWorker::getDbo();
 			}
 			else
 			{
-				$dbs[$cn->id] = JDatabase::getInstance($options);
+				self::$dbs[$cn->id] = JDatabase::getInstance($options);
 			}
-			if (JError::isError($dbs[$cn->id]) || is_a($dbs[$cn->id], 'JException') || $dbs[$cn->id]->getErrorNum() !== 0)
+			if (JError::isError(self::$dbs[$cn->id]) || is_a(self::$dbs[$cn->id], 'JException') || self::$dbs[$cn->id]->getErrorNum() !== 0)
 			{
 				//$$$Rob - not sure why this is happening on badmintonrochelais.com (mySQL 4.0.24) but it seems like
 				//you can only use one connection on the site? As JDatabase::getInstance() forces a new connection if its options
 				//signature is not found, then fabrik's default connection won't be created, hence defaulting to that one
 				if ($cn->default == 1)
 				{
-					$dbs[$cn->id] = FabrikWorker::getDbo();
+					self::$dbs[$cn->id] = FabrikWorker::getDbo();
 
 					// $$$rob remove the error from the error stack
 					// if we dont do this the form is not rendered
@@ -221,7 +220,7 @@ class FabrikFEModelConnection extends JModel {
 						if (JRequest::getCmd('task') == 'test')
 						{
 							$session->clear('fabrik.connection.'.$cn->id);
-							$this->_connection = null;
+							$this->connection = null;
 						}
 						JError::raiseError(E_ERROR, 'Could not connection to database cid = ' . $cn->id);
 						exit;
@@ -229,7 +228,7 @@ class FabrikFEModelConnection extends JModel {
 				}
 			}
 		}
-		return $dbs[$cn->id];
+		return self::$dbs[$cn->id];
 	}
 
 	/**
@@ -376,8 +375,8 @@ class FabrikFEModelConnection extends JModel {
 			$connectionTables[$cn->value] = array();
 			if ($cn->host and $cn->published == '1')
 			{
-				$this->_connection = null;
-				$this->_id = $cn->id;
+				$this->connection = null;
+				$this->id = $cn->id;
 				$fabrikDb = $this->getDb();
 				if (JError::isError($fabrikDb))
 				{
@@ -449,16 +448,16 @@ class FabrikFEModelConnection extends JModel {
 
 	function &loadDefaultConnection()
 	{
-		if (!$this->_defaultConnection)
+		if (!$this->defaultConnection)
 		{
 			// $$$ rob connections are pooled for all packages - each package should use
 			// jos_fabrik_connections and not jos_{package}_connections
 			$row = FabTable::getInstance('Connection', 'FabrikTable');
 			$row->load(array('default'=> 1));
-			$this->_defaultConnection = $row;
+			$this->defaultConnection = $row;
 		}
-		$this->_connection = $this->_defaultConnection;
-		return $this->_defaultConnection;
+		$this->connection = $this->defaultConnection;
+		return $this->defaultConnection;
 	}
 }
 

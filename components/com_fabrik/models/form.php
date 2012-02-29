@@ -546,7 +546,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 				//$row = $thisGroup->getGroup();
 				$row = FabTable::getInstance('Group', 'FabrikTable');
 				$row->bind($groupd);
-				$thisGroup->_group = $row;
+				$thisGroup->setGroup($row);
 				if ($row->published == 1)
 				{
 					$this->groups[$id] = $thisGroup; //dont use &=!
@@ -735,7 +735,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		{
 			$listModel = $this->getListModel();
 			$fabrikDb = $listModel->getDb();
-			$sql = $this->_buildQuery();
+			$sql = $this->buildQuery();
 			$fabrikDb->setQuery($sql);
 			$this->_origData = $fabrikDb->loadObjectList();
 		}
@@ -1405,16 +1405,14 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 					$idElementModel = $pluginManager->getPlugIn('internalid', 'element');
 					$idElementModel->getElement()->name = 'id';
 					$idElementModel->getElement()->group_id = $elementModel->getGroup()->getGroup()->id;
-					$idElementModel->_group = $elementModel->getGroup();
-					$idElementModel->_group = $elementModel->_group;
-					$idElementModel->_aFullNames['id1_1__1_'] = $oJoin->table_join.'___id';
+					$idElementModel->setGroupModel($elementModel->getGroup());
+					$idElementModel->fullNames['id1_1__1_'] = $oJoin->table_join . '___id';
 
 					$parentElement = $pluginManager->getPlugIn('field', 'element');
 					$parentElement->getElement()->name = 'parent_id';
 					$parentElement->getElement()->group_id = $elementModel->getGroup()->getGroup()->id;
-					$parentElement->_group = $elementModel->getGroup();
-					$parentElement->_group = $elementModel->_group;
-					$parentElement->_aFullNames['parent_id1_1__1_'] = $oJoin->table_join.'___parent_id';
+					$parentElement->setGroupModel($elementModel->getGroup());
+					$parentElement->fullNames['parent_id1_1__1_'] = $oJoin->table_join . '___parent_id';
 
 					$joinGroup->publishedElements = array();
 					$joinGroup->publishedElements[''] = array($elementModel, $idElementModel, $parentElement);
@@ -1887,7 +1885,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 									$v = $w->parseMessageForPlaceHolder($v, $post);
 								}
 
-								$elementModel->_group = $groupModel;
+								$elementModel->setGroupModel($groupModel);
 								$elementModel->setValuesFromEncryt($post, $key, $v);
 								// $$ rob set both normal and rawvalues to encrypted - otherwise validate mehtod doenst
 								//pick up decrypted value
@@ -1917,22 +1915,23 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 				if ($groupModel->isJoin())
 				{
 					$joinModel = $groupModel->getJoinModel();
-					if (array_key_exists('join', $post) && array_key_exists($joinModel->_id, $post['join']))
+					$joinId = $joinModel->getId();
+					if (array_key_exists('join', $post) && array_key_exists($joinId, $post['join']))
 					{
 						if ($groupModel->canRepeat())
 						{
-							$v = JArrayHelper::getValue($post['join'][$joinModel->_id], $elName2, array());
+							$v = JArrayHelper::getValue($post['join'][$joinId], $elName2, array());
 						}
 						else
 						{
-							$v = JArrayHelper::getValue($post['join'][$joinModel->_id], $elName2, '');
+							$v = JArrayHelper::getValue($post['join'][$joinId], $elName2, '');
 						}
-						$joindata[$joinModel->_id][$elName2] = $v;
-						$joindata[$joinModel->_id][$elName2.'_raw'] = $v;
-						$post['join'][$joinModel->_id][$elName2] = $v;
-						$post['join'][$joinModel->_id][$elName2.'_raw'] = $v;
-						$_POST['join'][$joinModel->_id][$elName2] = $v;
-						$_POST['join'][$joinModel->_id][$elName2.'_raw'] = $v;
+						$joindata[$joinId][$elName2] = $v;
+						$joindata[$joinId][$elName2.'_raw'] = $v;
+						$post['join'][$joinId][$elName2] = $v;
+						$post['join'][$joinId][$elName2.'_raw'] = $v;
+						$_POST['join'][$joinId][$elName2] = $v;
+						$_POST['join'][$joinId][$elName2.'_raw'] = $v;
 					}
 				}
 				else
@@ -2130,7 +2129,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 
 				if ($groupModel->isJoin())
 				{
-					$joindata[$joinModel->_id][$elName2] = $elDbVals;
+					$joindata[$joinModel->getId()][$elName2] = $elDbVals;
 				}
 				else
 				{
@@ -2490,7 +2489,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		$c = $dir == 1 ? '>=' : '<=';
 		$limit = $dir == 1 ? 'LIMIT 2' : '';
 		$listModel = $this->getListModel();
-		$order = $listModel->_buildQueryOrder();
+		$order = $listModel->buildQueryOrder();
 		$item = $listModel->getTable();
 		$rowid = JRequest::getInt('rowid');
 		$db->setQuery(" SELECT $item->db_primary_key AS ".FabrikString::safeColNameToArrayKey($item->db_primary_key)
@@ -2624,7 +2623,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		$fabrikDb = $listModel->getDb();
 		$item = $listModel->getTable();
 		$k = $fabrikDb->quoteName($item->db_primary_key);
-		$fabrikDb->setQuery("SELECT MAX($k) FROM ".FabrikString::safeColName($item->db_table_name) . $listModel->_buildQueryWhere());
+		$fabrikDb->setQuery("SELECT MAX($k) FROM " . FabrikString::safeColName($item->db_table_name) . $listModel->buildQueryWhere());
 		return $fabrikDb->loadResult();
 	}
 
@@ -2714,7 +2713,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 						$listModel->setBigSelects();
 
 						//otherwise lets get the table record
-						$sql = $this->_buildQuery();
+						$sql = $this->buildQuery();
 
 						$fabrikDb->setQuery($sql);
 						FabrikHelperHTML::debug($fabrikDb->getQuery(), 'form:render');
@@ -2968,11 +2967,11 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 	}
 
 	/**
-	 * @access private
 	 * create the sql query to get the rows data for insertion into the form
+	 * @return	string	sql query to get row
 	 */
 
-	function _buildQuery()
+	protected function buildQuery()
 	{
 		if (isset($this->query))
 		{
@@ -2988,7 +2987,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		$listModel = $this->getListModel();
 		$item = $listModel->getTable();
 
-		$sql = $listModel->_buildQuerySelect();
+		$sql = $listModel->buildQuerySelect();
 		$sql .= $listModel->buildQueryJoin();
 
 		$emptyRowId = $this->rowId === '' ? true : false;
@@ -3056,7 +3055,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		}
 		// get prefilter conditions from table and apply them to the record
 		//the false, ignores any filters set by the table
-		$where = $listModel->_buildQueryWhere(false);
+		$where = $listModel->buildQueryWhere(false);
 
 		if (strstr($sql, 'WHERE') && $this->rowId != '')
 		{
@@ -3083,7 +3082,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		if (!$random)
 		{
 			// $$$ rob if showing joined repeat groups we want to be able to order them as defined in the table
-			$sql .= $listModel->_buildQueryOrder();
+			$sql .= $listModel->buildQueryOrder();
 		}
 		$this->query = $sql;
 		return $sql;
