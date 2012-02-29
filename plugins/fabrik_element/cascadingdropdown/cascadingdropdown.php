@@ -601,7 +601,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 					$elementModels = $groupModel->getPublishedElements();
 					foreach ($elementModels as $elementModel)
 					{
-						$element = $elementModel->_element;
+						$element = $elementModel->element;
 						if ($element->name == $val)
 						{
 							$val = $elementModel->modifyJoinQuery($val);
@@ -801,7 +801,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 	 * @param	string	container
 	 */
 
-	function _filterJS($normal, $container)
+	public function filterJS($normal, $container)
 	{
 		$params = $this->getParams();
 		$element = $this->getElement();

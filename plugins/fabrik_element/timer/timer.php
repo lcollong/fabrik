@@ -90,9 +90,9 @@ class plgFabrik_ElementTimer extends plgFabrik_Element {
 			$value = array_pop($value);
 		}
 		$type = "text";
-		if (isset($this->_elementError) && $this->_elementError != '')
+		if ($this->elementError != '')
 		{
-			$type .= " elementErrorHighlight";
+			$type .= ' elementErrorHighlight';
 		}
 		if ($element->hidden == '1')
 		{

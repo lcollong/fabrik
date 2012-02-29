@@ -203,12 +203,12 @@ class fabrikViewForm extends JView
 						// $$$ rob 22/03/2011 changes element keys by appending "_id" to the end, means that
 						// db join add append data doesn't work if for example the popup form is set to allow adding,
 						// but not editing records
-						//$elementModel->_inDetailedView = true;
+						//$elementModel->inDetailedView = true;
 						$elementModel->editable = false;
 					}
 
 					//force reload?
-					$elementModel->_HTMLids = null;
+					$elementModel->set('HTMLids', null);
 					$elementHTMLId 	= $elementModel->getHTMLId($c);
 					if (!$model->editable)
 					{
@@ -221,8 +221,8 @@ class fabrikViewForm extends JView
 					//test for paginate plugin
 					if (!$model->editable)
 					{
-						$elementModel->_HTMLids = null;
-						$elementModel->_inDetailedView = true;
+						$elementModel->set('HTMLids', null);
+						$elementModel->inDetailedView = true;
 					}
 					$JSONHtml[$elementHTMLId] = htmlentities($elementModel->render($model->_data, $c), ENT_QUOTES, 'UTF-8');
 				}

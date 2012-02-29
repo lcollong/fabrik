@@ -135,11 +135,11 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element {
 		$element = $this->getElement();
 
 		$value = $this->getValue($data, $repeatCounter);
-		$type = ($params->get('password') == "1" ) ?"password" : "text";
-		if (isset($this->_elementError) && $this->_elementError != '') {
-			$type .= " elementErrorHighlight";
+		$type = ($params->get('password') == "1") ? 'password' : 'text';
+		if ($this->elementError != '') {
+			$type .= ' elementErrorHighlight';
 		}
-		$imagepath = COM_FABRIK_LIVESITE.'/plugins/fabrik_element/thumbs/images/';
+		$imagepath = COM_FABRIK_LIVESITE . '/plugins/fabrik_element/thumbs/images/';
 
 		$str = "<div id=\"$id"."_div\" class=\"fabrikSubElementContainer\">";
 		$listid = $this->getlistModel()->getTable()->id;

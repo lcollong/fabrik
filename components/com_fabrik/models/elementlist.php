@@ -95,18 +95,18 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	{
 		$params = $this->getParams();
 		$opts = $params->get('sub_options');
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			if (isset($opts->sub_initial_selection))
 			{
-				$this->_default = $this->getSubInitialSelection();
+				$this->default = $this->getSubInitialSelection();
 			}
 			else
 			{
-				$this->_default = parent::getDefaultValue($data);
+				$this->default = parent::getDefaultValue($data);
 			}
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	/**
@@ -222,7 +222,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 	 * @return	string	formatted value
 	 */
 	
-	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
+	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		$params = $this->getParams();
 		$split_str = $params->get('options_split_str', '');

@@ -98,15 +98,15 @@ class plgFabrik_Validationrule extends FabrikPlugin
 		return $this->elementModel->getParams();
 	}
 
- 	function getPluginParams()
+ 	public function getPluginParams()
 	{
 		if (!isset($this->pluginParams)) {
-			$this->pluginParams = $this->_loadPluginParams();
+			$this->pluginParams = $this->loadPluginParams();
 		}
 		return $this->pluginParams;
 	}
 
-	function _loadPluginParams()
+	protected function loadPluginParams()
 	{
 		return $this->elementModel->getParams();
 	}

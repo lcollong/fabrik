@@ -27,10 +27,10 @@ class plgFabrik_ElementFolder extends plgFabrik_Element {
 		$params = $this->getParams();
 		$allowAdd = $params->get('allow_frontend_addtodropdown', false);
 		$selected = $this->getValue($data, $repeatCounter);
-		$errorCSS = (isset($this->_elementError) &&  $this->_elementError != '') ? " elementErrorHighlight" : '';
-		$attribs = 'class="fabrikinput inputbox'.$errorCSS."\"";
+		$errorCSS = $this->elementError != '' ? ' elementErrorHighlight' : '';
+		$attribs = 'class="fabrikinput inputbox' . $errorCSS . '"';
 		$aRoValues 	= array();
-		$path = JPATH_ROOT. '/' .$params->get('fbfolder_path');
+		$path = JPATH_ROOT . '/' . $params->get('fbfolder_path');
 		$opts = array();
 		if ($params->get('folder_allownone', true))
 		{

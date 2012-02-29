@@ -42,11 +42,11 @@ class plgFabrik_ElementCount extends plgFabrik_Element {
 		if (JRequest::getVar('c') != 'form')
 		{
 			$params = $this->getParams();
-			$fullElName = JArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___'.$this->_element->name));
+			$fullElName = JArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->element->name));
 			$r = "COUNT(".$params->get('count_field', '*').")";
 			$aFields[] 	= "$r AS $fullElName";
 			$aAsFields[] =  $fullElName;
-			$aAsFields[] =  "`$dbtable" . '___' . $this->getElement()->name . "_raw`";
+			$aAsFields[] =  "`$dbtable" . '___' . $this->getElement()->name . '_raw`';
 		}
 	}
 
@@ -96,8 +96,8 @@ class plgFabrik_ElementCount extends plgFabrik_Element {
 			}
 			$value 	= $this->getValue($data, $repeatCounter);
 			$type = "text";
-			if (isset($this->_elementError) && $this->_elementError != '') {
-			$type .= " elementErrorHighlight";
+			if ($this->elementError != '') {
+			$type .= ' elementErrorHighlight';
 			}
 			if ($element->hidden == '1') {
 			$type = "hidden";

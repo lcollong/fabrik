@@ -34,7 +34,7 @@ class plgFabrik_ElementRadiobutton extends plgFabrik_ElementList
 	 * @return	string	formatted value
 	 */
 
-	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
+	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		if (empty($value))
 		{

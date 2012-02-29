@@ -258,13 +258,14 @@ class plgFabrik_Form extends FabrikPlugin
 					$key = $elementModel->getFullName(true, true, false);
 					//used for working out if the element should behave as if it was
 					//in a new form (joined grouped) even when editing a record
-					$elementModel->_inRepeatGroup = $groupModel->canRepeat();
+					$elementModel->inRepeatGroup = $groupModel->canRepeat();
 					$elementModel->_inJoin = $groupModel->isJoin();
 					$elementModel->editable = false;
 
 					if ($elementModel->_inJoin)
 					{
-						if ($elementModel->_inRepeatGroup) {
+						if ($elementModel->inRepeatGroup)
+						{
 							if (!array_key_exists($k . '_raw', $this->emailData))
 							{
 								$this->emailData[$k.'_raw'] = array();
@@ -281,7 +282,7 @@ class plgFabrik_Form extends FabrikPlugin
 						//@TODO do we need to check if none -joined repeat groups have their data set out correctly?
 						if (array_key_exists($key, $model->_formDataWithTableName))
 						{
-							$rawval = JArrayHelper::getValue($model->_formDataWithTableName, $k.'_raw', '');
+							$rawval = JArrayHelper::getValue($model->_formDataWithTableName, $k . '_raw', '');
 							if ($rawval == '')
 							{
 								$this->emailData[$k.'_raw'] = $model->_formDataWithTableName[$key];
@@ -313,7 +314,7 @@ class plgFabrik_Form extends FabrikPlugin
 						$email_value = $this->emailData[$k];
 					}
 					$this->emailData[$k] = $elementModel->getEmailValue($email_value, $model->_formDataWithTableName, $c);
-					if ($elementModel->_inRepeatGroup && $elementModel->_inJoin)
+					if ($elementModel->inRepeatGroup && $elementModel->_inJoin)
 					{
 						$this->emailData['join'][$groupModel->getGroup()->join_id][$k.'_raw'] = $this->emailData[$k.'_raw'];
 						$this->emailData['join'][$groupModel->getGroup()->join_id][$k] = $this->emailData[$k];

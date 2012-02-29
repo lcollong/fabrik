@@ -36,7 +36,7 @@ class FabrikFEModelFormsession extends FabModel {
 	protected $row = null;
 	
 	/**
-	 * @var bol should the form store a cookie with
+	 * @var bool should the form store a cookie with
 	 * a reference to the incomplete form data
 	 */
 	protected $useCookie = true;

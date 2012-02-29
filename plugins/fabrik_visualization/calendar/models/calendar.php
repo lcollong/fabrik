@@ -28,7 +28,7 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 	/** @var array filters from url*/
 	var $filters = array();
 
-	/** @var bol can add to tables **/
+	/** @var bool can add to tables **/
 	var $canAdd = null;
 
 

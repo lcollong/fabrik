@@ -57,7 +57,7 @@ class FabrikFEModelList extends JModelForm {
 	/** @var array database fields */
 	protected $_dbFields = null;
 
-	/** @var bol force reload table calculations **/
+	/** @var bool force reload table calculations **/
 	protected $_reloadCalculations = false;
 
 	/** @var array data contains request data **/
@@ -91,7 +91,7 @@ class FabrikFEModelList extends JModelForm {
 	/** @var array original table data BEFORE form saved - used to ensure uneditable data is stored */
 	protected $_origData = null;
 
-	/** @var bol set to true to load records STARTING from a random id (used in the getPageNav func) **/
+	/** @var bool set to true to load records STARTING from a random id (used in the getPageNav func) **/
 	public $randomRecords = false;
 
 	protected $data = null;
@@ -132,7 +132,7 @@ class FabrikFEModelList extends JModelForm {
 	/** @var array - used in views for rendering */
 	public $groupTemplates = array();
 
-	/** @var bol is the table a view **/
+	/** @var bool is the table a view **/
 	protected $isView = null;
 
 	/** @var array index objects **/
@@ -4258,7 +4258,7 @@ class FabrikFEModelList extends JModelForm {
 						$o = new stdClass();
 						$o->name = $elementModel->getFullName(false, true, false);
 						$o->filter = $elementModel->getFilter($counter, true);
-						$fscript .= $elementModel->_filterJS(true, $container);
+						$fscript .= $elementModel->filterJS(true, $container);
 						$o->required = $elementModel->getParams()->get('filter_required');
 						$o->label = $elementModel->getParams()->get('alt_list_heading') == '' ? $element->label : $elementModel->getParams()->get('alt_list_heading');
 						$aFilters[] = $o;

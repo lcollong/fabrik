@@ -108,7 +108,7 @@ $listDirn	= $this->state->get('list.direction');
 						<?php echo "($item->form_id) " . $item->flabel; ?>
 					</td>
 					<td>
-						<?php echo $item->_elementCount; ?>
+						<?php echo $item->elementCount; ?>
 						<a href="index.php?option=com_fabrik&view=element&layout=edit&filter_groupId=<?php echo $item->id?>"><?php echo JText::_('COM_FABRIK_ADD')?></a>
 					</td>
 					<td>

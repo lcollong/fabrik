@@ -47,7 +47,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 		$multiple = $params->get('multiple', 0);
 		$multisize = $params->get('dropdown_multisize', 3);
 		$selected = (array)$this->getValue($data, $repeatCounter);
-		$errorCSS = (isset($this->_elementError) &&  $this->_elementError != '') ? " elementErrorHighlight" : '';
+		$errorCSS = $this->elementError != '' ? " elementErrorHighlight" : '';
 		$attribs 	= 'class="fabrikinput inputbox' . $errorCSS . '"';
 
 		if ($multiple == "1")
@@ -152,7 +152,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 	function getDefaultValue($data = array())
 	{
 		$params = $this->getParams();
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			if ($this->getElement()->default != '')
 			{
@@ -172,19 +172,19 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 				}
 				if (is_string($v)) {
 					
-					$this->_default = explode('|', $v);
+					$this->default = explode('|', $v);
 				}
 				else
 				{
-					$this->_default = $v;
+					$this->default = $v;
 				}
 			}
 			else
 			{
-				$this->_default = $this->getSubInitialSelection();
+				$this->default = $this->getSubInitialSelection();
 			}
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	/**

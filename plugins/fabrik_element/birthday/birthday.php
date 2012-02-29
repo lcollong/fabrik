@@ -173,8 +173,8 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 			{
 				$years[] = JHTML::_('select.option', $i);
 			}
-			$errorCSS = (isset($this->_elementError) && $this->_elementError != '') ? " elementErrorHighlight" : '';
-			$attribs = 'class="fabrikinput inputbox'.$errorCSS.'"';
+			$errorCSS = $this->elementError != '' ? ' elementErrorHighlight' : '';
+			$attribs = 'class="fabrikinput inputbox' . $errorCSS . '"';
 			$str = array();
 			$str[] = '<div class="fabrikSubElementContainer" id="'.$id.'">';
 			//$name already suffixed with [] as element hasSubElements = true

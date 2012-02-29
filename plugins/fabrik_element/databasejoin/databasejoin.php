@@ -962,7 +962,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	}
 
 	/**
-	 * $$$ rob not tested but i think elementlist _getEmailValue()
+	 * $$$ rob not tested but i think elementlist getIndEmailValue()
 	 * should handle this ok
 	 *
 	 * used to format the data when shown in the form's email
@@ -1856,7 +1856,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$fullElName = $this->getFullName(false, true, false);
 		$sql = "(SELECT GROUP_CONCAT(".$jkey." SEPARATOR '".GROUPSPLITTER."') FROM $jointable
 		LEFT JOIN ".$params->get('join_db_name')." ON "
-		.$params->get('join_db_name').".".$params->get('join_key_column')." = $jointable.".$this->_element->name." WHERE parent_id = ".$item->db_primary_key.")";
+		.$params->get('join_db_name') . '.' . $params->get('join_key_column')." = $jointable." . $this->element->name . " WHERE parent_id = ".$item->db_primary_key.")";
 		if ($addAs)
 		{
 			$sql .= " AS $fullElName";
@@ -1872,7 +1872,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$db = JFactory::getDbo();
 		$table = $this->getListModel()->getTable();
 		$fullElName = $this->getFullName(false, true, false)."_id";
-		$str .= ", (SELECT GROUP_CONCAT(".$this->_element->name." SEPARATOR '".GROUPSPLITTER."') FROM $jointable WHERE parent_id = ".$table->db_primary_key.") AS $fullElName";
+		$str .= ", (SELECT GROUP_CONCAT(".$this->element->name." SEPARATOR '".GROUPSPLITTER."') FROM $jointable WHERE parent_id = ".$table->db_primary_key.") AS $fullElName";
 		return $str;
 	}
 

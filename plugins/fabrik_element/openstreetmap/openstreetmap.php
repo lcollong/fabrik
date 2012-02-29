@@ -321,8 +321,8 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 		$dbtable = $this->actualTableName();
 		$listModel = $this->getlistModel();
 		$table = $listModel->getTable();
-		$fullElName = JArrayHelper::getValue($opts, 'alias', "$dbtable" . '___' . $this->_element->name);
-		$str = FabrikString::safeColName($fullElName)." AS ".$db->quoteName($fullElName);
+		$fullElName = JArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
+		$str = FabrikString::safeColName($fullElName) . ' AS ' . $db->quoteName($fullElName);
 		if ($table->db_primary_key == $fullElName)
 		{
 			array_unshift($aFields, $fullElName);
@@ -332,8 +332,8 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 		{
 			$aFields[] 	= $str;
 			$aAsFields[] = $fullElName;
-			$aFields[] = $db->quoteName($dbtable).'.'.$db->quoteName($this->_element->name).' AS '.$db->quoteName($fullElName.'_raw');
-			$aAsFields[] = $db->quoteName($fullElName.'_raw');
+			$aFields[] = $db->quoteName($dbtable) . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($fullElName . '_raw');
+			$aAsFields[] = $db->quoteName($fullElName . '_raw');
 		}
 	}
 
@@ -344,12 +344,12 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 
   function getDefaultValue($data = array())
   {
-    if (!isset($this->_default))
+    if (!isset($this->default))
     {
 	    $params = $this->getParams();
-	    $this->_default = $params->get('fb_osm_lat') . ',' . $params->get('fb_osm_long') . ':' . $params->get('fb_osm_zoomlevel');
+	    $this->default = $params->get('fb_osm_lat') . ',' . $params->get('fb_osm_long') . ':' . $params->get('fb_osm_zoomlevel');
     }
-    return $this->_default;
+    return $this->default;
   }
 
   /**

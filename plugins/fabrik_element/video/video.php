@@ -142,7 +142,7 @@ class plgFabrik_ElementVideo extends plgFabrik_Element {
 
 		$type = ($params->get('password') == "1" ) ?"password" : "text";
 
-		if( isset($this->_elementError) && $this->_elementError != '')
+		if ($this->elementError != '')
 		{
 			$type .= " elementErrorHighlight";
 		}

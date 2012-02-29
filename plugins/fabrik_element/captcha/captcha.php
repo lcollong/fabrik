@@ -183,13 +183,13 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 
 			$value = $this->getValue($data, $repeatCounter);
 			$type = ($params->get('password') == "1") ? "password" : "text";
-			if (isset($this->_elementError) && $this->_elementError != '')
+			if ($this->elementError != '')
 			{
-				$type .= " elementErrorHighlight";
+				$type .= ' elementErrorHighlight';
 			}
 			if ($element->hidden == '1')
 			{
-				$type = "hidden";
+				$type = 'hidden';
 			}
 			$sizeInfo = ' size="' . $size . '"';
 			if (!$this->editable)

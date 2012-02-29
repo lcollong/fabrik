@@ -38,23 +38,21 @@ class FabrikFEModelVisualization extends JModel
 		parent::__construct();
 	}
 
-	function getPluginParams()
+	public function getPluginParams()
 	{
 		if (!isset($this->_pluginParams))
 		{
-			$this->_pluginParams = $this->_loadPluginParams();
+			$this->_pluginParams = $this->loadPluginParams();
 		}
 		return $this->_pluginParams;
 	}
 
 	/**
 	 * load visualization plugin  params
-	 * @access private - public call = getPluginParams()
-	 *
-	 * @return object visualization plugin parameters
+	 * @return	object	visualization plugin parameters
 	 */
 
-	function _loadPluginParams()
+	protected function loadPluginParams()
 	{
 		$this->getVisualization();
 		$pluginParams = new fabrikParams($this->_row->params);

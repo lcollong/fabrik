@@ -52,7 +52,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		$rowid = $this->getForm()->rowId;
 		//@TODO when editing a form with joined repeat group the rowid will be set but
 		//the record is in fact new
-		if ($params->get('update_on_edit') || !$rowid || ($this->_inRepeatGroup && $this->_inJoin &&  $this->_repeatGroupTotal == $repeatCounter))
+		if ($params->get('update_on_edit') || !$rowid || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
 		{
 			//set user to logged in user
 			if ($this->editable)
@@ -82,7 +82,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			{
 				//$$$ rob - changed from $name to $id as if your element is in a repeat group name as "[]" at the end
 				//$user  		=& JFactory::getUser((int)$data[$name . '_raw']);
-				if ($this->_inDetailedView)
+				if ($this->inDetailedView)
 				{
 					//$id = FabrikString::rtrimWord($id, "_ro");
 					$id = preg_replace('#_ro$#', '_raw', $id);
@@ -433,12 +433,12 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	function getDefaultValue($data = array())
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			$user = JFactory::getUser();
-			$this->_default = $user->get('id');
+			$this->default = $user->get('id');
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	/**
@@ -469,7 +469,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		// $$$ rob replaced ALL references to rowid with __pk_val as rowid doesnt exists in the data :O
 
 		//$$$ rob
-		//($this->_inRepeatGroup && $this->_inJoin &&  $this->_repeatGroupTotal == $repeatCounter)
+		//($this->inRepeatGroup && $this->_inJoin &&  $this->_repeatGroupTotal == $repeatCounter)
 		//is for saying that the last record in a repeated join group should be treated as if it was in a new form
 
 		// $$$ rob - erm why on earth would i want to do that! ?? (see above!) - test case:

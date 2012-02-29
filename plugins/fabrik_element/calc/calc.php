@@ -21,7 +21,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 
 	function getDefaultValue($data = array(), $repeatCounter = 0)
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			$w = new FabrikWorker();
 			$element = $this->getElement();
@@ -31,9 +31,9 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 				$default = @eval($default);
 				FabrikWorker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
 			}
-			$this->_default = $default;
+			$this->default = $default;
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	private function _getV($data, $repeatCounter)
@@ -46,7 +46,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 		// $$$ hugh - if we don't do this, we get the cached default from the previous repeat
 		if ($repeatCounter > 0)
 		{
-			unset($this->_default);
+			unset($this->default);
 		}
 		// $$$ hugh - don't think we want to do this here, otherwise calc gets run regardless of calc_on_save_only,
 		// it just won't get used if 'true'

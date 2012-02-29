@@ -46,7 +46,7 @@ class FabrikFEModelGroup extends FabModel{
 	/** @var array of form ids that the group is in (maximum of one value)*/
 	protected $formsIamIn = null;
 
-	/** @var bol can the group be viewed (set to false if no elements are visible in the group**/
+	/** @var bool can the group be viewed (set to false if no elements are visible in the group**/
 	var $canView = null;
 
 	/**

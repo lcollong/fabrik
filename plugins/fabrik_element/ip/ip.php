@@ -28,7 +28,7 @@ class plgFabrik_elementIp extends plgFabrik_Element
 		$rowid = JRequest::getVar('rowid', false);
 		//@TODO when editing a form with joined repeat group the rowid will be set but
 		//the record is in fact new
-		if ($params->get('ip_update_on_edit') || !$rowid || ($this->_inRepeatGroup && $this->_inJoin &&  $this->_repeatGroupTotal == $repeatCounter))
+		if ($params->get('ip_update_on_edit') || !$rowid || ($this->inRepeatGroup && $this->_inJoin && $this->_repeatGroupTotal == $repeatCounter))
 		{
 			$ip = $_SERVER['REMOTE_ADDR'];
 		}
@@ -97,11 +97,11 @@ class plgFabrik_elementIp extends plgFabrik_Element
 
 	function getDefaultValue($data = array())
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
-			$this->_default = $_SERVER['REMOTE_ADDR'];
+			$this->default = $_SERVER['REMOTE_ADDR'];
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	/**

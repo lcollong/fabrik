@@ -47,7 +47,7 @@ class plgFabrik_ElementDisplay extends plgFabrik_Element
 	
 	function renderListData($data, &$thisRow)
 	{
-		unset($this->_default);
+		unset($this->default);
 		$value = $this->getValue(JArrayHelper::fromObject($thisRow));
 		return parent::renderListData($value, $thisRow);
 	}

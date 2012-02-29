@@ -27,12 +27,12 @@ class plgFabrik_ElementYesno extends plgFabrik_ElementRadiobutton {
 
 	function getDefaultValue($data = array())
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			$params = $this->getParams();
-			$this->_default = $params->get('yesno_default', 0);
+			$this->default = $params->get('yesno_default', 0);
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	function renderListData($data, &$thisRow)

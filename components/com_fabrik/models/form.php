@@ -32,13 +32,13 @@ class FabrikFEModelForm extends FabModelForm
 	/** @var array of group ids that are actually tablejoins [groupid->joinid]*/
 	public $aJoinGroupIds = array();
 
-	/** @var bol true if editable if 0 then show view only verion of form */
+	/** @var bool true if editable if 0 then show view only verion of form */
 	public $editable = true;
 
 	/** @var array validation rule classes */
 	protected $validationRuleClasses = null;
 
-	/**@var bol is the form running as a mambot or module(true)*/
+	/**@var bool is the form running as a mambot or module(true)*/
 	public $isMambot = false;
 
 	/** @var array of join objects for the form */
@@ -62,7 +62,7 @@ class FabrikFEModelForm extends FabModelForm
 	/** @var object last current element found in hasElement()*/
 	var $_currentElement = null;
 
-	/** @var bol if true encase table and element names with "`" when getting elemenet list */
+	/** @var bool if true encase table and element names with "`" when getting elemenet list */
 	var $_addDbQuote = false;
 
 	var $_formData = null;
@@ -3928,7 +3928,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 
 					if (!$this->editable)
 					{
-						$elementModel->_inDetailedView = true;
+						$elementModel->inDetailedView = true;
 					}
 
 					if (!$this->editable && !$elementModel->canView())

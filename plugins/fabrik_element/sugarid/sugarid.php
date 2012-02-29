@@ -33,7 +33,7 @@ class plgFabrik_ElementSugarid extends plgFabrik_Element
 		$element = $this->getElement();
 		$value = $this->getValue($data, $repeatCounter);
 		$type = "hidden";
-		if (isset($this->_elementError) && $this->_elementError != '')
+		if ($this->elementError != '')
 		{
 			$type .= " elementErrorHighlight";
 		}

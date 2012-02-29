@@ -509,9 +509,9 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 		$db = FabrikWorker::getDbo();
 		$listModel = $this->getlistModel();
 		$table = $listModel->getTable();
-		$fullElName = JArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->_element->name);
+		$fullElName = JArrayHelper::getValue($opts, 'alias', $dbtable . '___' . $this->element->name);
 		$dbtable = $db->quoteName($dbtable);
-		$str = $dbtable . '.' . $db->quoteName($this->_element->name) . ' AS ' . $db->quoteName($fullElName);
+		$str = $dbtable . '.' . $db->quoteName($this->element->name) . ' AS ' . $db->quoteName($fullElName);
 		if ($table->db_primary_key == $fullElName)
 		{
 			array_unshift($aFields, $fullElName);
@@ -522,7 +522,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 			$aFields[] 	= $str;
 			$aAsFields[] =  $db->quoteName($fullElName);
 			$rawName = $fullElName . '_raw';
-			$aFields[] = $dbtable . '.' . $db->quoteName($this->_element->name) .' AS '. $db->quoteName($rawName);
+			$aFields[] = $dbtable . '.' . $db->quoteName($this->element->name) .' AS '. $db->quoteName($rawName);
 			$aAsFields[] = $db->quoteName($rawName);
 		}
 	}
@@ -534,13 +534,13 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 
 	function getDefaultValue($data = array())
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			$params = $this->getParams();
 			// $$$ hugh - added parens around lat,long for consistancy!
-			$this->_default = '(' . $params->get('fb_gm_lat') . ',' . $params->get('fb_gm_long') . ')' . ':' . $params->get('fb_gm_zoomlevel');
+			$this->default = '(' . $params->get('fb_gm_lat') . ',' . $params->get('fb_gm_long') . ')' . ':' . $params->get('fb_gm_zoomlevel');
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 

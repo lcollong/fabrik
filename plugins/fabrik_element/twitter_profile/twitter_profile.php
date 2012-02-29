@@ -109,7 +109,7 @@ class plgFabrik_ElementTwitter_profile extends plgFabrik_Element
 		}
 		$value 	= $this->getValue($data, $repeatCounter);
 		$type = "text";
-		if (isset($this->_elementError) && $this->_elementError != '')
+		if ($this->elementError != '')
 		{
 			$type .= " elementErrorHighlight";
 		}

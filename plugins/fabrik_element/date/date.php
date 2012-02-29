@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 class plgFabrik_ElementDate extends plgFabrik_Element
 {
 
-	/** @var bol toggle to determine if storedatabaseformat resets the date to GMT*/
+	/** @var bool toggle to determine if storedatabaseformat resets the date to GMT*/
 	protected $_resetToGMT = true;
 
 	/**
@@ -687,7 +687,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 
 	function getDefaultValue($data = array())
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			$params = $this->getParams();
 			$element = $this->getElement();
@@ -721,9 +721,9 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 					$default = $oTmpDate->toSql();
 				}
 			}
-			$this->_default = $default;
+			$this->default = $default;
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	/**

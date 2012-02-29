@@ -16,7 +16,7 @@ require_once(COM_FABRIK_FRONTEND . '/models/parent.php'); //required for fabble
 class FabrikPlugin extends JPlugin
 {
 
-	/** @var bol determines if the admin settings are visible or hidden when rendered */
+	/** @var bool determines if the admin settings are visible or hidden when rendered */
 	var $_adminVisible = false;
 
 	/** @var string path to xml file **/

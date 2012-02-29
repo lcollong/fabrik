@@ -203,7 +203,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 	 * @return string formatted value
 	 */
 
-	protected function _getEmailValue($value, $data = array(), $repeatCounter = 0)
+	protected function getIndEmailValue($value, $data = array(), $repeatCounter = 0)
 	{
 		if (is_string($value))
 		{
@@ -339,7 +339,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 
 	function getDefaultValue($data = array())
 	{
-		if (!isset($this->_default))
+		if (!isset($this->default))
 		{
 			$w = new FabrikWorker();
 			$params = $this->getParams();
@@ -359,9 +359,9 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 			{
 				$default = @eval(stripslashes($default));
 			}
-			$this->_default = array('label'=>$default, 'link'=>$link);
+			$this->default = array('label'=>$default, 'link'=>$link);
 		}
-		return $this->_default;
+		return $this->default;
 	}
 
 	/**

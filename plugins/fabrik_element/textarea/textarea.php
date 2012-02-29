@@ -194,9 +194,9 @@ class plgFabrik_ElementTextarea extends plgFabrik_Element
 			$bits['placeholder'] = $params->get('textarea_placeholder');
 		}
 		$bits['class'] = "fabrikinput inputbox";
-		if (isset($this->_elementError) && $this->_elementError != '')
+		if ($this->elementError != '')
 		{
-			$bits['class'] .= " elementErrorHighlight";
+			$bits['class'] .= ' elementErrorHighlight';
 		}
 		if ($params->get('use_wysiwyg'))
 		{
@@ -273,9 +273,9 @@ class plgFabrik_ElementTextarea extends plgFabrik_Element
 		{
 			// $$$ rob need to use the NAME as the ID when wysiwyg end in joined group
 			$id	= $this->getHTMLName($repeatCounter);
-			if ($this->_inDetailedView)
+			if ($this->inDetailedView)
 			{
-				$id .= "_ro";
+				$id .= '_ro';
 			}
 		}
 		else

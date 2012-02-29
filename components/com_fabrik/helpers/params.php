@@ -17,7 +17,7 @@ jimport('joomla.html.parameter');
 class fabrikParams extends JParameter
 {
 
-	/** @var bol duplicatable param (if true add []" to end of element name)*/
+	/** @var bool duplicatable param (if true add []" to end of element name)*/
 	var $_duplicate = false;
 
 	/** used by form plugins - to set id in name of radio buttons **/

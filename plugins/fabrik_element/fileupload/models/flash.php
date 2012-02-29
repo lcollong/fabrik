@@ -67,7 +67,7 @@ class flashRender{
 		}
 		// $$$ hugh - if they've enabled thumbnails, for Flash content we'll take that to mean they don't
 		// want to play the content inline in the table, and use mediabox (if available) to open it instead.
-		if (!$model->_inDetailedView && $fbConfig->get('use_mediabox', true) && $params->get('make_thumbnail', false)) {
+		if (!$model->inDetailedView && $fbConfig->get('use_mediabox', true) && $params->get('make_thumbnail', false)) {
 			$element = $model->getElement();
 
 			// @TODO - work out how to do thumbnails
@@ -111,7 +111,7 @@ class flashRender{
 			$file = str_replace("\\", "/", COM_FABRIK_LIVESITE  . $file);
 			$this->output .=	"<a href='$file' rel='lightbox[flash $w $h]'><img src='$thumb_file' alt='Full Size'></a>";
 		}
-		else if ($model->_inDetailedView) {
+		else if ($model->inDetailedView) {
 			$file = str_replace("\\", "/", COM_FABRIK_LIVESITE  . $file);
 			$this->output = "<object width=\"$w\" height=\"$h\">
 				<param name=\"movie\" value=\"$file\">

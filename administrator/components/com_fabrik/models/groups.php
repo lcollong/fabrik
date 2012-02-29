@@ -118,7 +118,7 @@ class FabrikModelGroups extends FabModelList
 		for ($i = 0; $i < count($result); $i++)
 		{
 			$k = $result[$i]->id;
-			$result[$i]->_elementCount = @$elementcount[$k]->count;
+			$result[$i]->elementCount = @$elementcount[$k]->count;
 		}
 		return $result;
 	}
