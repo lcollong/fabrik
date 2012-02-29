@@ -33,29 +33,36 @@ class FabrikViewList extends JView{
 		$model->render();
 		$params = $model->getParams();
 
-		if ($params->get('rss') == '0') {
+		if ($params->get('rss') == '0')
+		{
 			return '';
 		}
 
 		$formModel = $model->getFormModel();
 		$form = $formModel->getForm();
 
-		$aJoinsToThisKey = $model->getJoinsToThisKey();
+		$joinsToThisKey = $model->getJoinsToThisKey();
 		/* get headings */
 		$aTableHeadings = array();
 		$groupModels = $formModel->getGroupsHiarachy();
-		foreach ($groupModels as $groupModel) {
+		foreach ($groupModels as $groupModel)
+		{
 			$elementModels = $groupModel->getPublishedElements();
-			foreach ($elementModels as $elementModel) {
+			foreach ($elementModels as $elementModel)
+			{
 				$element = $elementModel->getElement();
 				$elParams = $elementModel->getParams();
 
 				//$elParams = new fabrikParams($oElement->attribs, $mosConfig_absolute_path . '/administrator/components/com_fabrik/xml/element.xml', 'component');
-				if ($elParams->get('show_in_rss_feed') == '1') {
+				if ($elParams->get('show_in_rss_feed') == '1')
+				{
 					$heading = $element->label;
-					if ($elParams->get('show_label_in_rss_feed') == '1') {
+					if ($elParams->get('show_label_in_rss_feed') == '1')
+					{
 						$aTableHeadings[$heading]['label']	 = $heading;
-					} else {
+					}
+					else
+					{
 						$aTableHeadings[$heading]['label']	 = '';
 					}
 					$aTableHeadings[$heading]['colName'] = $elementModel->getFullName(false, true);
@@ -65,16 +72,20 @@ class FabrikViewList extends JView{
 			}
 		}
 
-		foreach ($aJoinsToThisKey as $element) {
+		foreach ($joinsToThisKey as $element)
+		{
 			$element = $elementModel->getElement();
 			$elParams = new fabrikParams($element->attribs, JPATH_SITE . '/administrator/components/com_fabrik/xml/element.xml', 'component');
-			if ($elParams->get('show_in_rss_feed') == '1') {
+			if ($elParams->get('show_in_rss_feed') == '1')
+			{
 				$heading = $element->label;
-
-				if ($elParams->get('show_label_in_rss_feed') == '1') {
-					$aTableHeadings[$heading]['label']	 = $heading;
-				} else {
-					$aTableHeadings[$heading]['label']	 = '';
+				if ($elParams->get('show_label_in_rss_feed') == '1')
+				{
+					$aTableHeadings[$heading]['label'] = $heading;
+				}
+				else
+				{
+					$aTableHeadings[$heading]['label'] = '';
 				}
 				$aTableHeadings[$heading]['colName'] = $element->db_table_name . '___' . $element->name;
 				$aTableHeadings[$heading]['dbField'] = $element->name;
@@ -87,16 +98,11 @@ class FabrikViewList extends JView{
 		$rows = $model->getData();
 		$document->title = $w->parseMessageForPlaceHolder($table->label, $_REQUEST);
 		$document->description = $w->parseMessageForPlaceHolder($table->introduction);
-		$document->link = JRoute::_('index.php?option=com_fabrik&view=list&listid='.$table->id.'&Itemid='.$Itemid);
+		$document->link = JRoute::_('index.php?option=com_fabrik&view=list&listid=' . $table->id . '&Itemid=' . $Itemid);
 
-		/* check for a custom css file and include it if it exists*/
 		$tmpl = JRequest::getVar('layout', $table->template);
-		$csspath = COM_FABRIK_FRONTEND . '/' . "views/list/tmpl" . '/' . $tmpl . '/feed.css';
-
-		if (file_exists($csspath)) {
-			$document->addStyleSheet(COM_FABRIK_LIVESITE . "components/com_fabrik/views/list/tmpl/$tmpl/feed.css");
-		}
-
+		FabrikHelperHTML::stylesheetFromPath(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tmpl . '/feed.css');
+		
 		$titleEl = $params->get('feed_title');
 		$dateEl = $params->get('feed_date');
 		$dateEl = $params->get('feed_date');
@@ -120,20 +126,24 @@ class FabrikViewList extends JView{
 				$title = '';
 				$item = new JFeedItem();
 
-				foreach ($aTableHeadings as $heading=>$dbcolname) {
-					if ($title == '') {
+				foreach ($aTableHeadings as $heading=>$dbcolname)
+				{
+					if ($title == '')
+					{
 						//set a default title
 						$title = $row->$dbcolname['colName'];
 					}
 					$rsscontent = $row->$dbcolname['colName'];
 
 					$found = false;
-					foreach($rsstags as $rsstag =>$namespace) {
-
-						if (strstr($rsscontent, $rsstag)) {
+					foreach ($rsstags as $rsstag =>$namespace)
+					{
+						if (strstr($rsscontent, $rsstag))
+						{
 							$found = true;
-							if (!strstr($document->_namespace, $namespace)) {
-								$rsstag = substr($rsstag, 1, strlen($rsstag)-2);
+							if (!strstr($document->_namespace, $namespace))
+							{
+								$rsstag = substr($rsstag, 1, strlen($rsstag) - 2);
 								$document->_itemTags[] = $rsstag;
 								$document->_namespace .=  $namespace . "\n";
 							}
@@ -141,18 +151,25 @@ class FabrikViewList extends JView{
 						}
 					}
 
-					if ($found) {
+					if ($found)
+					{
 						$item->{$rsstag} = $rsscontent;
-					} else {
-						if ($dbcolname['label'] == '') {
+					}
+					else
+					{
+						if ($dbcolname['label'] == '')
+						{
 							$str2 .= $rsscontent . "<br />\n";
-						} else {
-							$str .= "<tr><td>".$dbcolname['label'].":</td><td>".$rsscontent."</td></tr>\n";
+						}
+						else
+						{
+							$str .= "<tr><td>" . $dbcolname['label'] . ":</td><td>" . $rsscontent . "</td></tr>\n";
 						}
 					}
 				}
 
-				if (isset($row->$titleEl)) {
+				if (isset($row->$titleEl))
+				{
 					$title = $row->$titleEl;
 				}
 				$str = $str2 . $str . "</table>";
@@ -163,9 +180,12 @@ class FabrikViewList extends JView{
 				// strip html from feed item description text
 				$author	= @$row->created_by_alias ? @$row->created_by_alias : @$row->author;
 
-				if ($dateEl != '') {
+				if ($dateEl != '')
+				{
 					$date = ($row->$dateEl ? date('r', strtotime(@$row->$dateEl) ) : '');
-				} else {
+				}
+				else
+				{
 					$data = '';
 				}
 				// load individual item creator class

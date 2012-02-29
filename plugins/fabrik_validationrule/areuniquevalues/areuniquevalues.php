@@ -70,7 +70,7 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 		->from($lookuptable)
 		->where($elementModel->getFullName(false, false, false)." = $data");
 
-		$listModel->_buildQueryJoin($query);
+		$listModel->buildQueryJoin($query);
 
 		if (!empty($otherfield))
 		{

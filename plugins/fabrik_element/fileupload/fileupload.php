@@ -45,7 +45,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 	public function ignoreOnUpdate($val = null)
 	{
 		//check if its a CSV import if it is allow the val to be inserted
-		if (JRequest::getCmd('task') === 'makeTableFromCSV' || $this->getListModel()->_importingCSV)
+		if (JRequest::getCmd('task') === 'makeTableFromCSV' || $this->getListModel()->importingCSV)
 		{
 			return false;
 		}
@@ -185,7 +185,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		$paramsKey = $this->getFullName(false, true, false);
 		$paramsKey = Fabrikstring::rtrimword($paramsKey, $this->getElement()->name);
 		$paramsKey .= 'params';
-		$formData = $this->getForm()->_data;
+		$formData = $this->getFormModel()->_data;
 		$imgParams = JArrayHelper::getValue($formData, $paramsKey);
 
 		$value = $this->getValue(array(), $repeatCounter);
@@ -195,7 +195,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 
 		//repeat_image_repeat_image___params
 		$rawvalues = count($value) == 0 ? array() : array_fill(0, count($value), 0);
-		$fdata = $this->getForm()->_data;
+		$fdata = $this->getFormModel()->_data;
 		$rawkey = $this->getFullName(false, true, false).'_raw';
 		$rawvalues = JArrayHelper::getValue($fdata, $rawkey, $rawvalues);
 		if (!is_array($rawvalues))

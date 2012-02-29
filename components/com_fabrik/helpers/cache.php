@@ -14,7 +14,7 @@ class FabrikCacheHelper
 	function tableSelect($listModel)
 	{
 		$query = $listModel->_buildQuerySelect();
-		$query .= $listModel->_buildQueryJoin();
+		$query .= $listModel->buildQueryJoin();
 		$db = FabrikWorker::getDbo();
 		$query = $db->replacePrefix($query, '#__');
 		return $query;

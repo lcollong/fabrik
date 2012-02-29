@@ -68,7 +68,7 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
 
-		$join = $listModel->_buildQueryJoin();
+		$join = $listModel->buildQueryJoin();
 		$where = $listModel->_buildQueryWhere();
 		$order = $listModel->_buildQueryOrder();
 

@@ -2989,7 +2989,7 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		$item = $listModel->getTable();
 
 		$sql = $listModel->_buildQuerySelect();
-		$sql .= $listModel->_buildQueryJoin();
+		$sql .= $listModel->buildQueryJoin();
 
 		$emptyRowId = $this->rowId === '' ? true : false;
 		$random = JRequest::getVar('random');
@@ -3374,14 +3374,14 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		$form = $this->getForm();
 
 		$pluginManager->runPlugins('getBottomContent', $this, 'form');
-		$pluginbottom = implode("<br />", array_filter($pluginManager->_data));
+		$pluginbottom = implode("<br />", array_filter($pluginManager->data));
 
 		$pluginManager->runPlugins('getTopContent', $this, 'form');
-		$plugintop = implode("<br />", array_filter($pluginManager->_data));
+		$plugintop = implode("<br />", array_filter($pluginManager->data));
 
 		//inserted after the form's closing </form> tag
 		$pluginManager->runPlugins('getEndContent', $this, 'form');
-		$pluginend = implode("<br />", array_filter($pluginManager->_data));
+		$pluginend = implode("<br />", array_filter($pluginManager->data));
 		return array($plugintop, $pluginbottom, $pluginend);
 	}
 
@@ -4078,8 +4078,9 @@ WHERE $item->db_primary_key $c $rowid $order $limit");
 		return $html;
 	}
 
-	public function isEditable() {
-		return $this->_editable;
+	public function isEditable()
+	{
+		return $this->editable;
 	}
 }
 

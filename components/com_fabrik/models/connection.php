@@ -185,7 +185,7 @@ class FabrikFEModelConnection extends JModel {
 			$deafult_options= array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database, 'prefix' => $prefix);
 			$options = $this->getConnectionOptions($cn);
 
-			if ($this->_compareConnectionOpts($deafult_options, $options))
+			if ($this->compareConnectionOpts($deafult_options, $options))
 			{
 				$dbs[$cn->id] = FabrikWorker::getDbo();
 			}
@@ -234,12 +234,12 @@ class FabrikFEModelConnection extends JModel {
 
 	/**
 	 * compare two arrays of connection details. Ignore prefix as this may be set to '' if using koowna
-	 * @param array $opts1
-	 * @param array $opts2
-	 * @return boolean
+	 * @param	array	$opts1
+	 * @param	array	$opts2
+	 * @return	boolean
 	 */
 
-	private function _compareConnectionOpts($opts1, $opts2)
+	private function compareConnectionOpts($opts1, $opts2)
 	{
 		return ($opts1['driver'] == $opts2['driver']
 		&& $opts1['host'] == $opts2['host']

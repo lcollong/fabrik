@@ -614,7 +614,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 		// $$$ rob @todo commented query wont work when label/id selected from joined group of look up table
 		// not sure if we should fix this or just remove those elements from the cdd element id/label fields
 		//see http://fabrikar.com/forums/showthread.php?t=15546
-		//$this->_sql[$repeatCounter] = "SELECT DISTINCT($key) AS value, $val AS text FROM ".$db->quoteName($table) .' AS '.$db->quoteName($join->table_join_alias)." $where ".$listModel->_buildQueryJoin()." ";
+		//$this->_sql[$repeatCounter] = "SELECT DISTINCT($key) AS value, $val AS text FROM ".$db->quoteName($table) .' AS '.$db->quoteName($join->table_join_alias)." $where ".$listModel->buildQueryJoin()." ";
 		$sql = "SELECT DISTINCT($key) AS value, $val AS text";
 		$desc = $params->get('cdd_desc_column');
 		if ($desc !== '')

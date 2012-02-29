@@ -73,7 +73,7 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 							$element->getAsField_html($aFields, $aAsFields);
 							$pval= str_replace('___', '.', $val);
 							$query->select(implode(', ', $aFields))->from($db->quoteName($item->db_table_name));
-							$query = $model->_buildQueryJoin($query);
+							$query = $model->buildQueryJoin($query);
 							$query->group($db->quoteName($pval));
 							$query->order($pval.' ASC');
 							$db->setQuery($query);

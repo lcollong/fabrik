@@ -22,7 +22,7 @@ class FabrikViewList extends JView{
 		$model->set('_outPutFormat', 'csv');
 		$exporter->model = $model;
 		JRequest::setVar('limitstart'.$model->getId(), JRequest::getInt('start', 0));
-		JRequest::setVar('limit'.$model->getId(), $exporter->_getStep());
+		JRequest::setVar('limit'.$model->getId(), $exporter->getStep());
 
 		// $$$ rob moved here from csvimport::getHeadings as we need to do this before we get
 		// the table total

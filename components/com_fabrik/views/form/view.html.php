@@ -97,7 +97,7 @@ class fabrikViewForm extends JView
 
 		$this->groups = $model->getGroupView($tmpl);
 		JDEBUG ? $profiler->mark('form view after group view got') : null;
-		$this->assignRef('data', $model->data);
+		$this->assignRef('data', $model->_data);
 		$this->assignRef('modeldata', $model->_data);
 		$this->assignRef('params', $params);
 		$this->assign('tipLocation', $params->get('tiplocation'));
@@ -202,7 +202,7 @@ class fabrikViewForm extends JView
 			//if there is a menu item available AND the form is not rendered in a content plugin or module
 			if (is_object($menu) && !$this->isMambot)
 			{
-				$menu_params = new JForm($menu->params);
+				$menu_params = new JRegistry($menu->params);
 				if (!$menu_params->get('page_title') || $menu_params->get('show_page_title') == 0)
 				{
 					$params->set('page_title', $title);
@@ -470,7 +470,7 @@ class fabrikViewForm extends JView
 
 				// if the view is a form then we should always add the js as long as the element is editable or viewable
 				// if the view is details then we should only add hte js if the element is viewable.
-				if (($elementModel->canUse() && $model->_editable) || $elementModel->canView())
+				if (($elementModel->canUse() && $model->isEditable()) || $elementModel->canView())
 				{
 					for ($c = 0; $c < $max; $c ++)
 					{

@@ -232,6 +232,9 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			if ($join->element_id == $element->id)
 			{
 				$this->join = $join;
+				if (is_string($this->join->params)) {
+					$this->join->params = new JRegistry($this->join->params);
+				}
 				return $this->join;
 			}
 		}
@@ -767,7 +770,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 						// $joinids = $default;
 						$rawname = $this->getFullName(false, true, false) . '_raw';
 						$joinids = explode(GROUPSPLITTER, JArrayHelper::getValue($data, $rawname));
-						$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaults, 'value', 'text', $options_per_row, $this->_editable);
+						$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaults, 'value', 'text', $options_per_row, $this->editable);
 						if ($this->isJoin() && $this->_editable)
 						{
 							$join = $this->getJoin();
@@ -789,7 +792,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 								$tmpids[] = $o;
 							}
 							$html[] = '<div class="fabrikHide">';
-							$html[] = FabrikHelperHTML::aList($displayType, $tmpids, $joinidsName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $joinids, 'value', 'text', $options_per_row, $this->_editable);
+							$html[] = FabrikHelperHTML::aList($displayType, $tmpids, $joinidsName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $joinids, 'value', 'text', $options_per_row, $this->editable);
 							$html[] = '</div>';
 						}
 						$defaultLabel = implode("\n", $html);
@@ -802,7 +805,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 						} 
 						else
 						{
-							$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaults, 'value', 'text', $options_per_row, $this->_editable);
+							$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaults, 'value', 'text', $options_per_row, $this->editable);
 						}
 						$defaultLabel = implode("\n", $html);
 						break;
@@ -815,13 +818,13 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				}
 
 
-				if ($params->get('fabrikdatabasejoin_frontend_select') && $this->_editable)
+				if ($params->get('fabrikdatabasejoin_frontend_select') && $this->editable)
 				{
 					$html[] = '<a href="#" class="toggle-selectoption" title="' . JText::_('COM_FABRIK_SELECT') . '">'.
 					FabrikHelperHTML::image('search.png', 'form', @$this->tmpl, array('alt' => JText::_('COM_FABRIK_SELECT')))."</a>";
 				}
 
-				if ($params->get('fabrikdatabasejoin_frontend_add') && $this->_editable)
+				if ($params->get('fabrikdatabasejoin_frontend_add') && $this->editable)
 				{
 					$html[] = '<a href="#" title="' . JText::_('COM_FABRIK_ADD') . '" class="toggle-addoption">';
 					$html[] = FabrikHelperHTML::image('action_add.png', 'form', @$this->tmpl, array('alt' => JText::_('COM_FABRIK_SELECT'))).'</a>';

@@ -2318,7 +2318,7 @@ class plgFabrik_Element extends FabrikPlugin
 
 		// check if the elements group id is on of the table join groups if it is then we swap over the table name
 		$fromTable = $this->isJoin() ? $this->getJoinModel()->getJoin()->table_join : $origTable;
-		$joinStr = $incjoin ? $listModel->_buildQueryJoin() : $this->buildFilterJoin();
+		$joinStr = $incjoin ? $listModel->buildQueryJoin() : $this->buildFilterJoin();
 		$groupBy = "GROUP BY " . $params->get('filter_groupby', 'text') . " ASC";
 		foreach ($listModel->getJoins() as $aJoin)
 		{
@@ -2865,7 +2865,7 @@ class plgFabrik_Element extends FabrikPlugin
 	protected function getAvgQuery(&$listModel, $label = "'calc'")
 	{
 		$item = $listModel->getTable();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		$groupModel = $this->getGroup();
@@ -2887,7 +2887,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	protected function getSumQuery(&$listModel, $label = "'calc'")
 	{
 		$item = $listModel->getTable();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		$groupModel = $this->getGroup();
@@ -2909,7 +2909,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$params = $this->getParams();
 		$custom_query = $params->get('custom_calc_query', '');
 		$item = $listModel->getTable();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		$groupModel = $this->getGroup();
@@ -2933,7 +2933,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	protected function getMedianQuery(&$listModel, $label = "'calc'")
 	{
 		$item = $listModel->getTable();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		return "SELECT {$this->getFullName(false, false, false)} AS value, $label AS label FROM ".FabrikString::safeColName($item->db_table_name)." $joinSQL $whereSQL ";
 	}
@@ -2942,7 +2942,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	{
 		$db = FabrikWorker::getDbo();
 		$item = $listModel->getTable();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		// $$$ hugh - need to account for 'count value' here!
@@ -3100,7 +3100,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$db = $listModel->getDb();
 		$item = $listModel->getTable();
 		$element = $this->getElement();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$params = $this->getParams();
 		$splitMedian = $params->get('median_split', '');
@@ -3791,10 +3791,10 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	}
 
 	/**
-	 * determines if the element should be shown in the table view
+	 * determines if the element should be shown in the list view
 	 *
 	 * @param object $listModel
-	 * @return bol
+	 * @return bool
 	 */
 
 	function inTableFields(&$listModel)
@@ -3818,7 +3818,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		}
 		if ($table->db_primary_key == $elFullName)
 		{
-			$listModel->_temp_db_key_addded = true;
+			$listModel->temp_db_key_addded = true;
 		}
 		return $bAddElement;
 	}
@@ -4188,7 +4188,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$this->encryptFieldName($name);
 		$where = trim($listModel->_buildQueryWhere(false));
 		$where .= ($where == '') ? ' WHERE ' : ' AND ';
-		$join = $listModel->_buildQueryJoin();
+		$join = $listModel->buildQueryJoin();
 		$where .= "$name LIKE " . $db->Quote(addslashes('%'.JRequest::getVar('value').'%'));
 		$query = "SELECT DISTINCT($name) AS value, $name AS text FROM $tableName $join $where";
 		$query = $listModel->pluginQuery($query);

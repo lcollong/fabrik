@@ -26,7 +26,7 @@ class FabrikFEModelPluginmanager extends JModel{
 	var $_elementLists = array();
 
 	/** @var array containing out put from run plugins */
-	var $_data = array();
+	public $data = array();
 
 	/**
 	 * constructor
@@ -402,7 +402,7 @@ class FabrikFEModelPluginmanager extends JModel{
 		$usedLocations = (array)$params->get('plugin_locations');
 		$usedEvents = (array)$params->get('plugin_events');
 		$states = (array)$params->get('plugin_state');
-		$this->_data = array();
+		$this->data = array();
 
 		if ($type != 'list')
 		{
@@ -476,7 +476,7 @@ class FabrikFEModelPluginmanager extends JModel{
 								$m = $method . '_result';
 								if (method_exists($plugin, $m))
 								{
-									$this->_data[] = $plugin->$m($c);
+									$this->data[] = $plugin->$m($c);
 								}
 							}
 							$runPlugins ++;
@@ -485,12 +485,12 @@ class FabrikFEModelPluginmanager extends JModel{
 							{
 								$runningAway = true;
 							}
-							$mainData = $this->_data;
+							$mainData = $this->data;
 							if ($type == 'list' && $method !== 'observe')
 							{
 								$this->runPlugins('observe', $oRequest, 'list', $plugin, $method);
 							}
-							$this->_data = $mainData;
+							$this->data = $mainData;
 						}
 					}
 				}

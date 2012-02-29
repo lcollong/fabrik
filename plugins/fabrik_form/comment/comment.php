@@ -39,7 +39,7 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 
 	function getEndContent_result($c)
 	{
-		return $this->_data;
+		return $this->data;
 	}
 
 	/**
@@ -211,7 +211,7 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 		}
 		$script .= "\n});";
 		FabrikHelperHTML::addScriptDeclaration($script);
-		$this->_data = $data;
+		$this->data = $data;
 	}
 
 	function getAddCommentForm($params, $reply_to = 0, $master = false)
@@ -698,7 +698,7 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 	 */
 	function _jskit(&$params)
 	{
-		$this->_data = '
+		$this->data = '
  		<div class="js-kit-comments" permalink=""></div>
 <script src="http://js-kit.com/comments.js"></script>';
 	}
@@ -711,10 +711,10 @@ class plgFabrik_FormComment extends plgFabrik_Form {
 	function _intensedebate(&$params)
 	{
 		FabrikHelperHTML::addScriptDeclaration("
-var idcomments_acct = '".$params->get('comment-intesedebate-code')."';
+var idcomments_acct = '" . $params->get('comment-intesedebate-code') . "';
 var idcomments_post_id;
 var idcomments_post_url;");
-		$this->_data = '
+		$this->data = '
 <span id="IDCommentsPostTitle" style="display:none"></span>
 <script type=\'text/javascript\' src=\'http://www.intensedebate.com/js/genericCommentWrapperV2.js\'></script>';
 	}
@@ -729,7 +729,7 @@ var idcomments_post_url;");
 	{
 		if (JRequest::getVar('ajax') == 1)
 		{
-			$this->_data= '';
+			$this->data= '';
 			return;
 		}
 		FabrikHelperHTML::addScriptDeclaration(
@@ -746,7 +746,7 @@ var idcomments_post_url;");
 	})();
 "
 		);
-		$this->_data = '<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/'.$params->get('comment-disqus-subdomain').'/embed.js"></script><noscript><a href="http://rotterdamvooruit.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>';;
+		$this->data = '<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/'.$params->get('comment-disqus-subdomain').'/embed.js"></script><noscript><a href="http://rotterdamvooruit.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>';;
 	}
 
 	/**
@@ -761,7 +761,7 @@ var idcomments_post_url;");
 		if (JFile::exists($jcomments))
 		{
 			require_once($jcomments);
-			$this->_data = '<div id="jcomments" style="clear: both;">
+			$this->data = '<div id="jcomments" style="clear: both;">
                     '.JComments::showComments(JRequest::getVar('rowid'), "com_fabrik_{$formModel->getId()}").'
                     </div>';
 		}

@@ -17,8 +17,6 @@ require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormRedirect extends plgFabrik_Form {
 
-	var $_result = true;
-
 	/**
 	 * process the plugin, called afer form is submitted
 	 *
@@ -39,15 +37,15 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		$app = JFactory::getApplication();
 		$this->formModel = $formModel;
 		$w = new FabrikWorker();
-		$this->_data = new stdClass();
+		$this->data = new stdClass();
 
-		$this->_data->append_jump_url = $params->get('append_jump_url');
-		$this->_data->save_in_session = $params->get('save_insession');
+		$this->data->append_jump_url = $params->get('append_jump_url');
+		$this->data->save_in_session = $params->get('save_insession');
 		$form = $formModel->getForm();
 
 		$this->data = array_merge($this->getEmailData(), $formModel->_formData);
-		$this->_data->jump_page = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
-		$this->_data->thanks_message = $w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data);
+		$this->data->jump_page = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
+		$this->data->thanks_message = $w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data);
 		if (!$this->shouldRedirect($params))
 		{
 			//clear any sessoin redirects
@@ -65,11 +63,11 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		$this->_storeInSession($formModel);
 		$sshowsystemmsg[$this->renderOrder] = true;
 		$session->set($context . 'showsystemmsg', $sshowsystemmsg);
-		if ($this->_data->jump_page != '')
+		if ($this->data->jump_page != '')
 		{
-			$this->_data->jump_page = $this->buildJumpPage($formModel);
+			$this->data->jump_page = $this->buildJumpPage($formModel);
 			//3.0 ajax/module redirect logic handled in form controller not in plugin
-			$surl[$this->renderOrder] = $this->_data->jump_page;
+			$surl[$this->renderOrder] = $this->data->jump_page;
 			$session->set($context.'url', $surl);
 			$session->set($context.'redirect_content_how', $params->get('redirect_content_how', 'popup'));
 			$session->set($context.'redirect_content_popup_width', $params->get('redirect_content_popup_width', '300'));
@@ -91,7 +89,7 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 			$session->set($context.'url', $surl);
 		}
 
-		$smsg[$this->renderOrder] = $this->_data->thanks_message;
+		$smsg[$this->renderOrder] = $this->data->thanks_message;
 		$session->set($context . 'msg', $smsg);
 		return true;
 	}
@@ -164,16 +162,16 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		}
 		else
 		{
-			if (!empty($this->_data->jump_page))
+			if (!empty($this->data->jump_page))
 			{
 				//ajax form submit load redirect page in window
-				if (strstr($this->_data->jump_page, '?'))
+				if (strstr($this->data->jump_page, '?'))
 				{
-					$this->_data->jump_page .= '&tmpl=component';
+					$this->data->jump_page .= '&tmpl=component';
 				}
 				else
 				{
-					$this->_data->jump_page .= '?tmpl=component';
+					$this->data->jump_page .= '?tmpl=component';
 				}
 				return false;
 			}
@@ -197,10 +195,10 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		//being appended to the element name. But I can't reproduce the issue (Testing locally php 5.2.6 on my Gigs table)
 		// if there is still an issue it would make a lot more sense to manually set the element's table model rather than calling
 		//force in the getFullName() code - as doing so increases the table query count by a magnitude of 2
-		$jumpPage = $this->_data->jump_page;
+		$jumpPage = $this->data->jump_page;
 		$reserved = array('format','view','layout','task');
 		$queryvars = array();
-		if ($this->_data->append_jump_url == '1')
+		if ($this->data->append_jump_url == '1')
 		{
 			$groups = $formModel->getGroupsHiarachy();
 			foreach ($groups as $group)
@@ -275,7 +273,7 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 	{
 		$app = JFactory::getApplication();
 		$store = array();
-		if ($this->_data->save_in_session == '1')
+		if ($this->data->save_in_session == '1')
 		{
 			//@TODO - rob, you need to look at this, I really only put this in as a band-aid.
 			// $$$ hugh - we need to guesstimate the 'type', otherwise when the session data is processed

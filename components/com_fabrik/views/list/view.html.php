@@ -186,16 +186,17 @@ class FabrikViewList extends JView{
 		$c = 0;
 
 		$pluginManager->runPlugins('onLoadJavascriptInstance', $model, 'list');
-		$aObjs = $pluginManager->_data;
+		$aObjs = $pluginManager->data;
 
-		if (!empty($aObjs)) {
+		if (!empty($aObjs))
+		{
 			$script[] = "list.addPlugins([\n";
 			$script[] = "  " . implode(",\n  ", $aObjs);
 			$script[] = "]);";
 		}
 		//@since 3.0 inserts content before the start of the list render (currently on f3 tmpl only)
 		$pluginManager->runPlugins('onGetContentBeforeList', $model, 'list');
-		$this->assign('pluginBeforeList', $pluginManager->_data);
+		$this->assign('pluginBeforeList', $pluginManager->data);
 
 		$script[] = $model->filterJs;
 		$script[] = "});";
@@ -354,7 +355,7 @@ class FabrikViewList extends JView{
 		$this->canGroupBy = $model->canGroupBy();
 		$this->assignRef('navigation', $nav);
 		$this->nav = JRequest::getInt('fabrik_show_nav', $params->get('show-table-nav', 1)) ? $nav->getListFooter($this->renderContext, $this->get('tmpl')) : '';
-		$this->nav = '<div class="fabrikNav">'.$this->nav.'</div>';
+		$this->nav = '<div class="fabrikNav">' . $this->nav . '</div>';
 		$this->fabrik_userid = $user->get('id');
 		$this->canDelete = $model->deletePossible() ? true : false;
 		$tmpl = $this->get('tmpl');
@@ -400,7 +401,7 @@ class FabrikViewList extends JView{
 		$this->assign('isGrouped', !($this->get('groupBy') == ''));
 		$this->assign('colCount', count($this->headings));
 		$this->assign('hasButtons', $this->get('hasButtons'));
-		$this->assignRef('grouptemplates', $model->grouptemplates);
+		$this->assignRef('grouptemplates', $model->groupTemplates);
 		$this->assignRef('params', $params);
 		$this->loadTemplateBottom();
 		$this->getManagementJS($this->rows);

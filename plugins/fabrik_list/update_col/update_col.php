@@ -88,7 +88,7 @@ class plgFabrik_ListUpdate_col extends plgFabrik_List
 		JArrayHelper::toInteger($ids);
 		$this->_row_count = count($ids);
 		$ids = implode(',', $ids);
-		$model->_pluginQueryWhere[] = $item->db_primary_key . ' IN ( '.$ids.')';
+		$model->addPluginQueryWhere($item->db_primary_key . ' IN ( '.$ids.')');
 		$data = $model->getData();
 
 		//$$$servantek reordered the update process in case the email routine wants to kill the updates

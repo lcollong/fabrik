@@ -152,11 +152,11 @@ class plgFabrik_ListRadius_search extends plgFabrik_List {
 
 	/**
 	 * this is used to put the radius search data into the listfilter model
-	 * called from its getPostFilters() method. The data is then sent to tableModel->_request
+	 * called from its getPostFilters() method. The data is then sent to listFilter->request
 	 * which is then stored in the session for future use
-	 * @param object plug-in $params
-	 * @param object table $model
-	 * @param array filters created from listfilter::getPostFilters();
+	 * @param	object	plug-in $params
+	 * @param 	object	list $model
+	 * @param	array	filters created from listfilter::getPostFilters();
 	 */
 
 	function onGetPostFilter(&$params, &$model, &$args)
@@ -252,7 +252,7 @@ class plgFabrik_ListRadius_search extends plgFabrik_List {
 	 * when the search form is posted we need to append the radius
 	 * search to the filter query
 	 * @param object plug-in $params
-	 * @param object table $model
+	 * @param object list $model
 	 */
 
 	function onFiltersGot(&$params, &$model)

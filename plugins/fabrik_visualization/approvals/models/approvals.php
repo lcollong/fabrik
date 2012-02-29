@@ -54,7 +54,7 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 			}
 
 			$query->select("'$item->label' AS type, ".$item->db_primary_key.' AS pk, '.implode(',', $asfields))->from($db->quoteName($item->db_table_name));
-			$query = $listModel->_buildQueryJoin($query);
+			$query = $listModel->buildQueryJoin($query);
 			$query->where(str_replace('___', '.', $approveEls[$x]) .' = 0');
 			$db->setQuery($query, 0, 5);
 			$rows = $db->loadObjectList();

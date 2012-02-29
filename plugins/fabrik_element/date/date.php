@@ -304,11 +304,11 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 		$listModel = $this->getListModel();
 		// $$$ hugh - offset_tz of 1 means 'in MySQL format, GMT'
 		// $$$ hugh - offset_tz of 2 means 'in MySQL format, Local TZ'
-		if ($listModel->_importingCSV && $params->get('date_csv_offset_tz', '0') == '1')
+		if ($listModel->importingCSV && $params->get('date_csv_offset_tz', '0') == '1')
 		{
 			return $val;
 		}
-		else if ($listModel->_importingCSV && $params->get('date_csv_offset_tz', '0') == '2')
+		else if ($listModel->importingCSV && $params->get('date_csv_offset_tz', '0') == '2')
 		{
 			return $this->toMySQLGMT(JFactory::getDate($val));
 		}
@@ -1356,7 +1356,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	{
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		return "SELECT FROM_UNIXTIME(AVG(UNIX_TIMESTAMP($name))) AS value, $label AS label FROM " . $db->quoteName($table->db_table_name) . " $joinSQL $whereSQL";
@@ -1373,7 +1373,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 	{
 		$table = $listModel->getTable();
 		$db = $listModel->getDb();
-		$joinSQL = $listModel->_buildQueryJoin();
+		$joinSQL = $listModel->buildQueryJoin();
 		$whereSQL = $listModel->_buildQueryWhere();
 		$name = $this->getFullName(false, false, false);
 		//$$$rob not actaully likely to work due to the query easily exceeding mySQL's TIMESTAMP_MAX_VALUE value but the query in itself is correct

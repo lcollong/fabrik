@@ -20,7 +20,7 @@ class FabrikFEModelCSVExport {
 
 	public $outPutFormat = 'csv';
 
-	public function _getStep()
+	public function getStep()
 	{
 		return $this->model->getParams()->get('csv_export_step', $this->step);
 	}
@@ -118,19 +118,19 @@ class FabrikFEModelCSVExport {
 					array_unshift($a, ' ');
 				}
 				$this->carriageReutrnFix($a);
-				$str .= implode($this->delimiter, array_map(array($this, "_quote"), array_values($a)));
+				$str .= implode($this->delimiter, array_map(array($this, "quote"), array_values($a)));
 				$str .= "\n";
 			}
 		}
 		$res = new stdClass();
 		$res->total = $total;
-		$res->count = $start + $this->_getStep();
+		$res->count = $start + $this->getStep();
 		$res->file= $filepath;
 		$res->limitStart = $start;
-		$res->limitLength = $this->_getStep();
+		$res->limitLength = $this->getStep();
 		if ($res->count >= $res->total)
 		{
-			$this->_addCalculations($a, $str);
+			$this->addCalculations($a, $str);
 		}
 		error_reporting(0);
 		$ok = JFile::write($filepath, $str);
@@ -248,7 +248,7 @@ class FabrikFEModelCSVExport {
 	 * @param string to out put as csv file $str
 	 */
 
-	function _addCalculations($a, &$str)
+	protected function addCalculations($a, &$str)
 	{
 		if (JRequest::getVar('inccalcs') == 1)
 		{
@@ -294,13 +294,13 @@ class FabrikFEModelCSVExport {
 						}
 					}
 				}
-				$str .= implode($this->delimiter, array_map(array($this, "_quote"), array_values($aCalcs[$calkey])));
+				$str .= implode($this->delimiter, array_map(array($this, "quote"), array_values($aCalcs[$calkey])));
 				$str .= "\n";
 			}
 		}
 	}
 
-	function _quote($n)
+	protected function quote($n)
 	{
 		$n = '"'.str_replace('"', '""', $n).'"';
 		// $$$ hugh - func won't exist if PHP wasn't built with MB string
@@ -431,7 +431,7 @@ class FabrikFEModelCSVExport {
 		{
 			array_unshift($h, JText::_('Calculation'));
 		}
-		$h = array_map(array($this, "_quote"), $h);
+		$h = array_map(array($this, "quote"), $h);
 		return $h;
 	}
 

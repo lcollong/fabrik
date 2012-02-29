@@ -451,7 +451,7 @@ class FabrikFEModelImportcsv extends JModelForm{
 		$dropData = (int)JArrayHelper::getValue($jform, 'drop_data', 0);
 		$overWrite = (int)JArrayHelper::getValue($jform, 'overwrite', 0);
 		$model = $this->getlistModel();
-		$model->_importingCSV = true;
+		$model->importingCSV = true;
 		$item = $model->getTable();
 		$formModel = $model->getFormModel();
 		if ($dropData)

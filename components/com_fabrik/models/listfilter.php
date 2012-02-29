@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 class FabrikFEModelListfilter extends FabModel {
 
-	protected $_request = null;
+	protected $request = null;
 
 	function setListModel($model)
 	{
@@ -53,12 +53,12 @@ class FabrikFEModelListfilter extends FabModel {
 		//form or detailed views should not apply filters? what about querystrings to set up the default values?
 		if (JRequest::getCmd('view') == 'details' || JRequest::getCmd('view') == 'form')
 		{
-			$this->_request = array();
-			return $this->_request;
+			$this->request = array();
+			return $this->request;
 		}
-		if (isset($this->_request))
+		if (isset($this->request))
 		{
-			return $this->_request;
+			return $this->request;
 		}
 
 		$filters = array();
@@ -68,8 +68,8 @@ class FabrikFEModelListfilter extends FabModel {
 		if (JRequest::getInt('clearfilters') === 1 && $this->activeTable())
 		{
 			$this->clearFilters();
-			$this->_request = array();
-			return $this->_request;
+			$this->request = array();
+			return $this->request;
 		}
 
 		if (JRequest::getVar('replacefilters') == 1)
@@ -112,8 +112,8 @@ class FabrikFEModelListfilter extends FabModel {
 		$this->getPostFilters($filters);
 
 		FabrikHelperHTML::debug($filters, 'filter array: after getpostfilters');
-		$this->_request = $filters;
-		FabrikHelperHTML::debug($this->_request, 'filter array');
+		$this->request = $filters;
+		FabrikHelperHTML::debug($this->request, 'filter array');
 		$this->checkAccess($filters);
 		// echo "<pre>";print_r($filters);echo "</pre>";
 		return $filters;
@@ -1218,7 +1218,7 @@ class FabrikFEModelListfilter extends FabModel {
 	{
 		$pluginManager = FabrikWorker::getPluginManager();
 		$pluginManager->runPlugins('onGetFilterKey', $this->listModel, 'list');
-		return $pluginManager->_data;
+		return $pluginManager->data;
 	}
 
 }
