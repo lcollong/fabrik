@@ -151,7 +151,7 @@ class plgFabrik_Validationrule extends FabrikPlugin
 			$name .= '_allowempty';
 		}
 		$label = '<span>' . $this->getLabel($elementModel, $c) . '</span>';
-		$str = FabrikHelperHTML::image($name.'.png', 'form', $tmpl, array('class' => 'fabrikTip', 'opts' => "{notice:true}",  'title' => $label));
+		$str = FabrikHelperHTML::image($name.'.png', 'form', $tmpl, array('class' => 'fabrikTip ' . $this->_pluginName, 'opts' => "{notice:true}",  'title' => $label));
 		return $str;
 	}
 

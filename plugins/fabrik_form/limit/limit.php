@@ -37,7 +37,8 @@ class plgFabrik_FormLimit extends plgFabrik_Form {
 		{
 			return true;
 		}
-		if (JRequest::getCmd('view') === 'details')
+
+		if (JRequest::getCmd('view') === 'details' || JRequest::getInt('rowid', 0) > 0)
 		{
 			return true;
 		}

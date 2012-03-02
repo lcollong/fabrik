@@ -1561,6 +1561,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 						$fullforeginKey = $oJoinPk;
 					}
 
+
 					// $$$rob test if the joined to table's key (as part of the join) is the same as its primary key
 					// if it is then we dont want to overwrite the foreginkey as we will in fact be overwriting the pk
 
@@ -1584,9 +1585,14 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 						// pointing to PK on main table.  BUT ... we may have a situation where neither of the selected keys are
 						// a PK, i.e. two records are joined by some other field.  In which case we do not want to set the FK val!
 						// So, we need some logic here to handle that!
-						$fkVal = JArrayHelper::getValue($joinKeys, $oJoin->join_from_table.'.'.$oJoin->table_key, $insertId);
-						$data[$fullforeginKey] = $fkVal;
-						$data[$fullforeginKey . '_raw'] = $fkVal;
+						// $$$ hugh - OK, I think this is the test we need to see if neither ends of the join are a PK,
+						// and if so, don't modify any data, as we're joining on some other field that isn't the PK of either table.
+						if ($oJoin->join_from_table.'.'.$oJoin->table_key == $origTableKey)
+						{
+							$fkVal = JArrayHelper::getValue($joinKeys, $oJoin->join_from_table.'.'.$oJoin->table_key, $insertId);
+							$data[$fullforeginKey] = $fkVal;
+							$data[$fullforeginKey . "_raw"] = $fkVal;
+						}
 					}
 					if ($item->db_primary_key == '')
 					{
