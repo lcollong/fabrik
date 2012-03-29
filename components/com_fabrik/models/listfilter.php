@@ -388,6 +388,8 @@ class FabrikFEModelListfilter extends FabModel {
 		{
 			$app->setUserState('com_fabrik.searchform.form'.$fromFormId.'.searchall', '');
 		}
+		
+		
 	}
 
 	protected function defaultAccessLevel()

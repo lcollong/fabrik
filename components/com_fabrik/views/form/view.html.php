@@ -560,7 +560,7 @@ class fabrikViewForm extends JView
 		
 		$str = implode("\n", $script);
 		FabrikHelperHTML::script($srcs, $str);
-		
+
 		$pluginManager->runPlugins('onAfterJSLoad', $model);
 	}
 

@@ -1409,7 +1409,6 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		}
 		$tmpFile = $file['tmp_name'];
 		$uploader = $this->getFormModel()->getUploader();
-
 		if ($params->get('ul_file_types') == '')
 		{
 			$params->set('ul_file_types', implode(',', $this->_getAllowedExtension()));

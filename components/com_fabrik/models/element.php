@@ -346,7 +346,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$dbtable = $this->actualTableName();
 		$db = JFactory::getDbo();
 		$table = $this->getListModel()->getTable();
-		//$fullElName = $db->quoteName("$dbtable" . '___' . $this->element->name);//wasnt working for filepload elements in list view.
+		//$fullElName = $db->quoteName($dbtable . '___' . $this->element->name);//wasnt working for filepload elements in list view.
 		$fullElName = $db->quoteName($jointable . '___' . $this->element->name);
 		$sql = '(SELECT GROUP_CONCAT(' . $jkey . ' SEPARATOR \'' . GROUPSPLITTER . '\') FROM ' . $jointable . ' WHERE parent_id = ' . $table->db_primary_key . ')';
 		if ($addAs)
@@ -406,7 +406,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$dbtable = $this->actualTableName();
 		$db = FabrikWorker::getDbo();
 		$table = $this->getListModel()->getTable();
-		$fullElName = JArrayHelper::getValue($opts, 'alias', $db->quoteName("$dbtable" . '___' . $this->element->name));
+		$fullElName = JArrayHelper::getValue($opts, 'alias', $db->quoteName($dbtable . '___' . $this->element->name));
 		$k = $db->quoteName($dbtable) . '.' . $db->quoteName($this->element->name);
 		$secret = JFactory::getConfig()->get('secret');
 		if ($this->encryptMe())
@@ -993,7 +993,7 @@ class plgFabrik_Element extends FabrikPlugin
 	 * @param	string	$tmpl
 	 * @return string
 	 */
-	
+
 	protected function addErrorHTML($repeatCounter, $tmpl = '')
 	{
 		$err = $this->getErrorMsg($repeatCounter);
@@ -1331,9 +1331,7 @@ class plgFabrik_Element extends FabrikPlugin
 		$element->id = $this->getHTMLId($c);
 		$element->className = 'fb_el_' . $element->id;
 		$element->containerClass = $this->containerClass($element);
-
 		$element->element = $this->getElementOutPut($model->_data, $c, $groupModel);
-
 		if ($params->get('tipsoverelement', false))
 		{
 			$element->element = $this->rollover($element->element, $model->_data);
@@ -1803,7 +1801,6 @@ class plgFabrik_Element extends FabrikPlugin
 		{
 			$element = $this->getElement();
 			//$pluginParams = new fabrikParams($element->params, $this->_xmlPath, 'fabrikplugin');
-			echo "loading path $this->_xmlPath <br>";
 			
 			//$pluginParams = new JParameter($element->params, $this->_xmlPath);
 			//$pluginParams->bind($element);
@@ -2003,7 +2000,6 @@ class plgFabrik_Element extends FabrikPlugin
 				//is there a filter with this elements name
 				if ($k !== false)
 				{
-
 					//if its a search all filter dont use its value.
 					//if we did the next time the filter form is submitted its value is turned
 					//from a search all filter into an element filter
@@ -2737,8 +2733,9 @@ class plgFabrik_Element extends FabrikPlugin
 	{
 		if ($this->encryptMe())
 		{
+			$db = FabrikWorker::getDbo();
 			$secret = JFactory::getConfig()->get('secret');
-			$key = "AES_DECRYPT($key, '" . $secret . "')";
+			$key = 'AES_DECRYPT(' . $key . ', ' . $db->quote($secret) . ')';
 		}
 	}
 
@@ -4805,8 +4802,12 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$classes[] = $this->getParams()->get('tablecss_header_class');
 		return implode(' ', $classes);
 	}
-	
-	
+
+	public function fromXMLFormat($v)
+	{
+		return $v;
+	}
+
 	/**
 	* allows the element to pre-process a rows data before and join mergeing of rows
 	* occurs. Used in calc element to do cals on actual row rather than merged row

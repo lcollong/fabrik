@@ -24,7 +24,8 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 	{
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		if ($params->get('cdd_display_type') == 'auto-complete') {
+		if ($params->get('cdd_display_type') == 'auto-complete')
+		{
 			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, 'fabrikcascadingdropdown');
 		}
 		FabrikHelperHTML::script('media/com_fabrik/js/lib/Event.mock.js');
@@ -170,7 +171,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 				case 'radio':
 				$str .= "<div class='fabrikSubElementContainer' id='$id'>";
 				$str .= FabrikHelperHTML::radioList($tmp, $name, 'class="'.$class.'" '.$disabled.' id="'.$id.'"', $default, 'value', 'text');
-				$str .= " <img src=\"".COM_FABRIK_LIVESITE."media/com_fabrik/images/ajax-loader.gif\" class=\"loader\" alt=\"".JText::_('Loading')."\" style=\"display:none;padding-left:10px;\" />";
+				$str .= " <img src=\''.COM_FABRIK_LIVESITE."media/com_fabrik/images/ajax-loader.gif\" class=\"loader\" alt=\''.JText::_('Loading')."\" style=\"display:none;padding-left:10px;\" />";
 				break;*/
 				default:
 				case 'dropdown':
@@ -367,7 +368,7 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 			{
 				JError::raiseError(500, 'No watch element set up for cdd'.$this->getElement()->id);
 			}
-			$this->watchElement = $this->getForm()->getElement($watch, true);
+			$this->watchElement = $this->getFormModel()->getElement($watch, true);
 		}
 		return $this->watchElement;
 	}
@@ -413,7 +414,8 @@ class plgFabrik_ElementCascadingdropdown extends plgFabrik_ElementDatabasejoin
 					}
 					else
 					{
-						if (isset($formModel->_data) || isset($formModel->_formData)) {
+						if (isset($formModel->_data) || isset($formModel->_formData))
+						{
 							if (isset($formModel->_data))
 							{
 								$whereval = $elementModel->getValue($formModel->_data, $repeatCounter);

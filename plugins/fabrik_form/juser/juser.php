@@ -188,7 +188,7 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 	 * @return	bool
 	 */
 
-	public function onDeleteRowsForm($params, &$formModel, &$groups)
+	function onDeleteRowsForm(&$params, &$formModel, &$groups)
 	{
 		if ($params->get('juser_field_userid') != '' && $params->get('juser_delete_user', false)) {
 			$useridfield = $this->getFieldName($params, 'juser_field_userid');
@@ -242,7 +242,7 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 
 		if ($ftable == $jos_users)
 		{
-			$formModel->storeMainRow = false;
+			$formModel->_storeMainRow = false;
 		}
 
 		$usersConfig = JComponentHelper::getParams('com_users');
@@ -271,7 +271,7 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 		if ($params->get('juser_field_userid') != '')
 		{
 			$this->useridfield = $this->getFieldName($params, 'juser_field_userid');
-			if (!empty($formModel->rowId))
+			if (!empty($formModel->_rowId))
 			{
 				$original_id = (int)$formModel->_formData[$this->useridfield];
 			}
@@ -700,21 +700,21 @@ class plgFabrik_FormJUser extends plgFabrik_Form {
 		$xid = intval( $db->loadResult());
 		if ($xid && $xid != intval($post['id']))
 		{
-			$this->raiseError($formModel->errors, $this->usernamefield, JText::_('JLIB_DATABASE_ERROR_USERNAME_INUSE'));
+			$this->raiseError($formModel->_arErrors, $this->usernamefield, JText::_('JLIB_DATABASE_ERROR_USERNAME_INUSE'));
 			$ok = false;
 		}
 
 		// check for existing email
 		$query = 'SELECT id'
 		. ' FROM #__users '
-		. ' WHERE email = '. $db->quote($post['email'])
+		. ' WHERE email = '. $db->Quote($post['email'])
 		. ' AND id != '. (int)$post['id']
 		;
 		$db->setQuery($query);
 		$xid = intval( $db->loadResult());
 		if ($xid && $xid != intval($post['id']))
 		{
-			$this->raiseError($formModel->errors, $this->emailfield, JText::_('JLIB_DATABASE_ERROR_EMAIL_INUSE'));
+			$this->raiseError($formModel->_arErrors, $this->emailfield, JText::_('JLIB_DATABASE_ERROR_EMAIL_INUSE'));
 			$ok = false;
 		}
 		return $ok;

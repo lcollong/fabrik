@@ -17,6 +17,7 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 
 	protected $fieldDesc = 'TEXT';
 
+
 	/**
 	 * this really does get just the default value (as defined in the element's settings)
 	 * @return unknown_type

@@ -89,7 +89,8 @@ class FabrikFEModelFormsession extends FabModel {
 		$row->referring_url  = JRequest::getVar('HTTP_REFERER', '', 'server');
 		$row->data = $data;
 		$this->setCookie($hash);
-		if (!$row->store()) {
+		if (!$row->store())
+		{
 			echo $row->getError();
 		}
 		// $$$ hugh - if we're saving the formdata in the session, we should set 'session.on'

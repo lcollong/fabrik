@@ -214,6 +214,19 @@ class FabrikControllerForm extends JController
 				// $$$ hugh - special case to allow custom code to specify that
 				// the form should not be cleared after a failed AJAX submit
 				$session = JFactory::getSession();
+				$context = $model->getRedirectContext();
+				$redirect_opts['redirect_how'] = $session->get($context . 'redirect_content_how', 'popup');
+				$redirect_opts['width'] = (int)$session->get($context . 'redirect_content_popup_width', '300');
+				$redirect_opts['height'] = (int)$session->get($context . 'redirect_content_popup_height', '300');
+				$redirect_opts['x_offset'] = (int)$session->get($context . 'redirect_content_popup_x_offset', '0');
+				$redirect_opts['y_offset'] = (int)$session->get($context . 'redirect_content_popup_y_offset', '0');
+				$redirect_opts['title'] = $session->get($context . 'redirect_content_popup_title', '');
+				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
+			}
+			else if ($this->isMambot) {
+				// $$$ hugh - special case to allow custom code to specify that
+				// the form should not be cleared after a failed AJAX submit
+				$session = JFactory::getSession();
 				$context = 'com_fabrik.form.'.$model->get('id').'.redirect.';
 				$redirect_opts['reset_form'] = $session->get($context.'redirect_content_reset_form', '1') == '1';
 			}

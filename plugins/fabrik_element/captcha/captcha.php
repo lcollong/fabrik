@@ -194,7 +194,7 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 				$type = 'hidden';
 			}
 			$sizeInfo = ' size="' . $size . '"';
-			$str[] = '<input class="inputbox '.$type.'" type="'.$type.'" name="'.$name.'" id="'.$id.'" '.$sizeInfo.' value="" />';
+			$str[] = '<input class="inputbox ' . $type . '" type="' . $type . '" name="' . $name . '" id="' . $id . '" '.$sizeInfo.' value="" />';
 			return implode("\n", $str);
 		}
 	}

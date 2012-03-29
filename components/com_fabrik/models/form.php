@@ -302,6 +302,15 @@ class FabrikFEModelForm extends FabModelForm
 			{
 				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom_css.php?c=".$this->getId().'&amp;view='.$v);
 			}
+			// $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
+			// custom.css - for backward compat with existing 2.x custom.css
+			// custom_css.php - what we'll recommend people use for custom css moving foward.
+			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/'.$tmpl.'/custom.css')) {
+				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom.css");
+			}
+			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/'.$tmpl.'/custom_css.php')) {
+				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom_css.php?c=".$this->getId().'&amp;view='.$v);
+			}
 		}
 
 		if ($app->isAdmin() && JRequest::getVar('tmpl') === 'components')
@@ -1500,7 +1509,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 						// not passing in the correct table name - see notes line 720 for explaination
 						// $listModel->storeRow($repData, $joinRowId, true, $item->db_table_name);
 						$listModel->storeRow($repData, $joinRowId, true, $joinGroupTable);
-						if ((int)$joinRowId === 0)
+						if ((int) $joinRowId === 0)
 						{
 							$joinRowId = $listModel->lastInsertId;
 							// $$$ hugh - need to set PK element value for things like email plugin
@@ -1536,9 +1545,11 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 					}
 					$joinDb->setQuery($query);
 					$joinDb->query();
+
 				}
 				else
 				{
+
 					// $$$ hugh - trying to get one-to-one joins working where parent.fk = child.pk (ie where parent points to child)
 					// So ... if we have that situation, what we will see next is
 					// if (($fullforeginKey != $oJoinPk || (int)$data['rowid'] === 0) && ($fullforeginKey != "{$oJoin->table_join}___{$oJoin->table_key}" || $oJoin->table_key === $oJoin->table_join_key)) {}
@@ -1588,6 +1599,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 						$data[$fullforeginKey] = $fkVal;
 						$data[$fullforeginKey . '_raw'] = $fkVal;
 					}
+
 				}
 				if ($item->db_primary_key == '')
 				{
@@ -2443,7 +2455,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 							{
 								$rawval = str_replace('`', '', $rawval);
 							}
-							$aEls[$label . "(raw)"] = JHTML::_('select.option', $rawval, $label . "(raw)");
+							$aEls[$label . "(raw)"] = JHTML::_('select.option', $rawval, $label . '(raw)');
 						}
 					}
 				}
@@ -2532,7 +2544,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		}
 		if ($this->getListModel()->getParams()->get('sef-slug', '') !== '')
 		{
-			$this->rowId = explode(":", $this->rowId);
+			$this->rowId = explode(':', $this->rowId);
 			$this->rowId = array_shift($this->rowId);
 		}
 		// $$$ hugh - for some screwed up reason, when using SEF, rowid=-1 ends up as :1
@@ -4050,6 +4062,18 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 	public function isEditable()
 	{
 		return $this->editable;
+	}
+
+	/**
+	 * helper method to get the session redirect key. Redirect plugin stores this
+	 * other form plugins such as twitter or paypal may need to query the session to perform the final redirect
+	 * once the user has returned from those sites.
+	 * @return	string	the session key to store redirect information (note: ends in '.')
+	 */
+	public function getRedirectContext()
+	{
+		return 'com_fabrik.form.' . $this->getId() . '.redirect.';
+
 	}
 
 	/**

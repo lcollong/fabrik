@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+		<fieldset name="plg-list-pivot">
+			<field name="pivot_access" 
+				type="accesslevel" 
+				repeat="true"
+				label="PLG_LIST_PIVOT_VALUE_ACCESS_LABEL"/>
+				
+			<field name="pivot_button_label"
+				type="text"
+				size="20"
+				repeat="true"
+				label="PLG_LIST_PIVOT_BUTTON_LABEL_LABEL"
+				description="PLG_LIST_PIVOT_BUTTON_LABEL_DESC" />
+					
+			<field name="pivot_heading"
+				type="text"
+				size="40"
+				repeat="true"
+				label="PLG_LIST_PIVOT_TITLE_LABEL"
+				descirption="PLG_LIST_PIVOT_TITLE_DESC" />
+					
+			<field name="pivot_value"
+				type="listfields"
+				valueformat="tableelement"
+				repeat="true"
+				label="PLG_LIST_PIVOT_VALUE_FIELD_LABEL"
+				description="PLG_LIST_PIVOT_VALUE_FIELD_DESC" />
+				
+			<field name="pivot_xcol"
+				type="listfields"
+				valueformat="tableelement"
+				repeat="true"
+				label="PLG_LIST_PIVOT_XCOL_FIELD_LABEL"
+				description="PLG_LIST_PIVOT_XCOL_FIELD_DESC" />
+				
+			<field name="pivot_ycol"
+				type="listfields"
+				valueformat="tableelement"
+				repeat="true"
+				label="PLG_LIST_PIVOT_YCOL_FIELD_LABEL"
+				description="PLG_LIST_PIVOT_YCOL_FIELD_DESC" />
+		</fieldset>
+	</fields>
+</form>

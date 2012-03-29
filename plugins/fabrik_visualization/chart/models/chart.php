@@ -463,14 +463,7 @@ class fabrikModelChart extends FabrikFEModelVisualization
 			case 'p':
 			case 'p3':
 				$legends = $params->get('graph_show_legend', '');
-				if ($total > 1)
-				{
-					$axisLabels = (array)$params->get('chart_axis_labels');
-				}
-				else
-				{
-					$axisLabels = explode('|', $glabels[0]);
-				}
+				$axisLabels = ($total > 1) ? (array)$params->get('chart_axis_labels') : explode('|', $glabels[0]);
 				break;
 			default:
 				$axisLabels = explode('|', $glabels[0]);

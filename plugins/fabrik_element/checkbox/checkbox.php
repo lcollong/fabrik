@@ -16,13 +16,13 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 	protected $hasLabel = false;
 	
 	protected $inputType = 'checkbox';
-	
+
 	/**
 	 * set the element id
 	 * and maps parameter names for common ElementList options
 	 * @param	int	$id
 	 */
-	
+
 	public function setId($id)
 	{
 		parent::setId($id);
@@ -160,14 +160,14 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 		$value = $this->prepareFilterVal($value);
 		return parent::getFilterValue($value, $condition, $eval);
 	}
-	
+
 	/**
 	* can be overwritten in add on classes
 	* @param mixed thie elements posted form data
 	* @param array posted form data
 	* @return string
 	*/
-	
+
 	function storeDatabaseFormat($val, $data)
 	{
 		if (is_array($val))
@@ -178,6 +178,10 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 		if (is_array($val) || is_object($val))
 		{
 			return json_encode($val);
+		}
+		else
+		{
+			return isset($val) ? $val : '';
 		}
 	}
 

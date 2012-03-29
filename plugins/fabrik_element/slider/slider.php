@@ -105,6 +105,6 @@ class plgFabrik_ElementSlider extends plgFabrik_Element {
 		$opts = json_encode($opts);
 		return "new FbSlider('$id', $opts)";
 	}
-
+	
 }
 ?>

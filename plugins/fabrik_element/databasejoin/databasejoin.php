@@ -671,7 +671,6 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$groupModel = $this->getGroup();
 		$element = $this->getElement();
 		$aGroupRepeats[$element->group_id] = $groupModel->canRepeat();
-
 		$displayType = $params->get('database_join_display_type', 'dropdown');
 		$db = $this->getDb();
 		if (!$db)

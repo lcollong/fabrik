@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<updates>
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<update>
+		<name>Fabrik cron: gcalsync</name>
+		<description>Fabrik cron: gcalsync</description>
+		<element>plg_cron_gcalsync</element>
+		<type>plugin</type>
+		<folder>fabrik_cron</folder>
+		<version>3.0.4</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_cron_gcalsync_3.0.4.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http://pollen-8.co.uk</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
+</updates>

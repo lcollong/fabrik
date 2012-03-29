@@ -102,7 +102,7 @@ class FabrikViewList extends JView{
 		{ 
 			$opts->popup_offset_x = (int)$xOffset;
 		}
-		
+
 		$yOffset = $params->get('popup_offset_y', '');
 		if ($yOffset !== '')
 		{

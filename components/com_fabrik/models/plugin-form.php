@@ -269,6 +269,7 @@ class plgFabrik_Form extends FabrikPlugin
 						else
 						{
 							$this->emailData[$k . '_raw'] = $model->formDataWithTableName['join'][$group->join_id][$k];
+
 						}
 					}
 					else

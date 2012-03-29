@@ -23,7 +23,7 @@ class fabrikViewApprovals extends JView
 
 		$this->calName = $this->get('VizName');
 
-		$this->assignRef('params', $this->get('PluginParams'));
+		$this->assignRef('params', $model->getParams());
 		$tmpl = $this->params->get('approvals_layout', $tmpl);
 		$tmplpath = JPATH_SITE . '/plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);

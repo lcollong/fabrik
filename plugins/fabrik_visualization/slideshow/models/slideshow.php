@@ -228,7 +228,7 @@ class fabrikModelSlideshow extends FabrikFEModelVisualization {
  	function getFilters()
  	{
  	  $params = $this->getParams();
- 	  $listids 	= (array)$params->get('slideshow_viz_table');
+ 	  $listids 	= (array) $params->get('slideshow_viz_table');
  	  $listModels = $this->getlistModels($listids);
  	  $filters = array();
  	  foreach ($listModels as $listModel)
@@ -243,7 +243,7 @@ class fabrikModelSlideshow extends FabrikFEModelVisualization {
 		if (!isset($this->listids))
 		{
 			$params = $this->getParams();
-			$this->listids = (array)$params->get('slideshow_viz_table');
+			$this->listids = (array) $params->get('slideshow_viz_table');
 		}
 	}
 

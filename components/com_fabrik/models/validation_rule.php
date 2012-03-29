@@ -10,11 +10,6 @@
 defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
-/**
- * @package fabrik
- * @Copyright (C) Rob Clayburn
- * @version $Revision: 1.3 $
- */
 
 require_once(JPATH_SITE . '/components/com_fabrik/models/plugin.php');
 

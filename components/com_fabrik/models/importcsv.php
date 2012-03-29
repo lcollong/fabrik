@@ -402,6 +402,7 @@ class FabrikFEModelImportcsv extends JModelForm{
 			$element = $elementModel->getElement();
 			$elementModel->prepareCSVData($this->data, $key, $rawMap[$key]);
 		}
+		
 	}
 
 	/**
@@ -832,6 +833,11 @@ class FabrikFEModelImportcsv extends JModelForm{
 		// $$$ rob 30/01/2012 - if in csvimport cron plugin then we have to return true here
 		// otherwise a blank column is added to the import data meaniing overwrite date dunna workie
 		if (JRequest::getBool('cron_csvimport'))
+		{
+			return true;
+		}
+		//$$$ rob 13/03/2012 - reimporting into exisiting list - should return true
+		if (JRequest::getInt('listid') !== 0)
 		{
 			return true;
 		}

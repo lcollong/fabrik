@@ -820,7 +820,6 @@ EOD;
 
 	public static function tips($selector='.hasTip', $params = array(), $selectorPrefix = 'document')
 	{
-		
 		$sig = md5(serialize(array($selector, $params)));
 		if (isset(self::$tips[$sig]) && (self::$tips[$sig]))
 		{
@@ -987,7 +986,8 @@ EOD;
 	 *Load the autocomplete script once
 	 */
 
-	public static function autoCompleteScript() {
+	public static function autoCompleteScript()
+	{
 		if (!isset(self::$autocomplete))
 		{
 			self::$autocomplete = true;
