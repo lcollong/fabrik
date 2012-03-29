@@ -63,7 +63,8 @@ class FabrikControllerForms extends FabControllerAdmin
 	public function listview()
 	{
 		$cid = JRequest::getVar('cid', array(0), 'method', 'array');
-		if(is_array($cid)){
+		if(is_array($cid))
+		{
 			$cid = $cid[0];
 		}
 		$db = JFactory::getDbo(true);

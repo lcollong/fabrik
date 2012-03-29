@@ -14,13 +14,16 @@ jimport('joomla.application.component.model');
 
 class plgFabrik_List extends FabrikPlugin
 {
+	/** determines if the plugin requires mocha to be loaded */
+	var $useMocha = false;
+
 	protected $buttonPrefix = '';
 
 	protected $jsInstance = null;
 
 	/**
 	 * get the parameter name that defines the plugins acl access
-	 * @return string
+	 * @return	string
 	 */
 
 	function getAclParam()
@@ -31,7 +34,8 @@ class plgFabrik_List extends FabrikPlugin
 	public function canUse(&$model = null, $location = null, $event = null)
 	{
 		$aclParam = $this->getAclParam();
-		if ($aclParam == '') {
+		if ($aclParam == '')
+		{
 			return true;
 		}
 		$params = $this->getParams();
@@ -47,17 +51,20 @@ class plgFabrik_List extends FabrikPlugin
 	protected function buttonLabel()
 	{
 		$s = strtoupper($this->buttonPrefix);
-		return JText::_('PLG_LIST_'.$s.'_'.$s);
+		return JText::_('PLG_LIST_' . $s . '_' . $s);
 	}
 	
 	public function button_result()
 	{
-		if ($this->canUse()) {
+		if ($this->canUse())
+		{
+			$p = $this->onGetFilterKey_result();
+			FabrikHelperHTML::addPath('plugins/fabrik_list/' . $p . '/images/', 'image','list');
 			$name = $this->_getButtonName();
 			$label = $this->buttonLabel();
 			$imageName = $this->getParams()->get('list_' . $this->buttonPrefix . '_image_name', $this->buttonPrefix . '.png');
 			$img = FabrikHelperHTML::image($imageName, 'list', '',  $label);
-			return '<a href="#" class="'.$name.' listplugin" title="'.$label.'">'.$img.'<span>'.$label.'</span></a>';
+			return '<a href="#" class="' . $name . ' listplugin" title="' . $label . '">' . $img . '<span>' . $label . '</span></a>';
 		}
 		return '';
 	}
@@ -73,10 +80,10 @@ class plgFabrik_List extends FabrikPlugin
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @param object parameters
-	 * @param list table model
-	 * @param array [0] => string table's form id to contain plugin
-	 * @return bool
+	 * @param	object	parameters
+	 * @param	object list model
+	 * @param	array	[0] => string table's form id to contain plugin
+	 * @return	bool
 	 */
 
 	function onLoadJavascriptInstance($params, $model, $args)
@@ -89,7 +96,7 @@ class plgFabrik_List extends FabrikPlugin
 	 * onGetData method
 	 *
 	 * @param object calling the plugin table/form
-	 * @return bol currently ignored
+	 * @return bool currently ignored
 	 */
 
 	function onLoadData(&$params, &$oRequest)
@@ -101,7 +108,7 @@ class plgFabrik_List extends FabrikPlugin
 	 * onFiltersGot method - run after the table has created filters
 	 *
 	 * @param object calling the plugin table/form
-	 * @return bol currently ignored
+	 * @return bool currently ignored
 	 */
 
 	function onFiltersGot(&$params, &$oRequest)
@@ -125,24 +132,25 @@ class plgFabrik_List extends FabrikPlugin
 
  	/**
  	 * get the html name for the button
- 	 * @return string
+ 	 * @return	string
  	 */
 
 	function _getButtonName()
 	{
-		return $this->buttonPrefix."-".$this->renderOrder;
+		return $this->buttonPrefix . '-' . $this->renderOrder;
 	}
 
 	/**
-	 * prefilght check to ensure that the tabel plugin should process
-	 * @param object $params
-	 * @param object $model
-	 * @return string|boolean
+	 * prefilght check to ensure that the list plugin should process
+	 * @param	object	$params
+	 * @param	object	$model
+	 * @return	string|boolean
 	 */
 
 	function process_preflightCheck(&$params, &$model)
 	{
-		if ($this->buttonPrefix == '') {
+		if ($this->buttonPrefix == '')
+		{
 			return false;
 		}
 		$postedRenderOrder = JRequest::getInt('fabrik_listplugin_renderOrder', -1);
@@ -153,7 +161,7 @@ class plgFabrik_List extends FabrikPlugin
 	 * get a key name specific to the plugin class to use as the reference
 	 * for the plugins filter data
 	 * (Normal filter data is filtered on the element id, but here we use the plugin name)
-	 * @return string key
+	 * @return	string	key
 	 */
 
 	public function onGetFilterKey()
@@ -164,6 +172,10 @@ class plgFabrik_List extends FabrikPlugin
 
 	public function onGetFilterKey_result()
 	{
+		if (!isset($this->filterKey))
+		{
+			$this->onGetFilterKey();
+		}
 		return $this->filterKey;
 	}
 
@@ -180,7 +192,7 @@ class plgFabrik_List extends FabrikPlugin
 	/**
 	 * used to assign the js code created in onLoadJavascriptInstance()
 	 * to the table view.
-	 * @return string javascript to create instance. Instance name must be 'el'
+	 * @return	string	javascript to create instance. Instance name must be 'el'
 	 */
 
 	function onLoadJavascriptInstance_result()
@@ -190,9 +202,9 @@ class plgFabrik_List extends FabrikPlugin
 
 	/**
 	 * allows to to alter the table's select query
-	 * @param object $params
-	 * @param object table model
-	 * @param array arguements - first value is an object with a query
+	 * @param	object	$params
+	 * @param	object	table model
+	 * @param	array	arguements - first value is an object with a query
 	 * property which contains the current query:
 	 * $args[0]->query
 	 */
@@ -205,7 +217,7 @@ class plgFabrik_List extends FabrikPlugin
 	/**
 	 * load the javascript class that manages plugin interaction
 	 * should only be called once
-	 * @return string javascript class file
+	 * @return	string	javascript class file
 	 */
 
 	public function loadJavascriptClass()
@@ -217,7 +229,7 @@ class plgFabrik_List extends FabrikPlugin
 	{
 		$this->onGetFilterKey();
 		$p = $this->onGetFilterKey_result();
-		return 'plugins/fabrik_list/'.$p.'/'.$p.'.js';
+		return 'plugins/fabrik_list/' . $p . '/' . $p . '.js';
 	}
 
 }

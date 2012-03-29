@@ -22,8 +22,7 @@ class fabrikViewImport extends JView
 		$listModel->setId($this->listid);
 		$this->table = $listModel->getTable();
 		$this->form = $this->get('Form');
-		if (!$listModel->canCSVImport())
-		{
+		if (!$listModel->canCSVImport()) {
 			JError::raiseError(400, 'Naughty naughty!');
 			jexit;
 		}

@@ -38,7 +38,8 @@ class FabrikTableVisualization extends JTable
 
 	public function bind($array, $ignore = '')
 	{
-		if (isset($array['params']) && is_array($array['params'])) {
+		if (isset($array['params']) && is_array($array['params']))
+		{
 			$registry = new JRegistry();
 			$registry->loadArray($array['params']);
 			$array['params'] = (string)$registry;

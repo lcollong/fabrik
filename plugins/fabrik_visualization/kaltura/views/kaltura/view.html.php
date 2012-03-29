@@ -18,7 +18,8 @@ class fabrikViewKaltura extends JView
 		$model = $this->getModel();
 		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0) )));
 		$this->row = $model->getVisualization();
-		$this->params = $model->getParams();
+		$this->assign('params', $model->getParams());
+
 		$pluginParams = $model->getPluginParams();
 		$tmpl = $pluginParams->get('fb_gm_layout', $tmpl);
 		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/kaltura/views/kaltura/tmpl/' . $tmpl;
@@ -33,10 +34,10 @@ function entryClicked ( entry_id )
 EOT;
 		$this->assignRef('data', $this->get('Data'));
 		FabrikHelperHTML::addScriptDeclaration($js);
-		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/googlemap/views/googlemap/tmpl/' . $tmpl . '/template.css');
+		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/kaltura/views/kaltura/tmpl/' . $tmpl . '/template.css');
 		$template = null;
 		$this->assign('containerId', $this->get('ContainerId'));
-		$this->assign('showFilters', JRequest::getInt('showfilters', 1) === 1 ?  1 : 0);
+		$this->assign('showFilters', JRequest::getInt('showfilters', $params->get('show_filters')) === 1 ?  1 : 0);
 		$this->assignRef('filters', $this->get('Filters'));
 		$this->_setPath('template', $tmplpath);
 		echo parent::display($template);

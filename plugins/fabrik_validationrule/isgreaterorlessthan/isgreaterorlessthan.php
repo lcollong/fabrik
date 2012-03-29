@@ -10,7 +10,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin classes
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_validationruleIsgreaterorlessthan extends plgFabrik_Validationrule {
@@ -24,14 +23,11 @@ class plgFabrik_validationruleIsgreaterorlessthan extends plgFabrik_Validationru
 	protected $icon = 'notempty';
 
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($data, &$elementModel, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		//could be a dropdown with multivalues
 		if (is_array($data))
@@ -41,13 +37,11 @@ class plgFabrik_validationruleIsgreaterorlessthan extends plgFabrik_Validationru
  		$params = $this->getParams();
  		$formdata = $elementModel->getForm()->_formData;
  		$cond = $params->get('isgreaterorlessthan-greaterthan');
- 		$cond = $cond[$c] == '1' ? '>' : '<';
- 		//$compare = $params->get('isgreaterorlessthan-comparewith');
- 		//$compare = str_replace('.', '___', $compare[$c]);
- 		$otherElementModel = $this->getOtherElement($elementModel, $c);
+ 		$cond = $cond[$pluginc] == '1' ? '>' : '<';
+ 		$otherElementModel = $this->getOtherElement($elementModel, $pluginc);
  		$otherFullName = $otherElementModel->getFullName(false, true, false);
- 		$compare = JArrayHelper::getValue($formdata, $otherFullName.'_raw', JArrayHelper::getValue($formdata, $otherFullName, ''));
- 		if ($this->allowEmpty($elementModel, $c) && ($data === '' || $compare === ''))
+ 		$compare = JArrayHelper::getValue($formdata, $otherFullName . '_raw', JArrayHelper::getValue($formdata, $otherFullName, ''));
+ 		if ($this->allowEmpty($elementModel, $pluginc) && ($data === '' || $compare === ''))
  		{
  			return true;
  		}
@@ -58,24 +52,32 @@ class plgFabrik_validationruleIsgreaterorlessthan extends plgFabrik_Validationru
 	/**
 	* does the validation allow empty value?
 	* Default is false, can be overrideen on per-validation basis (such as isnumeric)
-	* @param object element model
-	* @param int repeat group counter
-	* @return bool
+	* @param	object	element model
+	* @param	int		plugin sequence ref
+	* @return	bool
 	*/
 
-	protected function allowEmpty($elementModel, $c)
+	protected function allowEmpty($elementModel, $pluginc)
 	{
 		$params = $this->getParams();
 		$allow_empty = $params->get('isgreaterorlessthan-allow_empty');
-		$allow_empty = $allow_empty[$c];
+		$allow_empty = $allow_empty[$pluginc];
 		return $allow_empty == '1';
 	}
 
-	private function getOtherElement($elementModel, $c)
+	/**
+	 * 
+	 * get the element to compare values against
+	 * @param	object	element model
+	 * @param	int		plugin sequence ref
+	 * @return	bool
+	 */
+	
+	private function getOtherElement($elementModel, $pluginc)
 	{
 		$params = $this->getParams();
 		$otherfield = (array)$params->get('isgreaterorlessthan-comparewith', array());
-		$otherfield = $otherfield[$c];
+		$otherfield = $otherfield[$pluginc];
 		return FabrikWorker::getPluginManager()->getElementPlugin($otherfield);
 	}
 

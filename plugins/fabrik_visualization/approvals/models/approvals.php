@@ -103,11 +103,13 @@ class fabrikModelApprovals extends FabrikFEModelVisualization {
 				$db = $listModel->getDbo();
 				$query = $db->getQuery(true);
 				$el = FabrikString::safeColName($approveEls[$key]);
-				try {
+				try
+				{
 					$query->update($db->quoteName($item->db_table_name))->set($el.' = '.$db->quote($v))->where($item->db_primary_key.' = '.$db->quote(JRequest::getVar('rowid')));
 					$db->setQuery($query);
 					$db->query();
-				} catch (JException $e)
+				}
+				catch (JException $e)
 				{
 						JError::raiseError(500, $e->getMessage());
 				}

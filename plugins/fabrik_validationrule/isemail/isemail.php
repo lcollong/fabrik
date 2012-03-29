@@ -10,7 +10,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleIsEmail extends plgFabrik_Validationrule
@@ -25,39 +24,36 @@ class plgFabrik_ValidationruleIsEmail extends plgFabrik_Validationrule
 	protected $icon = 'isemail';
 
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($email, &$element, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		//could be a dropdown with multivalues
-		if (is_array($email))
+		if (is_array($data))
 		{
-			$email = implode('', $email);
+			$data = implode('', $data);
 		}
 		//decode as it can be posted via ajax
-		$email = urldecode($email);
+		$data = urldecode($data);
 
  		$params = $this->getParams();
 		$allow_empty = $params->get('isemail-allow_empty');
-		$allow_empty = $allow_empty[$c];
-		if ($allow_empty == '1' and empty($email))
+		$allow_empty = $allow_empty[$pluginc];
+		if ($allow_empty == '1' and empty($data))
 		{
 			return true;
 		}
 		/* First, we check that there's one symbol, and that the lengths are right*/
-		if (!preg_match("/[^@]{1,64}@[^@]{1,255}/", $email)) {
+		if (!preg_match("/[^@]{1,64}@[^@]{1,255}/", $data)) {
 			/* Email invalid because wrong number of characters in one section, or wrong number of symbols.*/
 			return false;
 		}
 
 		/* Split it into sections to make life easier*/
-		$email_array = explode("@", $email);
-		$local_array = explode(".", $email_array[0]);
+		$data_array = explode("@", $data);
+		$local_array = explode(".", $data_array[0]);
 		for ($i = 0; $i < sizeof($local_array); $i++)
 		{
 			if (!preg_match("/^(([A-Za-z0-9!#$%&'*+\/=?^_`{|}~-][A-Za-z0-9!#$%&'*+\/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$/", $local_array[0]))
@@ -66,10 +62,10 @@ class plgFabrik_ValidationruleIsEmail extends plgFabrik_Validationrule
 			}
 		}
 		/* Check if domain is IP. If not, it should be valid domain name */
-		if (!preg_match("/^\[?[0-9\.]+\]?$/", $email_array[1]))
+		if (!preg_match("/^\[?[0-9\.]+\]?$/", $data_array[1]))
 		{
-			$domain_array = explode(".", $email_array[1]);
-			if (sizeof( $domain_array ) < 2)
+			$domain_array = explode(".", $data_array[1]);
+			if (sizeof($domain_array) < 2)
 			{
 				 /* Not enough parts to domain */
 				return false;

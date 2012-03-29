@@ -12,11 +12,11 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.model');
 
-require_once(JPATH_SITE.DS.'components'.DS.'com_fabrik'.DS.'models'.DS.'element.php');
+require_once(JPATH_SITE . '/components/com_fabrik/models/element.php');
 
 class plgFabrik_ElementYoutube extends plgFabrik_Element {
 
-	var $_pluginName = 'youtube';
+	var $pluginName = 'youtube';
 
 	/**
 	 * shows the data formatted for the table view
@@ -25,7 +25,7 @@ class plgFabrik_ElementYoutube extends plgFabrik_Element {
 	 * @return string formatted value
 	 */
 
-	function renderListData($data, $oAllRowsData)
+	function renderListData($data, $thisRow)
 	{
 		$params =& $this->getParams();
 		// ------------------ Construct embedded player
@@ -131,7 +131,7 @@ class plgFabrik_ElementYoutube extends plgFabrik_Element {
 	/**
 	 * do we need to include the lighbox js code
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function requiresLightBox()
@@ -174,7 +174,7 @@ class plgFabrik_ElementYoutube extends plgFabrik_Element {
 				$type .= " elementErrorHighlight";
 			}
 
-			if (!$this->_editable) {
+			if (!$this->editable) {
 				return($element->hidden == '1') ? "<!-- " . $value . " -->" : $value;
 			}
 
@@ -289,9 +289,10 @@ class plgFabrik_ElementYoutube extends plgFabrik_Element {
 	 * @return string javascript class file
 	 */
 
-	function formJavascriptClass()
+	function formJavascriptClass(&$srcs)
 	{
-		FabrikHelperHTML::script('javascript.js', 'components/com_fabrik/plugins/element/fabrikyoutube/', false);
+		plgFabrik_Element::formJavascriptClass($srcs, 'plugins/fabrik_element/youtube/youtube.js');
+		parent::formJavascriptClass($srcs);
 	}
 
 	/**

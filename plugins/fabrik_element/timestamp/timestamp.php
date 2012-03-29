@@ -24,28 +24,29 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 		return '';
 	}
 
-	function setIsRecordedInDatabase() {
+	function setIsRecordedInDatabase()
+	{
 		$this->recordInDatabase = false;
 	}
 
 	/**
 	 * draws a field element
-	 * @param int repeat group counter
-	 * @return string returns element html
+	 * @param	int		repeat group counter
+	 * @return	string	returns element html
 	 */
 
 	function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
 		$id	= $this->getHTMLId($repeatCounter);
-		$oDate = JFactory::getDate();
+		$date = JFactory::getDate();
 		$config = JFactory::getConfig();
-		$tzoffset = $config->get('offset');
-		$oDate->setOffset($tzoffset);
+		$tz = DateTimeZone($config->get('offset'));
+		$date->setTimezone($tz);
 		$params = $this->getParams();
 		$gmt_or_local = $params->get('gmt_or_local');
 		$gmt_or_local += 0;
-		return '<input name="'.$name.'" id="'.$id.'" type="hidden" value="' . $oDate->toSql($gmt_or_local) .'" />';
+		return '<input name="' . $name . '" id="' . $id . '" type="hidden" value="' . $date->toSql($gmt_or_local) . '" />';
 	}
 
 	/**
@@ -63,7 +64,7 @@ class plgFabrik_ElementTimestamp extends plgFabrik_Element {
 	}
 	/**
 	 * defines the type of database table field that is created to store the element's data
-	 * @return string db field description
+	 * @return	string	db field description
 	 */
 
 	function getFieldDescription()

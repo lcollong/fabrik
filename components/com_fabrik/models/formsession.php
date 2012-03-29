@@ -113,7 +113,7 @@ class FabrikFEModelFormsession extends FabModel {
 		$crypt = $this->getCrypt();
 		$lifetime = time() + 365 * 24 * 60 * 60;
 		$user = JFactory::getUser();
-		$key = (int)$user->get('id'). ':' .$this->getFormId(). ':' .$this->getRowId();
+		$key = (int)$user->get('id') . ':' . $this->getFormId() . ':' . $this->getRowId();
 		$rcookie = $crypt->encrypt($hash);
 		setcookie($key, $rcookie, $lifetime, '/');
 	}
@@ -127,8 +127,8 @@ class FabrikFEModelFormsession extends FabModel {
 	{
 		$user = JFactory::getUser();
 		$lifetime = time() -99986400;
-		$key = (int)$user->get('id') . ':' .$this->getFormId() . ':' . $this->getRowId();
-		$res = setcookie( $key, false, $lifetime, '/');
+		$key = (int)$user->get('id') . ':' . $this->getFormId() . ':' . $this->getRowId();
+		$res = setcookie($key, false, $lifetime, '/');
 	}
 
 	protected function getCrypt()
@@ -201,6 +201,7 @@ class FabrikFEModelFormsession extends FabModel {
 	 * @since 2.0.4
 	 * get the cookie name
 	 */
+	
 	protected function getCookieKey()
 	{
 		$user = JFactory::getUser();
@@ -219,7 +220,7 @@ class FabrikFEModelFormsession extends FabModel {
 	{
 		$session = JFactory::getSession();
 		$formid = $this->getFormId();
-		if ($session->has('com_fabrik.form.' . $formid . '.session.on'))
+		if ($session->get('com_fabrik.form.' . $formid . '.session.on'))
 		{
 			return true;
 		}
@@ -248,7 +249,7 @@ class FabrikFEModelFormsession extends FabModel {
 			if ($this->useCookie)
 			{
 				$crypt = $this->getCrypt();
-				$cookiekey = (int)$user->get('id'). ':' .$this->getFormId(). ':' .$this->getRowId();
+				$cookiekey = (int)$user->get('id') . ":" . $this->getFormId() . ":" . $this->getRowId();
 				$cookieval = JArrayHelper::getValue($_COOKIE, $cookiekey, '');
 				if ($cookieval !== '')
 				{
@@ -257,9 +258,6 @@ class FabrikFEModelFormsession extends FabModel {
 			}
 		}
 		$db = $row->getDBO();
-		//$row->set('_tbl_key', 'hash');
-		//$k = $row->getKeyName();
-		//$row->$k = $hash;
 		$row->hash = $hash;
 		$query = $db->getQuery(true);
 		$query->delete($db->quoteName($row->getTableName()))->where($row->getKeyName() .' = '. $db->Quote($hash));

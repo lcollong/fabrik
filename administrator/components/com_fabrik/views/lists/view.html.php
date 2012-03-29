@@ -30,7 +30,8 @@ class FabrikViewLists extends JView
 	 */
 	public function display($tpl = null)
 	{
-		switch ($this->getLayout()) {
+		switch ($this->getLayout())
+		{
 			case 'confirmdelete':
 				$this->confirmdelete();
 				return;
@@ -41,17 +42,17 @@ class FabrikViewLists extends JView
 				break;
 		}
 		// Initialise variables.
-		$this->items		= $this->get('Items');
-		$this->pagination	= $this->get('Pagination');
-		$this->state		= $this->get('State');
-
+		$this->items = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state = $this->get('State');
+		$this->packageOptions = $this->get('PackageOptions');
 		// Check for errors.
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+		{
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
 		$this->table_groups = $this->get('TableGroups');
-
 		$this->addToolbar();
 		parent::display($tpl);
 	}
@@ -63,37 +64,43 @@ class FabrikViewLists extends JView
 	 */
 	protected function addToolbar()
 	{
-		require_once JPATH_COMPONENT.'/helpers/fabrik.php';
-
-		$canDo	= FabrikHelper::getActions($this->state->get('filter.category_id'));
-
+		require_once JPATH_COMPONENT . '/helpers/fabrik.php';
+		$canDo = FabrikHelper::getActions($this->state->get('filter.category_id'));
 		JToolBarHelper::title(JText::_('COM_FABRIK_MANAGER_LISTS'), 'lists.png');
-		if ($canDo->get('core.create')) {
-			JToolBarHelper::addNew('list.add','JTOOLBAR_NEW');
+		if ($canDo->get('core.create'))
+		{
+			JToolBarHelper::addNew('list.add', 'JTOOLBAR_NEW');
 		}
-		if ($canDo->get('core.edit')) {
-			JToolBarHelper::editList('list.edit','JTOOLBAR_EDIT');
+		if ($canDo->get('core.edit'))
+		{
+			JToolBarHelper::editList('list.edit', 'JTOOLBAR_EDIT');
 		}
 		JToolBarHelper::custom('list.copy', 'copy.png', 'copy_f2.png', 'COM_FABRIK_COPY');
-		if ($canDo->get('core.edit.state')) {
-			if ($this->state->get('filter.state') != 2){
+		if ($canDo->get('core.edit.state'))
+		{
+			if ($this->state->get('filter.state') != 2)
+			{
 				JToolBarHelper::divider();
 				JToolBarHelper::custom('lists.publish', 'publish.png', 'publish_f2.png','JTOOLBAR_PUBLISH', true);
 				JToolBarHelper::custom('lists.unpublish', 'unpublish.png', 'unpublish_f2.png', 'JTOOLBAR_UNPUBLISH', true);
 			}
 		}
 		JToolBarHelper::divider();
-		if ($canDo->get('core.create')) {
+		if ($canDo->get('core.create'))
+		{
 			JToolBarHelper::custom('import.display', 'upload.png', 'upload_f2.png', 'COM_FABRIK_IMPORT', false);
 		}
 		JToolBarHelper::divider();
-
-		if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete')) {
-			JToolBarHelper::deleteList('', 'lists.delete','JTOOLBAR_EMPTY_TRASH');
-		} else if ($canDo->get('core.edit.state')) {
-			JToolBarHelper::trash('lists.trash','JTOOLBAR_TRASH');
+		if ($this->state->get('filter.published') == -2 && $canDo->get('core.delete'))
+		{
+			JToolBarHelper::deleteList('', 'lists.delete', 'JTOOLBAR_EMPTY_TRASH');
 		}
-		if ($canDo->get('core.admin')) {
+		else if ($canDo->get('core.edit.state'))
+		{
+			JToolBarHelper::trash('lists.trash', 'JTOOLBAR_TRASH');
+		}
+		if ($canDo->get('core.admin'))
+		{
 			JToolBarHelper::divider();
 			JToolBarHelper::preferences('com_fabrik');
 		}

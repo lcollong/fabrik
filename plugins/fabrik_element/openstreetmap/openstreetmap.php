@@ -141,7 +141,7 @@ class plgFabrik_ElementOpenstreetmap extends plgFabrik_Element {
 	 * determine if we use a google static ma
 	 * Option has to be turned on and element un-editable
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function _useStaticMap()

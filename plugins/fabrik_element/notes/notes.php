@@ -134,7 +134,7 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		}
 		$value = $params->get('notes_where_value');
 		$where = array();
-		$where[] = $db->quoteName($field) . ' = ' . $db->Quote($value);
+		$where[] = $db->quoteName($field) . ' = ' . $db->quote($value);
 		$fk = $params->get('join_fk_column', '');
 		$rowid = $this->getFormModel()->getRowId();
 		if ($fk !== '' && $rowid != '')
@@ -231,15 +231,15 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$table = $db->quoteName($params->get('join_db_name'));
 		$col = $params->get('join_val_column');
 		$key = $db->quoteName($params->get('join_key_column'));
-		$v = $db->Quote(JRequest::getVar('v'));
+		$v = $db->quote(JRequest::getVar('v'));
 		
 		$query->insert($table)
 		->set($col . ' = ' . $v);
 		
 		$field = $params->get('notes_where_element', '');
-		if ($field !== '')
+		if ($field !== '') 
 		{
-			$query->set($db->quoteName($field) . ' = ' . $db->Quote($params->get('notes_where_value')));
+			$query->set($db->quoteName($field) . ' = ' . $db->quote($params->get('notes_where_value')));
 		}
 		$user = $params->get('userid', '');
 		if ($user !== '')
@@ -249,7 +249,7 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		$fk = $params->get('join_fk_column', '');
 		if ($fk !== '')
 		{
-			$query->set($db->quoteName($fk) . ' = ' . $db->Quote(JRequest::getVar('rowid')));
+			$query->set($db->quoteName($fk) . ' = ' . $db->quote(JRequest::getVar('rowid')));
 		}
 		$db->setQuery($query);
 		if (!$db->query())
@@ -258,7 +258,7 @@ class plgFabrik_ElementNotes extends plgFabrik_ElementDatabasejoin
 		}
 		else
 		{
-			$this->loadRow = $db->Quote($db->insertid());
+			$this->loadRow = $db->quote($db->insertid());
 			$opts = $this->_getOptions();
 			$row = $opts[0];
 		/* 	$query->clear();

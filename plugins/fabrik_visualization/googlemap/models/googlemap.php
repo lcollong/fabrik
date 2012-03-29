@@ -23,7 +23,8 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 
 	var $recordCount = 0;
 
-	function getText() {
+	function getText()
+	{
 		return $this->txt;
 	}
 
@@ -43,6 +44,8 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		$viz = $this->getVisualization();
 
 		$opts = new stdClass();
+		$opts->lat = 0;
+		$opts->lon = 0;
 		$opts->icons = $this->getJSIcons();
 		$opts->polyline = $this->getPolyline();
 		$opts->id = $viz->id;
@@ -51,6 +54,12 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		$opts->maptypecontrol = (bool)$params->get('fb_gm_maptypecontrol');
 		$opts->overviewcontrol = (bool)$params->get('fb_gm_overviewcontrol');
 		$opts->center = $params->get('fb_gm_center');
+		if ($opts->center == 'querystring')
+		{
+			$opts->lat = JRequest::getVar('latitude', '') == '' ? $opts->lat : (float)JRequest::getVar('latitude');
+			$opts->lon = JRequest::getVar('longitude', '') == '' ? $opts->lon : (float)JRequest::getVar('longitude');
+			$opts->zoomlevel = JRequest::getVar('zoom', '') == '' ? $opts->zoomlevel : JRequest::getVar('zoom');
+		}
 		$opts->ajax_refresh = (bool)$params->get('fb_gm_ajax_refresh', false);
 		$opts->ajax_refresh_center = $params->get('fb_gm_ajax_refresh_center', 1);
 		$opts->maptype = $params->get('fb_gm_maptype');
@@ -60,14 +69,18 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		$opts->refresh_rate = $params->get('fb_gm_ajax_refresh_rate');
 		$opts->use_cookies = (bool)$params->get('fb_gm_use_cookies');
 		$opts->container = $this->getContainerId();
-		$opts->polylinewidth = $params->get('fb_gm_polyline_width', array(), '_default', 'array');
-		$opts->polylinecolour = $params->get('fb_gm_polyline_colour', array(), '_default', 'array');
-		$opts->overlay_urls = $params->get('fb_gm_overlay_urls', array(), '_default', 'array');
-		$opts->overlay_labels = $params->get('fb_gm_overlay_labels', array(), '_default', 'array');
-		$opts->use_overlays = (int)$params->get('fb_gm_use_overlays', '0');
+		$opts->polylinewidth = (array) $params->get('fb_gm_polyline_width');
+		$opts->polylinecolour = (array) $params->get('fb_gm_polyline_colour');
+		$opts->use_polygon = (bool) $params->get('fb_gm_use_polygon');
+		$opts->polygonopacity = $params->get('fb_gm_polygon_fillOpacity', 0.35);
+		$opts->polygonfillcolour = (array) $params->get('fb_gm_polygon_fillColor');
+		$opts->overlay_urls = (array) $params->get('fb_gm_overlay_urls');
+		$opts->overlay_labels = (array) $params->get('fb_gm_overlay_labels');
+		$opts->use_overlays = (int) $params->get('fb_gm_use_overlays', '0');
 		$opts->use_overlays_sidebar = $opts->use_overlays && (int)$params->get('fb_gm_use_overlays_sidebar', '0');
+		$opts->use_groups = (bool) $params->get('fb_gm_group_sidebar', 0);
 		$opts->groupTemplates = $this->getGroupTemplates();
-		$opts->zoomStyle = (int)$params->get('fb_gm_zoom_control_style', 0);
+		$opts->zoomStyle = (int) $params->get('fb_gm_zoom_control_style', 0);
 		$opts->zoom = $params->get('fb_gm_zoom', 1);
 		$opts = json_encode($opts);
 		$str .= "fabrikMap{$viz->id} = new FbGoogleMapViz('table_map', $opts)";
@@ -81,7 +94,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		if (!isset($this->listids))
 		{
 			$params = $this->getParams();
-			$this->listids = (array)$params->get('googlemap_table');
+			$this->listids = (array) $params->get('googlemap_table');
 		}
 	}
 
@@ -94,7 +107,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 	{
 		$params = $this->getParams();
 		$lines = array();
-		$polyelements = (array)$params->get('fb_gm_polyline_element');
+		$polyelements = (array) $params->get('fb_gm_polyline_element');
 		$listModels = $this->getlistModels();
 		$c = 0;
 		foreach ($listModels as $listModel)
@@ -113,11 +126,13 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 			}
 			$coordColumn = $mapsElements[0]->getFullName(false, false, false);
 			$table = $listModel->getTable();
+			$where = $listModel->buildQueryWhere();
+			$join = $listModel->buildQueryJoin();
 			$db = $listModel->getDb();
 			$query = $db->getQuery(true);
 			$query->select($coordColumn . ' AS coords')->from($table->db_table_name);
 			$query = $listModel->buildQueryJoin($query);
-			$query = $listModel->buildQueryWhere($query);
+			$query = $listModel->buildQueryWhere(true, $query);
 			$query->order($k);
 			$db->setQuery($query);
 			$data = $db->loadObjectList();
@@ -175,22 +190,23 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		$w = new FabrikWorker();
 		$uri = JURI::getInstance();
 		$params = $this->getParams();
-		$templates = (array)$params->get('fb_gm_detailtemplate');
-		$listids = (array)$params->get('googlemap_table');
+		$templates = (array) $params->get('fb_gm_detailtemplate');
+		$listids = (array) $params->get('googlemap_table');
 		//images for file system
-		$aIconImgs	= (array)$params->get('fb_gm_iconimage');
+		$aIconImgs	= (array) $params->get('fb_gm_iconimage');
 		//image from marker data
-		$markerImages = (array)$params->get('fb_gm_iconimage2');
+		$markerImages = (array) $params->get('fb_gm_iconimage2');
 		//specifed letter
-		$letters = (array)$params->get('fb_gm_icon_letter');
-		$aFirstIcons = (array)$params->get('fb_gm_first_iconimage');
-		$aLastIcons = (array)$params->get('fb_gm_last_iconimage');
-		$titleElements = (array)$params->get('fb_gm_title_element');
+		$letters = (array) $params->get('fb_gm_icon_letter');
+		$aFirstIcons = (array) $params->get('fb_gm_first_iconimage');
+		$aLastIcons = (array) $params->get('fb_gm_last_iconimage');
+		$titleElements = (array) $params->get('fb_gm_title_element');
+		$groupClass = (array) $params->get('fb_gm_group_class');
 		$c = 0;
 		$this->recordCount = 0;
 
 		$maxMarkers = $params->get('fb_gm_markermax', 0);
-		$recLimit (count($listids) == 1)  ? $maxMarkers : 0;
+		$recLimit = (count($listids) == 1) ? $maxMarkers : 0;
 		$limitMessageShown = false;
 		$limitMessage = $params->get('fb_gm_markermax_message');
 		$groupedIcons = array();
@@ -226,13 +242,14 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 				foreach ($group as $row)
 				{
 					$customimagefound = false;
+					$iconImg = JArrayHelper::getValue($aIconImgs, $c, '');
 					if ($k == 0)
 					{
-						$iconImg = JArrayHelper::getValue($aFirstIcons, $c, '');
-					}
-					else
-					{
-						$iconImg = JArrayHelper::getValue($aIconImgs, $c, '');
+						$firstIcon = JArrayHelper::getValue($aFirstIcons, $c, $iconImg);
+						if ($firstIcon !== '')
+						{
+							$iconImg = $firstIcon;
+						}
 					}
 					$v = $this->getCordsFromData($row->$coordColumn);
 					if ($v == array(0, 0))
@@ -240,6 +257,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 						continue;//dont show icons with no data
 					}
 					$rowdata = JArrayHelper::fromObject($row);
+					$rowdata['rowid'] = $rowdata['__pk_val'];
 					$html = $w->parseMessageForPlaceHolder($template, $rowdata);
 
 					$titleElement = JArrayHelper::getValue($titleElements, $c, '');
@@ -264,7 +282,6 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 					$html = str_replace(array("\n", "\r" ), "<br />", $html);
 					$html = str_replace("'", '"', $html);
 					$this->txt[] = $html;
-
 					if ($iconImg == '')
 					{
 						$iconImg = JArrayHelper::getValue($markerImages, $c, '');
@@ -304,6 +321,12 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 					//just for moosehunt!
 					$radomize = ($_SERVER['HTTP_HOST'] == 'moosehunt.mobi') ? true :false;
 					$groupKey = strip_tags($groupKey);
+					$gClass = JArrayHelper::getValue($groupClass, 0, '');
+					if (!empty($gClass))
+					{
+						$gClass .= '_raw';
+						$gClass = (isset($row->$gClass)) ? $row->$gClass : '';
+					}
 					if (array_key_exists($v[0].$v[1], $icons))
 					{
 						$existingIcon = $icons[$v[0].$v[1]];
@@ -321,7 +344,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 						else
 						{
 								$groupedIcons[] = array($v[0], $v[1], $html, $iconImg, $width,
-						$height, 'groupkey'=> $groupKey, 'listid' => $listid, 'title'=>$title);
+						$height, 'groupkey'=> $groupKey, 'listid' => $listid, 'title' => $title, 'groupClass' => 'type' . $gClass);
 						}
 					}
 					else
@@ -332,7 +355,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 							$iconImg = $uri->getScheme() . '://www.google.com/mapfiles/marker' . strtoupper($letters[$c]) . '.png';
 						}
 						$icons[$v[0].$v[1]] = array($v[0], $v[1], $html, $iconImg, $width,
-						$height, 'groupkey'=> $groupKey, 'listid' => $listid, 'title'=>$title);
+						$height, 'groupkey'=> $groupKey, 'listid' => $listid, 'title' => $title, 'groupClass' => 'type' . $gClass);
 					}
 					$this->recordCount++;
 					$k++;
@@ -343,7 +366,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 			$iconImg = JArrayHelper::getValue($aLastIcons, $c, '');
 			if ($iconImg != '')
 			{
-				list($width, $height) = $this->markerSize(JPATH_SITE . '/images/stories/' .$iconImg);
+				list($width, $height) = $this->markerSize(JPATH_SITE .'/media/com_fabrik/images/' . $iconImg);
 				$icons[$v[0].$v[1]][3] = $iconImg;
 				$icons[$v[0].$v[1]][4] = $width;
 				$icons[$v[0].$v[1]][5] = $height;
@@ -453,7 +476,8 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		return $str;
 	}
 
-	function getSidebar() {
+	function getSidebar()
+	{
 		$params = $this->getParams();
 		if ((int)$params->get('fb_gm_use_overlays', 0) && (int)$params->get('fb_gm_use_overlays_sidebar')) {
 
@@ -482,7 +506,7 @@ class fabrikModelGooglemap extends FabrikFEModelVisualization {
 		foreach ($models as $model)
 		{
 			$id = $model->getTable()->id;
-			$tmpls = $model->grouptemplates;
+			$tmpls = $model->groupTemplates;
 			foreach ($tmpls as $k => $v)
 			{
 				$k = preg_replace('#[^0-9a-zA-Z_]#', '', $k);

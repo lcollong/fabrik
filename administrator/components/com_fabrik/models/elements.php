@@ -24,8 +24,7 @@ class FabrikModelElements extends FabModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
-		{
+		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'e.id', 'e.name', 'e.label', 'e.show_in_list_summary', 'e.published',
 			'e.ordering', 'g.label', 'e.plugin'
@@ -43,8 +42,8 @@ class FabrikModelElements extends FabModelList
 	protected function getListQuery()
 	{
 		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select(
@@ -58,46 +57,38 @@ class FabrikModelElements extends FabModelList
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
-		if (is_numeric($published))
-		{
-			$query->where('e.published = ' . (int)$published);
-		}
-		else if ($published === '')
-		{
+		if (is_numeric($published)) {
+			$query->where('e.published = '.(int)$published);
+		} else if ($published === '') {
 			$query->where('(e.published IN (0, 1))');
 		}
 
 		//Filter by search in title
 		$search = $this->getState('filter.search');
-		if (!empty($search))
-		{
-			$search = $db->Quote('%' . $db->escape($search, true) . '%');
-			$query->where('(e.name LIKE ' . $search . ' OR e.label LIKE ' . $search . ')');
+		if (!empty($search)) {
+			$search = $db->quote('%'.$db->getEscaped($search, true).'%');
+			$query->where('(e.name LIKE '.$search.' OR e.label LIKE '.$search.')');
 		}
 
 		$group = $this->getState('filter.group');
-		if (trim($group) !== '')
-		{
-			$query->where('g.id = ' . (int)$group);
+		if (trim($group) !== '') {
+			$query->where('g.id = '.(int)$group);
 		}
 
 		$showInList = $this->getState('filter.showinlist');
-		if (trim($showInList) !== '')
-		{
-			$query->where('e.show_in_list_summary = ' . (int)$showInList);
+		if (trim($showInList) !== '') {
+			$query->where('e.show_in_list_summary = '.(int)$showInList);
 		}
 
 		$plugin = $this->getState('filter.plugin');
-		if (trim($plugin) !== '')
-		{
-			$query->where('e.plugin = ' . $db->Quote($plugin));
+		if (trim($plugin) !== '') {
+			$query->where('e.plugin = '.$db->quote($plugin));
 		}
 
 		//for drop fields view
 		$cids = (array)$this->getState('filter.cid');
-		if (!empty($cids))
-		{
-			$query->where('e.id IN (' . implode(',', $cids) . ')');
+		if (!empty($cids)) {
+			$query->where('e.id IN ('.implode(',', $cids).')');
 		}
 		$this->filterByFormQuery($query, 'fg');
 
@@ -132,13 +123,11 @@ class FabrikModelElements extends FabModelList
 		// Add the list ordering clause.
 		$orderCol	= $this->state->get('list.ordering', 'ordering');
 		$orderDirn	= $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
+		if ($orderCol == 'ordering' || $orderCol == 'category_title') {
 			$orderCol = 'ordering';
 		}
-		if (trim($orderCol) !== '')
-		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		if (trim($orderCol) !== '') {
+			$query->order($db->getEscaped($orderCol.' '.$orderDirn));
 		}
 		return $query;
 	}
@@ -151,8 +140,7 @@ class FabrikModelElements extends FabModelList
 	{
 		$items = parent::getItems();
 		//	get the join elemnent name of those elements not in a joined group
-		foreach ($items as &$item)
-		{
+		foreach ($items as &$item) {
 			if ($item->full_element_name == '') {
 				$item->full_element_name = $item->db_table_name . '___' . $item->name;
 			}
@@ -217,7 +205,7 @@ class FabrikModelElements extends FabModelList
 		$this->setState('filter.plugin', $plugin);
 
 		// List state information.
-		parent::populateState('ordering', 'asc');
+		parent::populateState($ordering, $direction);
 	}
 
 
@@ -243,10 +231,10 @@ class FabrikModelElements extends FabModelList
 		$query->select('element AS value, element AS text')
 		->from('#__extensions')
 		->where('enabled >= 1')
-		->where('type ='.$db->Quote('plugin'))
+		->where('type ='.$db->quote('plugin'))
 		->where('state >= 0')
 		->where('access IN ('.$levels.')')
-		->where('folder = '.$db->Quote('fabrik_element'))
+		->where('folder = '.$db->quote('fabrik_element'))
 		->order('text');
 		$db->setQuery($query);
 		$rows = $db->loadObjectList();

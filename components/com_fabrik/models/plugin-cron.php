@@ -78,7 +78,7 @@ class plgFabrik_Cron extends FabrikPlugin
 		return JRequest::getInt('fabrik_cron', 0);
 	}
 	
-	public function canUse(&$model, $location, $event)
+	public function canUse(&$model = null, $location = null, $event = null)
 	{
 		return true;
 	}

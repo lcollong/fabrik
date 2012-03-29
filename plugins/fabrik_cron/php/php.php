@@ -17,14 +17,19 @@ require_once(COM_FABRIK_FRONTEND . '/models/plugin-cron.php');
 
 class plgFabrik_Cronphp extends plgFabrik_Cron {
 
+	public function canUse(&$model = null, $location = null, $event = null)
+	{
+		return true;
+	}
+
 	/**
 	 * do the plugin action
+	 *
 	 */
-
 	function process(&$data, &$listModel)
 	{
 	  $params = $this->getParams();
-	  $file = JFilterInput::clean($params->get('cronphp_file'), 'CMD');
+	  $file = JFilterInput::getInstance()->clean($params->get('cronphp_file'), 'CMD');
 	  require_once(JPATH_ROOT . '/plugins/fabrik_cron/php/scripts/' . $file);
 	}
 
@@ -34,6 +39,7 @@ class plgFabrik_Cronphp extends plgFabrik_Cron {
 
 	function renderAdminSettings()
 	{
+		//JHTML::stylesheet('fabrikadmin.css', 'administrator/components/com_fabrik/views/');
 		$this->getRow();
 		$pluginParams = $this->getParams();
 

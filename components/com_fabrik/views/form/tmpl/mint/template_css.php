@@ -54,11 +54,14 @@ echo "
 	background-color:#F3FCEE;
 }
 
-#{$view}_$c fieldset ul,
-#details_$c fieldset ul{
+#{$view}_$c fieldset ul{
 	list-style:none;
 	padding:40px 10px 20px 10px;
 	margin:0;
+}
+
+#{$view}_$c ul.fabrikRepeatData{
+	padding:0;
 }
 
 #{$view}_$c .fabrikForm .fabrikGroup ul{
@@ -228,7 +231,7 @@ section for dropdowns radio buttons etc**/
 clear:left;
 }
 
-/** bump calendar above window in mootools 1.2**/
+/** bump calendar above mocha window in mootools 1.2**/
 #{$view}_$c div.calendar{
 	z-index:115 !important;
 }
@@ -346,7 +349,6 @@ margin:0;
 #{$view}_$c .fabrikSubElement {
 	display: block;
 	margin-top: 10px;
-	margin-left: 100px;
 }
 
 /*

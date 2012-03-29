@@ -28,18 +28,18 @@ class FabrikControllerImport extends FabControllerForm
 	/**
 	 * if new elements found in the CSV file and user decided to
 	 * add them to the table then do it here
-	 * @param	object	import model
-	 * @param	array	existing headings
-	 * @return	unknown_type
+	 * @param object import model
+	 * @param array existing headings
+	 * @return unknown_type
 	 */
 	protected function addElements($model, $headings)
 	{
-		$user = JFactory::getUser();
+		$user =& JFactory::getUser();
 		$c = 0;
 		$listModel = &$this->getModel('List', 'FabrikFEModel');
 		$listModel->setId(JRequest::getInt('list_id'));
 		$listModel->getTable();
-		$formModel = $listModel->getFormModel();
+		$formModel 	= $listModel->getFormModel();
 		$groupId = current(array_keys($formModel->getGroupsHiarachy()));
 		$plugins = JRequest::getVar('plugin');
 		$pluginManager = FabrikWorker::getPluginManager();
@@ -50,12 +50,10 @@ class FabrikControllerImport extends FabControllerForm
 		$dataRemoved = false;
 		
 		// @TODO use actual element plugin getDefaultProperties()
-		foreach ($newElements as $elname => $add)
-		{
-			if ($add)
-			{
+		foreach ($newElements as $elname => $add) {
+			if ($add) {
 				$element->id = 0;
-				$element->name = JFilterInput::clean($elname, 'CMD');
+				$element->name = JFilterInput::getInstance()->clean($elname, 'CMD');
 				$element->label = strtolower($elname);
 				$element->plugin = $plugins[$c];
 				$element->group_id = $groupId;
@@ -67,27 +65,24 @@ class FabrikControllerImport extends FabControllerForm
 				$element->created_by_alias = $user->get('username');
 				$element->checked_out = 0;
 				$element->show_in_list_summary = 1;
-				$element->ordering = 0;
+				$element->ordering 	= 0;
 				$element->params = $elementModel->getDefaultAttribs();
 				$headings[] = $element->name;
+
 				$element->store();
 				$where = " group_id = '" . $element->group_id . "'";
 				$element->move(1, $where);
 				//$elementModel->addToDBTable();
 				$elementsCreated ++;
-			}
-			else
-			{
+			} else {
 				//need to remove none selected element's (that dont already appear in the table structure
 				// data from the csv data
 				$session = JFactory::getSession();
 				$allHeadings = $session->get('com_fabrik.csvheadings');
 				$index = array_search($elname, $allHeadings);
-				if ($index !== false)
-				{
+				if ($index !== false) {
 					$dataRemoved = true;
-					foreach ($model->data as &$d)
-					{
+					foreach ($model->data as &$d) {
 						unset($d[$index]);
 					}
 				}
@@ -96,11 +91,9 @@ class FabrikControllerImport extends FabControllerForm
 		}
 		
 		$listModel->ammendTable(); //3.0 testing?
-		if ($dataRemoved)
-		{
+		if ($dataRemoved) {
 			//reindex data array
-			foreach ($model->data as $k => $d)
-			{
+			foreach ($model->data as $k => $d) {
 				$model->data[$k] = array_reverse(array_reverse($d));
 			}
 		}
@@ -140,7 +133,7 @@ class FabrikControllerImport extends FabControllerForm
 			$model->matchedHeadings = array();
 			foreach ($createElements as $elname => $add) {
 				if ($add) {
-					$name = JFilterInput::clean($elname, 'CMD');
+					$name = JFilterInput::getInstance()->clean($elname, 'CMD');
 					$plugin = $plugins[$c];
 					$newElements[$name] = $plugin;
 					$model->matchedHeadings[$dbname.'.'.$name] = $name;
@@ -190,8 +183,8 @@ class FabrikControllerImport extends FabControllerForm
 	function display()
 	{
 		
-		$viewType	= JFactory::getDocument()->getType();
-		$view = & $this->getView('import', $viewType);
+		$viewType = JFactory::getDocument()->getType();
+		$view = $this->getView('import', $viewType);
 		$this->getModel('Importcsv', 'FabrikFEModel')->clearSession();
 		$model = $this->getModel();
 		if (!JError::isError($model)) {
@@ -229,7 +222,7 @@ class FabrikControllerImport extends FabControllerForm
 		} else {
 			$model->import();
 			JRequest::setVar('fabrik_list', $id);
-			$msg = $model->makeTableFromCSV();
+			$msg = $model->insertData();
 			$model->removeCSVFile();
 			$this->setRedirect('index.php?option=com_fabrik&task=list.view&cid='.$id, $msg);
 		}

@@ -22,7 +22,7 @@ class FabrikString extends JString{
 	 * @return string the trimmed string
 	 */
 
-	function ltrimword($str, $word = false)
+	public static function ltrimword($str, $word = false)
 	{
 		$pos = strpos($str, $word);
 		if ($pos === 0)
@@ -40,7 +40,7 @@ class FabrikString extends JString{
 	 * @return string the trimmed string
 	 */
 	
-	function rtrimword(&$str, $word = false)
+	public static function rtrimword(&$str, $word = false)
 	{
 		$l = strlen($word);
 		$end = substr($str, -$l);
@@ -65,7 +65,7 @@ class FabrikString extends JString{
 	 * @return string the trimmed string
 	 */
 
-	function ltrimiword($str, $word = false)
+	public static function ltrimiword($str, $word = false)
 	{
 		$pos = stripos($str, $word);
 		if ($pos === 0)
@@ -120,7 +120,7 @@ class FabrikString extends JString{
 	 * @return string in table___field format
 	 */
 
-	function safeColNameToArrayKey($col)
+	public static function safeColNameToArrayKey($col)
 	{
 		$col = str_replace(array("`.`", "." ) , '___', $col);
 		$col = str_replace("`", "", $col);
@@ -134,7 +134,7 @@ class FabrikString extends JString{
 	 * @return string element name
 	 */
 
-	function shortColName($col)
+	public static function shortColName($col)
 	{
 		if (strstr($col, '.'))
 		{
@@ -182,7 +182,7 @@ class FabrikString extends JString{
 	 * @return string cleaned
 	 */
 
-	function iclean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
+	public static function iclean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
 	{
 		//replace umlauts
 
@@ -222,7 +222,7 @@ class FabrikString extends JString{
 	 * @return string cleaned
 	 */
 
-	function clean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
+	public static function clean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
 	{
 		return strtolower(FabrikString::iclean($str, $fromEnc, $toEnc));
 	}
@@ -234,7 +234,7 @@ class FabrikString extends JString{
 	 * @return string
 	 */
 
-	function truncate($text, $opts = array())
+	public static function truncate($text, $opts = array())
 	{
 		$text = htmlspecialchars(strip_tags($text), ENT_QUOTES);
 		$orig = $text;
@@ -274,7 +274,7 @@ class FabrikString extends JString{
 	 * @return string url/querystring
 	 */
 
-	function removeQSVar($url, $key)
+	public static function removeQSVar($url, $key)
 	{
 		$pair = explode('?', $url);
 		if (count($pair) === 2)
@@ -282,8 +282,8 @@ class FabrikString extends JString{
 			$url = $pair[0];
 			$bits = JArrayHelper::getValue($pair, 1);
 		}
-		else {
-			
+		else
+		{
 			$url = '';
 			$bits = JArrayHelper::getValue($pair, 0);
 		}
@@ -314,7 +314,7 @@ class FabrikString extends JString{
 	* @return encoded url
 	*/
 
-	function encodeurl($url)
+	public static function encodeurl($url)
 	{
 		list($site, $qs) = explode('?', $url);
 		if (!empty($qs)) {

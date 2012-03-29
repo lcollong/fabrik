@@ -56,7 +56,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleExample extends plgFabrik_Validationrule
@@ -71,27 +70,27 @@ class plgFabrik_ValidationruleExample extends plgFabrik_Validationrule
 	protected $icon = 'notempty';
 
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element model
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($data, &$elementModel, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		$found = preg_match("/http:/i", $data);
 		return $found;
 	}
 
 	/**
-	 * replace the elements data with something else!
-	 * @param string data to check
-	 * @param object element model
-	 * @param int plugin sequence ref
-	 * @return string replaced data
-	 */
- 	function replace($data, &$element, $c)
+ 	 * checks if the validation should replace the submitted element data
+ 	 * if so then the replaced data is returned otherwise original data returned
+ 	 * @param	string	original data
+ 	 * @param	model	$element
+ 	 * @param	int		validation plugin counter
+ 	 * @param	int		element repeat group 
+ 	 * @return	string	original or replaced data
+ 	 */
+
+ 	public function replace($data, &$element, $pluginc, $repeatCounter)
  	{
  		return $data;
  	}

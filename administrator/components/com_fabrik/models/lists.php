@@ -24,11 +24,10 @@ class FabrikModelLists extends FabModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
-		{
+		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'l.id', 'label', 'db_table_name', 'published'
-			);
+				);
 		}
 		parent::__construct($config);
 	}
@@ -44,49 +43,44 @@ class FabrikModelLists extends FabModelList
 	protected function getListQuery()
 	{
 		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select(
 		$this->getState(
 				'list.select',
 				'l.*'
-			)
-		);
-		$query->from('#__{package}_lists AS l');
+				)
+				);
+				$query->from('#__{package}_lists AS l');
 
-		// Filter by published state
-		$published = $this->getState('filter.published');
-		if (is_numeric($published))
-		{
-			$query->where('l.published = ' . (int)$published);
-		}
-		else if ($published === '')
-		{
-			$query->where('(l.published IN (0, 1))');
-		}
+				// Filter by published state
+				$published = $this->getState('filter.published');
+				if (is_numeric($published)) {
+					$query->where('l.published = '.(int)$published);
+				} else if ($published === '') {
+					$query->where('(l.published IN (0, 1))');
+				}
 
-		//Filter by search in title
-		$search = $this->getState('filter.search');
-		if (!empty($search))
-		{
-			$search = $db->Quote('%' . $db->escape($search, true) . '%');
-			$query->where('(l.db_table_name LIKE ' . $search . ' OR l.label LIKE ' . $search . ')');
-		}
+				//Filter by search in title
+				$search = $this->getState('filter.search');
+				if (!empty($search)) {
+					$search = $db->quote('%'.$db->getEscaped($search, true).'%');
+					$query->where('(l.db_table_name LIKE '.$search.' OR l.label LIKE '.$search.')');
+				}
 
-		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
-			$orderCol = 'category_title '.$orderDirn.', ordering';
-		}
-		if (trim($orderCol) !== '')
-		{
-			$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		}
-		return $query;
+				// Add the list ordering clause.
+				$orderCol	= $this->state->get('list.ordering');
+				$orderDirn	= $this->state->get('list.direction');
+				if ($orderCol == 'ordering' || $orderCol == 'category_title') {
+					$orderCol = 'category_title '.$orderDirn.', ordering';
+				}
+				if (trim($orderCol) !== '') {
+					$query->order($db->getEscaped($orderCol.' '.$orderDirn));
+				}
+
+				return $query;
 	}
 
 	/**
@@ -114,8 +108,8 @@ class FabrikModelLists extends FabModelList
 
 	public function getTableGroups()
 	{
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
 		$query->select('DISTINCT(l.id) AS id, fg.group_id AS group_id');
 		$query->from('#__{package}_lists AS l');
 		$query->join('LEFT', '#__{package}_formgroup AS fg ON l.form_id = fg.form_id');
@@ -181,8 +175,8 @@ class FabrikModelLists extends FabModelList
 		JArrayHelper::toInteger($cid);
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('db_table_name')->from('#__{package}_lists')->where('id IN(' . implode(',', $cid) . ')');
+		$query->select('db_table_name')->from('#__{package}_lists')->where('id IN('.implode(',', $cid).')');
 		$db->setQuery($query);
-		return $db->loadColumn();
+		return $db->loadResultArray();
 	}
 }

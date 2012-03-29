@@ -232,7 +232,7 @@ class fabrikModelChart extends FabrikFEModelVisualization
 	{
 		$params = $this->getParams();
 		$fillGraphs = $params->get('fill_line_graph');
-		$chartColours = $params->get('chart_colours', array(), '_default', 'array');
+		$chartColours = (array) $params->get('chart_colours');
 		$gcolours = array();
 		$fills = array();
 		$calcfound = $this->getCalcFound();
@@ -342,8 +342,8 @@ class fabrikModelChart extends FabrikFEModelVisualization
 			$tmodels = array();
 			$this->tableData = array();
 			$params = $this->getParams();
-			$listid = (array)$params->get('chart_table');
-			$chartWheres = (array)$params->get('chart_where');
+			$listid = (array) $params->get('chart_table');
+			$chartWheres = (array) $params->get('chart_where');
 			$c = 0;
 			foreach ($listid as $lid)
 			{
@@ -400,8 +400,8 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		}
 		$params = $this->getParams();
 		$graph =$params->get('graph_type');
-		$chartElements = $params->get('chart_elementList', array(), '_default', 'array');
-		$x_axis_label = $params->get('x_axis_label', array(), '_default', 'array');
+		$chartElements = (array) $params->get('chart_elementList');
+		$x_axis_label = (array) $params->get('x_axis_label');
 		$tableDatas = $this->getTableData();
 		$calculationLabels = array();
 		$c = 0;
@@ -469,7 +469,7 @@ class fabrikModelChart extends FabrikFEModelVisualization
 				}
 				else
 				{
-					$axisLabels = explode('|',$glabels[0]);
+					$axisLabels = explode('|', $glabels[0]);
 				}
 				break;
 			default:
@@ -486,8 +486,8 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		{
 			$this->calcfound = false;
 			$params = $this->getParams();
-			$chartElements = (array)$params->get('chart_elementList');
-			$listid = (array)$params->get('chart_table');
+			$chartElements = (array) $params->get('chart_elementList');
+			$listid = (array) $params->get('chart_table');
 			$calc_prefixes = array('sum___', 'avg___', 'med___', 'cnt___');
 			for ($c = 0; $c < count($listid); $c ++)
 			{
@@ -575,10 +575,11 @@ class fabrikModelChart extends FabrikFEModelVisualization
 		if (!isset($this->listids))
 		{
 			$params = $this->getParams();
-			$this->listids = (array)$params->get('chart_table');
+			$this->listids = (array) $params->get('chart_table');
 		}
 	}
 
 }
+
 
 ?>

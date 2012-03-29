@@ -76,7 +76,7 @@ class JFormFieldSwapList extends JFormFieldList
 		$query = $db->getQuery(true);
 		$query->select('DISTINCT(group_id)')->from('#__{package}_formgroup');
 		$db->setQuery($query);
-		$usedgroups = $db->loadColumn();
+		$usedgroups = $db->loadResultArray();
 		JArrayHelper::toInteger($usedgroups);
 		$query = $db->getQuery(true);
 		$query->select('id AS value, name AS text')->from('#__{package}_groups');
@@ -87,7 +87,7 @@ class JFormFieldSwapList extends JFormFieldList
 		$query->order(FabrikString::safeColName('text'));
 		$db->setQuery($query);
 		$groups = $db->loadObjectList();
-		$list = JHTML::_('select.genericlist', $groups, 'jform[groups]', 'class="inputbox" size="10" style="width:100%;" ', 'value', 'text', null, $this->id . '-from');
+		$list = JHTML::_('select.genericlist', $groups, 'jform[groups]', "class=\"inputbox\" size=\"10\" style=\"width:100%;\" ", 'value', 'text', null, $this->id . '-from');
 		return array($groups, $list);
 	}
 
@@ -108,7 +108,7 @@ class JFormFieldSwapList extends JFormFieldList
 		$query->order('fg.ordering');
 		$db->setQuery($query);
 		$currentGroups = $db->loadObjectList();
-		$list = JHTML::_('select.genericlist',  $currentGroups, $this->name, 'class="inputbox" multiple="multiple" style="width:100%;" size="10" ', 'value', 'text', '/', $this->id);
+		$list = JHTML::_('select.genericlist',  $currentGroups, $this->name, "class=\"inputbox\" multiple=\"multiple\" style=\"width:100%;\" size=\"10\" ", 'value', 'text', '/', $this->id);
 		return array($currentGroups, $list);
 	}
 }

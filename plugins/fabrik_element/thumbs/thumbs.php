@@ -33,16 +33,19 @@ class plgFabrik_ElementThumbs extends plgFabrik_Element {
 		$formid = $this->getlistModel()->getTable()->form_id;
 		$row_id = $thisRow->__pk_val;
 		$str = '';
-		for ($i=0; $i <count($data); $i++) {
+		for ($i = 0; $i <count($data); $i++)
+		{
 			JRequest::setVar('rowid', $row_id);
 			$myThumb = $this->_getMyThumb($listid, $formid, $row_id);
 			$imagefileup = 'thumb_up_out.gif';
 			$imagefiledown = 'thumb_down_out.gif';
-			if ($myThumb == 'up') {
+			if ($myThumb == 'up')
+			{
 				$imagefileup = 'thumb_up_in.gif';
 				$imagefiledown = 'thumb_down_out.gif';
 			}
-			else if ($myThumb == 'down') {
+			else if ($myThumb == 'down')
+			{
 				$imagefileup = 'thumb_up_out.gif';
 				$imagefiledown = 'thumb_down_in.gif';
 			}

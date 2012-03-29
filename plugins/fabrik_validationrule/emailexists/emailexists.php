@@ -12,7 +12,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleEmailExists extends plgFabrik_Validationrule
@@ -27,14 +26,11 @@ class plgFabrik_ValidationruleEmailExists extends plgFabrik_Validationrule
 	protected $icon = 'isemail';
 
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($data, &$element, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		if (empty($data))
 		{
@@ -43,15 +39,14 @@ class plgFabrik_ValidationruleEmailExists extends plgFabrik_Validationrule
 		$params = $this->getParams();
 		//as ornot is a radio button it gets json encoded/decoded as an object
 		$ornot = (object)$params->get('emailexists_or_not');
-		$ornot = isset($ornot->$c) ? $ornot->$c : 'fail_if_exists';
+		$ornot = isset($ornot->$pluginc) ? $ornot->$pluginc : 'fail_if_exists';
 
 		jimport('joomla.user.helper');
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id')->from('#__users')->where('email = '.$db->quote($data));
+		$query->select('id')->from('#__users')->where('email = ' . $db->quote($data));
 		$db->setQuery($query);
 		$result = $db->loadResult();
-
 		$user = JFactory::getUser();
 		if ($user->get('guest'))
 		{
@@ -75,14 +70,7 @@ class plgFabrik_ValidationruleEmailExists extends plgFabrik_Validationrule
 		{
 			if (!$result)
 			{
-				if ($ornot == 'fail_if_exists')
-				{
-					return true;
-				}
-				else
-				{
-					return false;
-				}
+				return ($ornot == 'fail_if_exists') ? true : false;
 			}
 			else
 			{
@@ -98,17 +86,17 @@ class plgFabrik_ValidationruleEmailExists extends plgFabrik_Validationrule
 
 	/**
 	* gets the hover/alt text that appears over the validation rule icon in the form
-	* @param object element model
-	* @param int repeat group counter
-	* @return string label
+	* @param	object	element model
+	* @param	int		repeat group counter
+	* @return	string	label
 	*/
 
 	protected function getLabel($elementModel, $c)
 	{
 		$params = $this->getParams();
 		//as ornot is a radio button it gets json encoded/decoded as an object
-		$ornot = (object)$params->get('emailexists_or_not');
-		$c = (int)$c;
+		$ornot = (object) $params->get('emailexists_or_not');
+		$c = (int) $c;
 		$cond = '';
 		foreach ($ornot as $k => $v)
 		{

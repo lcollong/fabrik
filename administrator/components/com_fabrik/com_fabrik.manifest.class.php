@@ -54,7 +54,7 @@ class Com_FabrikInstallerScript
 	{
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('extension_id, params')->from('#__extensions')->where('name = '.$db->Quote('fabrik'))->where('type = '.$db->Quote('component'));
+		$query->select('extension_id, params')->from('#__extensions')->where('name = '.$db->quote('fabrik'))->where('type = '.$db->quote('component'));
 		$db->setQuery($query);
 		$row = $db->loadObject();
 		$opts = new stdClass();
@@ -65,7 +65,7 @@ class Com_FabrikInstallerScript
 		if ($row && ($row->params == '{}' || $row->params == '')) {
 			$json = $row->params;
 			$query = $db->getQuery(true);
-			$query->update('#__extensions')->set('params = '.$db->Quote($json))->where('extension_id = '.(int)$row->extension_id);
+			$query->update('#__extensions')->set('params = '.$db->quote($json))->where('extension_id = '.(int)$row->extension_id);
 			$db->setQuery($query);
 			if (!$db->query()) {
 				return false;
@@ -95,15 +95,15 @@ class Com_FabrikInstallerScript
 
 		// $$$ hugh - have to use false as last arg (use_streams) on JFolder::copy(), otherwise
 		// it bypasses FTP layer, and will fail if web server does not have write access to J! folders
-		$moveRes = JFolder::copy($componentFrontend . '/fabrikfeed', $dest, JPATH_SITE, true, false);
+		$moveRes = JFolder::copy($componentFrontend.DS.'fabrikfeed', $dest, JPATH_SITE, true, false);
 		if ($moveRes !== true) {
-			echo "<p style=\"color:red\">failed to moved ".$componentFrontend . '/fabrikfeed'. ' to '.$dest.'</p>';
+			echo "<p style=\"color:red\">failed to moved ".$componentFrontend.DS.'fabrikfeed'. ' to '.$dest.'</p>';
 			return false;
 		}
 
 		$dest = 'libraries/joomla/database/database';
 
-		$driverInstallLoc = $componentFrontend . '/dbdriver/';
+		$driverInstallLoc = $componentFrontend.DS.'dbdriver'.DS;
 		$moveRes = JFolder::copy($driverInstallLoc, $dest, JPATH_SITE, true, false);
 		if ($moveRes !== true) {
 			echo "<p style=\"color:red\">failed to moved ".$driverInstallLoc. ' to '.$dest.'</p>';
@@ -131,8 +131,8 @@ class Com_FabrikInstallerScript
 
 		$dest = JPATH_SITE . '/libraries/joomla/database/database';
 		foreach ($this->drivers as $driver) {
-			if (JFile::exists($dest . '/' . $driver)) {
-				JFile::delete($dest . '/' . $driver);
+			if (JFile::exists($dest.DS.$driver)) {
+				JFile::delete($dest.DS.$driver);
 			}
 		}
 	}

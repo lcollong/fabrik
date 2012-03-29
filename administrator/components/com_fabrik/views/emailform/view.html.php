@@ -17,8 +17,8 @@ class fabrikViewEmailform extends JView
 	var $_template 	= null;
 	var $_errors 	= null;
 	var $_data 		= null;
-	/*var $rowId 	= null;
-	 var $params 	= null; */
+	var $rowId 	= null;
+	var $_params 	= null;
 	var $isMambot = null;
 
 	var $_id 			= null;
@@ -88,7 +88,7 @@ class fabrikViewEmailform extends JView
 		}
 
 		$config = JFactory::getConfig();
-		$sitename = $config->get('sitename');
+		$sitename = $config->getValue('sitename');
 		// link sent in email
 
 		$link = JRequest::getVar('referrer');
@@ -96,7 +96,7 @@ class fabrikViewEmailform extends JView
 		$msg =JText::sprintf('COM_FABRIK_EMAIL_MSG', $sitename, $yourname, $youremail, $link);
 
 		// mail function
-		 JFactory::getMailer()->sendMail($youremail, $yourname, $email, $subject, $msg);
+		JUTility::sendMail($youremail, $yourname, $email, $subject, $msg);
 
 	}
 

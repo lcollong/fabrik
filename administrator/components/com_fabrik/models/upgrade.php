@@ -11,13 +11,11 @@ class FabrikModelUpgrade extends JModel
 	public function __construct($config = array())
 	{
 		$this->fundleMenus();
-		if (!$this->shouldUpgrade())
-		{
+		if (!$this->shouldUpgrade()) {
 			JFactory::getApplication()->enqueueMessage('Already updated');
 			return parent::__construct($config);
 		}
-		if ($this->backUp())
-		{
+		if ($this->backUp()) {
 			$this->upgrade();
 		}
 		JFactory::getApplication()->enqueueMessage('Upgraded OK!');
@@ -38,39 +36,33 @@ class FabrikModelUpgrade extends JModel
 		$listModel = JModel::getInstance('List', 'FabrikFEModel');
 		$connModel = JModel::getInstance('Connection', 'FabrikFEModel');
 		$cnnTables = array();
-		foreach ($tables as $dbName => $item)
-		{
+		foreach ($tables as $dbName => $item) {
 			$connModel->setId($item->connection_id);
 			$connModel->getConnection($item->connection_id);
 			$cDb = $connModel->getDb();
-			if (!array_key_exists($item->connection_id, $cnnTables))
-			{
+			if (!array_key_exists($item->connection_id, $cnnTables)) {
 				$cnnTables[$item->connection_id] = $cDb->getTableList();
 			}
-			$listModel->set('connection', $connModel);
+			$listModel->set('_oConn', $connModel);
 			//drop the bkup table
-			$cDb->setQuery('DROP TABLE IF EXISTS ' . $cDb->quoteName('bkup_'.$item->db_table_name));
-			if (!$cDb->query())
-			{
+			$cDb->setQuery("DROP TABLE IF EXISTS ".$cDb->quoteName('bkup_'.$item->db_table_name));
+			if (!$cDb->query()) {
 				JError::raiseError(500, $cDb->getErrorMsg());
 				return false;
 			}
 			//test table exists
-			if (!in_array($item->db_table_name, $cnnTables[$item->connection_id]))
-			{
+			if (!in_array($item->db_table_name, $cnnTables[$item->connection_id])) {
 				JError::raiseNotice(500, 'backup: table not found: ' . $item->db_table_name);
 				continue;
 			}
 			//create the bkup table (this method will also correctly copy table indexes
 			$cDb->setQuery("CREATE TABLE IF NOT EXISTS ".$cDb->quoteName('bkup_'.$item->db_table_name)." like ".$cDb->quoteName($item->db_table_name));
-			if (!$cDb->query())
-			{
+			if (!$cDb->query()) {
 				JError::raiseError(500, $cDb->getErrorMsg());
 				return false;
 			}
 			$cDb->setQuery("INSERT INTO ".$cDb->quoteName('bkup_'.$item->db_table_name)." select * from ".$cDb->quoteName($item->db_table_name));
-			if (!$cDb->query())
-			 {
+			if (!$cDb->query()) {
 				JError::raiseError(500, $cDb->getErrorMsg());
 				return false;
 			}
@@ -85,27 +77,21 @@ class FabrikModelUpgrade extends JModel
 	protected function upgrade(){
 		$db = JFactory::getDbo(true);
 		$updates = array('#__fabrik_elements', '#__fabrik_cron', '#__fabrik_forms', '#__fabrik_groups', '#__fabrik_joins', '#__fabrik_jsactions', '#__fabrik_tables', '#__fabrik_visualizations');
-		foreach ($updates as $update)
-		{
+		foreach ($updates as $update) {
 			$db->setQuery("SELECT * FROM $update");
 			$rows = $db->loadObjectList();
-			if ($db->getErrorNum())
-			{
+			if ($db->getErrorNum()) {
 				JError::raiseError(500, $db->getErrorMsg());
 			}
-			foreach ($rows as $row)
-			{
+			foreach ($rows as $row) {
 				$json = json_decode($row->attribs);
 				if ($json == false) {
-					
 					//only do this if the attribs are not already in json format
 					$p = $this->fromAttribsToObject($row->attribs);
-					switch ($update)
-					{
+					switch ($update) {
 						case '#__fabrik_elements':
 							//elements had some fields moved into the attribs/params json object
-							if ($row->state == 0)
-							{
+							if ($row->state == 0) {
 								$row->state = -2;
 							}
 							$p->can_order = $row->can_order; 
@@ -143,17 +129,14 @@ class FabrikModelUpgrade extends JModel
 			}
 		}
 		//get the upgrade script
-		$sql = JFile::read(JPATH_SITE . '/administrator/components/com_fabrik/sql/updates/mysql/2.x-3.0.sql');
+		$sql = JFile::read(JPATH_SITE.'/administrator/components/com_fabrik/sql/updates/mysql/2.x-3.0.sql');
 		$prefix = JFactory::getApplication()->getCfg('dbprefix');
 		$sql = str_replace('#__', $prefix, $sql);
 		$sql = explode("\n", $sql);
-		foreach ($sql as $q)
-		 {
+		foreach ($sql as $q) {
 			$db->setQuery($q);
-			if (trim($q) !== '')
-			{
-				if (!$db->query())
-				{
+			if (trim($q) !== '') {
+				if (!$db->query()){
 					JError::raiseNotice(500, $db->getErrorMsg());
 				}
 			}
@@ -165,14 +148,15 @@ class FabrikModelUpgrade extends JModel
 		$fabrate = "SHOW TABLES LIKE '".$prefix."fabrik_ratings'";
 		$db->setQuery($fabrate);
 		$rateresult = $db->loadObjectList(); 
-		if (!count($rateresult))
-		{
+		if (!count($rateresult)) {
+			}
+			else 
+			{
+		$db->setQuery ("ALTER TABLE ".$prefix."fabrik_ratings CHANGE `tableid` `listid` INT( 6 ) NOT NULL"); 
+		$db->query();
+
 		}
-		else 
-		{
-			$db->setQuery ("ALTER TABLE ".$prefix."fabrik_ratings CHANGE `tableid` `listid` INT( 6 ) NOT NULL"); 
-			$db->query();
-		}
+		
 	}
 	
 	protected function fundleMenus()
@@ -203,17 +187,13 @@ class FabrikModelUpgrade extends JModel
 	protected function fromAttribsToObject($str) {
 		$o = new stdClass();
 		$a = explode("\n", $str);
-		foreach ($a as $line)
-		{
-			if (strstr($line, '='))
-			{ 
+		foreach ($a as $line) {
+			if (strstr($line, '=')) { 
 				list($key, $val) = explode("=", $line, 2);
-				if (strstr($val, '//..*..//'))
-				{
+				if (strstr($val, '//..*..//')) {
 					$val = explode('//..*..//', $val);
 				}
-				if ($key)
-				{
+				if ($key) {
 					$o->$key = $val;
 				}
 			}
@@ -254,11 +234,9 @@ class FabrikModelUpgrade extends JModel
 		$db = JFactory::getDbo(true);
 		$r = array();
 		$db->setQuery("SHOW TABLES");
-		$rows = $db->loadColumn();
-		foreach ($rows as $row)
-		{
-			if (strstr($row, '_fabrik_') && !strstr($row, 'bkup_'))
-			{
+		$rows = $db->loadResultArray();
+		foreach ($rows as $row) {
+			if (strstr($row, '_fabrik_') && !strstr($row, 'bkup_')) {
 				$o = new stdClass();
 				$o->db_table_name = $row;
 				$o->connection_id = 1;
@@ -276,11 +254,9 @@ class FabrikModelUpgrade extends JModel
 	{
 		$db = JFactory::getDbo(true);
 		$db->setQuery("SHOW TABLES");
-		$rows = $db->loadColumn();
-		foreach ($rows as $row)
-		{
-			if (strstr($row, '_fabrik_tables') && !strstr($row, 'bkup_'))
-			{
+		$rows = $db->loadResultArray();
+		foreach ($rows as $row) {
+			if (strstr($row, '_fabrik_tables') && !strstr($row, 'bkup_')) {
 				return true;
 			}
 		}

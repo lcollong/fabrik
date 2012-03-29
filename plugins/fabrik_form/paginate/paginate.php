@@ -17,14 +17,23 @@ require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 class plgFabrik_FormPaginate extends plgFabrik_Form {
 
 	/**
+	 * get the html to insert at the bottom of the form(non-PHPdoc)
+	 * @see components/com_fabrik/models/FabrikModelFormPlugin#getBottomContent_result()
+	 */
+
+	public function getBottomContent_result($c)
+	{
+		return $this->_data;
+	}
+
+	/**
 	 * store the html to insert at the bottom of the form(non-PHPdoc)
 	 * @see components/com_fabrik/models/FabrikModelFormPlugin#getBottomContent()
 	 */
 
-	function getBottomContent($params, $formModel)
+	public function getBottomContent($params, $formModel)
 	{
-		if (!$this->show($params, $formModel))
-		{
+		if (!$this->show($params, $formModel)) {
 			return;
 		}
 		$app = JFactory::getApplication();
@@ -34,13 +43,10 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 		$this->ids = $this->getNavIds($formModel);
 		$linkStartPrev = $this->ids->index == 0 ? ' disabled' : '';
 		$linkNextEnd = $this->ids->index == $this->ids->lastKey ? ' disabled' : '';
-		if ($app->isAdmin())
-		{
-			$url = 'index.php?option=com_fabrik&view=' . $mode . '&formid=' . $formId . '&rowid=';
-		}
-		else
-		{
-			$url = 'index.php?option=com_fabrik&view=' . $mode . '&formid=' . $formId . '&rowid=';
+		if ($app->isAdmin()) {
+			$url = 'index.php?option=com_fabrik&view='.$mode.'&formid='.$formId.'&rowid=';
+		} else {
+			$url = 'index.php?option=com_fabrik&view='.$mode.'&formid='.$formId.'&rowid=';
 		}
 		$ajax = (bool)$params->get('paginate_ajax', true);
 		$firstLink = ($linkStartPrev) ? '<span>&lt;&lt;</span>' . JText::_('START') : '<a href="'.JRoute::_($url.$this->ids->first).'" class="pagenav paginateFirst '.$linkStartPrev.'"><span>&lt;&lt;</span>' . JText::_('START').'</a>';
@@ -48,7 +54,7 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 
 		$nextLink = ($linkNextEnd) ? JText::_('NEXT') . '<span>&gt;</span>' : '<a href="'.JRoute::_($url.$this->ids->next).'" class="pagenav paginateNext'.$linkNextEnd.'">'.JText::_('NEXT') . '<span>&gt;</span></a>';
 		$endLink = ($linkNextEnd) ? JText::_('END') . '<span>&gt;&gt;</span>' : '<a href="'.JRoute::_($url.$this->ids->last).'" class="pagenav paginateLast'.$linkNextEnd.'">'.JText::_('END'). '<span>&gt;&gt;</span></a>';
-		$this->html = '<ul id="fabrik-from-pagination" class="pagination">
+		$this->_data = '<ul id="fabrik-from-pagination" class="pagination">
 				<li>'.$firstLink.'</li>
 				<li>'.$prevLink.'</li>
 				<li>'.$nextLink.'</li>
@@ -92,8 +98,7 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 	protected function show($params, $formModel)
 	{
 		$where = $params->get('paginate_where');
-		switch($where)
-		{
+		switch($where) {
 			case 'both':
 				return true;
 				break;
@@ -115,12 +120,10 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 
 	function onAfterJSLoad(&$params, &$formModel)
 	{
-		if (!$this->show($params, $formModel))
-		{
+		if (!$this->show($params, $formModel)) {
 			return;
 		}
-		if ($params->get('paginate_ajax') == 0)
-		{
+		if ($params->get('paginate_ajax') == 0) {
 			return;
 		}
 		$opts = new stdClass();
@@ -132,33 +135,33 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 		$form =& $formModel->getForm();
 		$container = $formModel->editable ? 'form' : 'details';
 		$container .= "_".$form->id;
-
+		
 		$scripts = array(
 		'plugins/fabrik_form/paginate/scroller.js',
 		'media/com_fabrik/js/encoder.js'
 		);
 		$code = "$container.addPlugin(new FabRecordSet($container, $opts));";
 		FabrikHelperHTML::script($scripts, $code);
-
+		
 		/* if (JRequest::getVar('tmpl') != 'component') {
 			FabrikHelperHTML::script('scroller.js', 'components/com_fabrik/plugins/form/paginate/');
-		FabrikHelperHTML::script('encoder.js', 'media/com_fabrik/js/');
-		FabrikHelperHTML::addScriptDeclaration("
-		window.addEvent('load', function() {
-		$container.addPlugin(new FabRecordSet($container, $opts));
-		});");
+			FabrikHelperHTML::script('encoder.js', 'media/com_fabrik/js/');
+			FabrikHelperHTML::addScriptDeclaration("
+			window.addEvent('load', function() {
+			$container.addPlugin(new FabRecordSet($container, $opts));
+	 		});");
 		} else {
-		// included scripts in the head don't work in window
-		// read in the class and insert it into the body as an inline script
-		$class = JFile::read(JPATH_BASE."/components/com_fabrik/plugins/form/paginate/scroller.js");
-		FabrikHelperHTML::addScriptDeclaration($class);
-		$class = JFile::read(JPATH_BASE."/media/com_fabrik/js/encoder.js");
-		FabrikHelperHTML::addScriptDeclaration($class);
-		//there is no load event in a window - use domready instead
-		FabrikHelperHTML::addScriptDeclaration("
-		window.addEvent('domready', function() {
-		$container.addPlugin(new FabRecordSet($container, $opts));
-		});");
+			// included scripts in the head don't work in mocha window
+			// read in the class and insert it into the body as an inline script
+			$class = JFile::read(JPATH_BASE."/components/com_fabrik/plugins/form/paginate/scroller.js");
+			FabrikHelperHTML::addScriptDeclaration($class);
+			$class = JFile::read(JPATH_BASE."/media/com_fabrik/js/encoder.js");
+			FabrikHelperHTML::addScriptDeclaration($class);
+			//there is no load event in a mocha window - use domready instead
+			FabrikHelperHTML::addScriptDeclaration("
+				window.addEvent('domready', function() {
+				$container.addPlugin(new FabRecordSet($container, $opts));
+	 		});");
 		} */
 	}
 
@@ -175,22 +178,22 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 		$formid = JRequest::getInt('formid');
 		$rowid = JRequest::getVar('rowid');
 		$mode = JRequest::getVar('mode', 'details');
-		$model = JModel::getInstance('Form', 'FabrikFEModel');
+		$model =& JModel::getInstance('Form', 'FabrikFEModel');
 		$model->setId($formid);
 		$model->rowId = $rowid;
 		$ids = $this->getNavIds($model);
 		$url = COM_FABRIK_LIVESITE.'index.php?option=com_fabrik&format=raw&controller=plugin&g=form&task=pluginAjax&plugin=paginate&method=xRecord&formid='.$formid.'&rowid='.$rowid;
-		$url = COM_FABRIK_LIVESITE.'index.php?option=com_fabrik&c=form&view=' . $mode . '&fabrik=' . $formid . '&rowid=' . $rowid . '&format=raw';
+		$url = COM_FABRIK_LIVESITE.'index.php?option=com_fabrik&c=form&view='.$mode.'&fabrik='.$formid.'&rowid='.$rowid.'&format=raw';
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+ 	  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		$data = curl_exec($ch);
-		curl_close($ch);
-		//apend the ids to the json array
-		$data = json_decode($data);
-		//$data['ids'] = $ids;
-		$data->ids = $ids;
-		echo json_encode($data);
+ 	  curl_close($ch);
+ 	  //apend the ids to the json array
+ 	  $data = json_decode($data);
+ 	  //$data['ids'] = $ids;
+ 	  $data->ids = $ids;
+ 	  echo json_encode($data);
 
 	}
 

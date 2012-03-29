@@ -63,13 +63,11 @@ class FabrikControllerForm extends JControllerForm
 		$viewName = JRequest::getVar('view', 'form', 'default', 'cmd');
 		$viewType = $document->getType();
 		$view = $this->getView($viewName, $viewType);
-
 		if (!JError::isError($model))
 		{
 			$view->setModel($model, true);
 		}
 		$model->setId(JRequest::getInt('formid', 0));
-
 		$this->isMambot = JRequest::getVar('_isMambot', 0);
 		$model->getForm();
 		$model->rowId = JRequest::getVar('rowid', '');
@@ -94,18 +92,17 @@ class FabrikControllerForm extends JControllerForm
 			}
 			else
 			{
-				$this->setRedirect('index.php?option=com_fabrik&task=form.view&formid=' . $model->getId() . '&rowid='.$model->_rowId, '');
+				$this->setRedirect('index.php?option=com_fabrik&task=form.view&formid=' . $model->getId() . '&rowid=' . $model->rowId, '');
 			}
 			return;
 		}
 
 		//reset errors as validate() now returns ok validations as empty arrays
 		$model->clearErrors();
-
 		$defaultAction = $model->process();
 
 		//check if any plugin has created a new validation error
-		if (!empty( $model->_arErrors))
+		if (!empty( $model->errors))
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
@@ -156,7 +153,7 @@ class FabrikControllerForm extends JControllerForm
 	 * generic function to redirect
 	 */
 
-	protected function makeRedirect($msg = null, &$model)
+	protected function makeRedirect($msg = null, &$model )
 	{
 		if (is_null($msg))
 		{
@@ -168,10 +165,11 @@ class FabrikControllerForm extends JControllerForm
 		}
 		else
 		{
-			$page = 'index.php?option=com_fabrik&task=list.view&cid[]=' .$model->getlistModel()->getTable()->id;
+			$page = 'index.php?option=com_fabrik&task=list.view&cid[]=' . $model->getlistModel()->getTable()->id;
 		}
 		// $$$ rob was redirecting back to admin list view and not list data view (list.view) 
-		//$page = JRequest::getVar('fabrik_referrer', $page);
+		// $$$ rob put back in as list views are now called using /administrator/index.php?option=com_fabrik&task=list.view&listid=1
+		$page = JRequest::getVar('fabrik_referrer', $page);
 		$this->setRedirect($page, $msg);
 	}
 }

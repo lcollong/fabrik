@@ -82,7 +82,7 @@ class plgFabrik_ListList_Example extends plgFabrik_List {
 	/**
 	 * determine if the table plugin is a button and can be activated only when rows are selected
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function canSelectRows()

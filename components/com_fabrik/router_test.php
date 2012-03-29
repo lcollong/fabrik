@@ -24,7 +24,8 @@ defined('_JEXEC') or die();
 function fabrikBuildRoute(&$query) {
 	$segments = array();
 
-	$menu = &JSite::getMenu();
+	$app = JFactory::getApplication();
+	$menu = $app->getMenu();
 
 	if (empty($query['Itemid'])) {
 		$menuItem = &$menu->getActive();

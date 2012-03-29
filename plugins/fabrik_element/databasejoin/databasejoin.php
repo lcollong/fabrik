@@ -27,6 +27,9 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	/** @var array option values **/
 	var $_optionVals = null;
 
+	/** @var bol is a join element */
+	var $_isJoin = true;
+
 	/** @var array linked form data */
 	var $_linkedForms = null;
 
@@ -96,8 +99,8 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 			if (JArrayHelper::getValue($opts, 'inc_raw', true))
 			{
-				$aFields[] = $k . ' AS ' . $db->quoteName($fullElName.'_raw');
-				$aAsFields[] = $db->quoteName($fullElName.'_raw');
+				$aFields[] = $k . ' AS ' . $db->quoteName($fullElName . '_raw');
+				$aAsFields[] = $db->quoteName($fullElName . '_raw');
 			}
 			$aFields[] = $k2 . ' AS ' . $db->quoteName($fullElName);
 			$aAsFields[] = $db->quoteName($fullElName);
@@ -148,7 +151,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	 * get the field name to use as the column that contains the join's label data
-	 * @param bol use step in element name
+	 * @param bool use step in element name
 	 * @return string join label column either returns concat statement or quotes `tablename`.`elementname`
 	 */
 
@@ -232,7 +235,8 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			if ($join->element_id == $element->id)
 			{
 				$this->join = $join;
-				if (is_string($this->join->params)) {
+				if (is_string($this->join->params))
+				{
 					$this->join->params = new JRegistry($this->join->params);
 				}
 				return $this->join;
@@ -267,7 +271,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		->join('LEFT', '#__{package}_formgroup AS fg ON fg.group_id = el.group_id')
 		->join('LEFT', '#__{package}_forms AS f ON f.id = fg.form_id')
 		->join('LEFT', ' #__{package}_tables AS t ON t.form_id = f.id')
-		->where('plugin = '.$db->Quote('databasejoin').' AND join_db_name = '.$db->Quote($table->db_table_name).' AND join_conn_id = '.(int)$table->connection_id);
+		->where('plugin = ' . $db->quote('databasejoin') . ' AND join_db_name = ' . $db->quote($table->db_table_name) . ' AND join_conn_id = ' . (int) $table->connection_id);
 		$db->setQuery($query);
 		return $db->loadObjectList();
 	}
@@ -294,7 +298,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				$quoteV = array();
 				foreach ($value as $v)
 				{
-					$quoteV[] = $db->Quote($v);
+					$quoteV[] = $db->quote($v);
 				}
 				$this->_autocomplete_where = $this->getJoinValueColumn()." IN (".implode(', ', $quoteV).')';
 			}
@@ -422,7 +426,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	 * Kind of an inverse access lookup
 	 * @param int group id to check against
 	 * @param string ref for filter
-	 * @return bol must apply filter - true, ignore filter (user has enough access rights) false;
+	 * @return bool must apply filter - true, ignore filter (user has enough access rights) false;
 	 */
 
 	function mustApplyWhere($gid, $ref)
@@ -478,15 +482,15 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		}
 		$query = $db->getQuery(true);
 		$sql = "SELECT DISTINCT($key) AS value, $val AS text";
-		$desc = $params->get('join_desc_column');
+		$desc = $params->get('join_desc_column', '');
 		if ($desc !== '')
 		{
-			$sql .= ", ".$db->quoteName($desc)." AS description";
+			$sql .= ', ' . $db->quoteName($desc) . ' AS description';
 		}
 		$sql .= $this->getAdditionalQueryFields();
 		$sql .= ' FROM ' . $db->quoteName($table) . ' AS ' . $db->quoteName($join->table_join_alias);
 		$sql .= $this->buildQueryJoin();
-		$sql .= " $where ";
+		$sql .= ' ' . $where . ' ';
 		// $$$ hugh - let them specify an order by, i.e. don't append default if the $where already has an 'order by'
 		// @TODO - we should probably split 'order by' out in to another setting field, because if they are using
 		// the 'apply where beneath' and/or 'apply where when' feature, any custom ordering will not be applied
@@ -588,7 +592,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	/**
 	 * get the database object
 	 *
-	 * @return object database
+	 * @return	object	database
 	 */
 
 	function getDb()
@@ -685,15 +689,8 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			$joinId = '';
 			$joinGroupId = '';
 		}
-		// $$$ rob dont load in all options for autocomplete as slows loading on large data sets
-		// $tmp = ($displayType == 'auto-complete' && $this->editable) ? array() : $this->_getOptions($data, $repeatCounter);
-		// $$$ hugh - doesn't matter if editable, otherwise it just failsd on _getROElement(). Don't load for auto-complete, period.
-		// $tmp = ($displayType == 'auto-complete') ? array() : $this->_getOptions($data, $repeatCounter);
-		// $$$ hugh - moved the auto-complete handling into _getOptionVals, so doesn't matter here any more
 		$tmp = $this->_getOptions($data, $repeatCounter);
-		/*get the default value */
 		$w = new FabrikWorker();
-
 		$default = (array)$this->getValue($data, $repeatCounter);
 		foreach ($default as &$d)
 		{
@@ -716,35 +713,37 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$id = $this->getHTMLId($repeatCounter);
 		// $$$ rob 24/05/2011 - add options per row
 		$options_per_row = intval($params->get('dbjoin_options_per_row', 0));
-
 		$html = array();
-
 		if (!$formModel->isEditable())
 		{
-			//$defaultLabel = $this->renderListData($default, JArrayHelper::toObject($data));
+			// $$$ rob 19/03/2012 uncommented line below - needed for checkbox rendering
+			$defaultLabel = $this->renderListData($default, JArrayHelper::toObject($data));
 			if ($defaultLabel === $params->get('database_join_noselectionlabel', JText::_('COM_FABRIK_PLEASE_SELECT')))
 			{
 				$defaultLabel = '';//no point showing 'please select' for read only
 			}
 			if ($params->get('databasejoin_readonly_link') == 1)
 			{
-				$popupformid = (int)$params->get('databasejoin_popupform');
+				$popupformid = (int) $params->get('databasejoin_popupform');
 				if ($popupformid !== 0)
 				{
-					$db->setQuery("select id from #__{package}_lists where form_id = $popupformid");
+					$query = $db->getQuery(true);
+					$query->select('id')->from('#__{package}_lists')->where('form_id =' . $popupformid);
+					$db->setQuery($query);
 					$listid = $db->loadResult();
-					$url = 'index.php?option=com_fabrik&view=details&formid='.$popupformid.'&listid ='.$listid .'&rowid='.$defaultValue;
+					$url = 'index.php?option=com_fabrik&view=details&formid=' . $popupformid . '&listid =' . $listid . '&rowid=' . $defaultValue;
 					$defaultLabel = '<a href="' . JRoute::_($url) . '">' . $defaultLabel . '</a>';
 				}
 			}
 			$html[] = $defaultLabel;
 		}
-		else {
+		else
+		{
 			//$$$rob should be canUse() otherwise if user set to view but not use the dd was shown
 			//if ($this->canView()) {
 			if ($this->canUse())
 			{
-				$idname = $this->getFullName(false, true, false) . "_id";
+				$idname = $this->getFullName(false, true, false) . '_id';
 				/*if user can access the drop down*/
 				switch ($displayType)
 				{
@@ -754,24 +753,25 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 						break;
 					case 'radio':
 						// $$$ rob 24/05/2011 - always set one value as selected for radio button if none already set
-						if ($defaultValue == '' && !empty($tmp)) {
+						if ($defaultValue == '' && !empty($tmp))
+						{
 							$defaultValue = $tmp[0]->value;
 						}
 						// $$$ rob 24/05/2011 - add options per row
 						$options_per_row = intval($params->get('dbjoin_options_per_row', 0));
-						$html[] = '<div class="fabrikSubElementContainer" id="'.$id.'">';
+						$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 						$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaultValue, 'value', 'text', $options_per_row);
 						break;
 					case 'checkbox':
 						$defaults = $formModel->failedValidation() ? $default : explode(GROUPSPLITTER, JArrayHelper::getValue($data, $idname));
-						$html[] = '<div class="fabrikSubElementContainer" id="'.$id.'">';
+						$html[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
 						//$joinids = $default == '' ? array() : explode(GROUPSPLITTER, $default);
 						// $$$ hugh - I think this needs to be the raw values ...
 						// $joinids = $default;
 						$rawname = $this->getFullName(false, true, false) . '_raw';
 						$joinids = explode(GROUPSPLITTER, JArrayHelper::getValue($data, $rawname));
 						$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaults, 'value', 'text', $options_per_row, $this->editable);
-						if ($this->isJoin() && $this->_editable)
+						if ($this->isJoin() && $this->editable)
 						{
 							$join = $this->getJoin();
 							$joinidsName = 'join[' . $join->id . '][' . $join->table_join . '___id][]';
@@ -799,10 +799,10 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 						break;
 					case 'multilist':
 						$defaults = $formModel->failedValidation() ? $default : explode(GROUPSPLITTER, JArrayHelper::getValue($data, $idname));
-						if ($this->_editable)
+						if ($this->editable)
 						{
 							$html[] = JHTML::_('select.genericlist', $tmp, $thisElName, 'class="fabrikinput inputbox" size="'.(int)$params->get('dbjoin_multilist_size', 6).'" multiple="true"', 'value', 'text', $defaults, $id);
-						} 
+						}
 						else
 						{
 							$html[] = FabrikHelperHTML::aList($displayType, $tmp, $thisElName, 'class="fabrikinput inputbox" size="1" id="'.$id.'"', $defaults, 'value', 'text', $options_per_row, $this->editable);
@@ -817,17 +817,16 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 						break;
 				}
 
-
 				if ($params->get('fabrikdatabasejoin_frontend_select') && $this->editable)
 				{
-					$html[] = '<a href="#" class="toggle-selectoption" title="' . JText::_('COM_FABRIK_SELECT') . '">'.
-					FabrikHelperHTML::image('search.png', 'form', @$this->tmpl, array('alt' => JText::_('COM_FABRIK_SELECT')))."</a>";
+					$html[] = '<a href="#" class="toggle-selectoption" title="' . JText::_('COM_FABRIK_SELECT') . '">' .
+					FabrikHelperHTML::image('search.png', 'form', @$this->tmpl, array('alt' => JText::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
 
 				if ($params->get('fabrikdatabasejoin_frontend_add') && $this->editable)
 				{
-					$html[] = '<a href="#" title="' . JText::_('COM_FABRIK_ADD') . '" class="toggle-addoption">';
-					$html[] = FabrikHelperHTML::image('action_add.png', 'form', @$this->tmpl, array('alt' => JText::_('COM_FABRIK_SELECT'))).'</a>';
+					$html[] = '<a href="#" title="'.JText::_('COM_FABRIK_ADD').'" class="toggle-addoption">';
+					$html[] = FabrikHelperHTML::image('action_add.png', 'form', @$this->tmpl, array('alt' => JText::_('COM_FABRIK_SELECT'))) . '</a>';
 				}
 
 				$html[] = ($displayType == 'radio') ? '</div>' : '';
@@ -842,16 +841,15 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				//$str = '<input type='hidden' class='fabrikinput' name='$thisElName' id='$id' value='$default' />";
 			}
 		}
-
-		if ($params->get('join_desc_column') !== '')
+		if ($params->get('join_desc_column', '') !== '')
 		{
 			$html[] = '<div class="dbjoin-description">';
 			for ($i = 0; $i < count($this->_optionVals); $i++)
 			{
 				$opt = $this->_optionVals[$i];
 				$display = $opt->value == $default ? '' : 'none';
-				$c = $i+1;
-				$html[] = '<div style="display:'. $display. '" class="notice description-' . $c . '">' . $opt->description . '</div>';
+				$c = $i + 1;
+				$html[] = '<div style="display:' . $display . '" class="notice description-' . $c . '">' . $opt->description .  '</div>';
 			}
 			$html[] = '</div>';
 		}
@@ -862,7 +860,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	{
 		$name = $this->getFullName(false, true, false);
 		$params = $this->getParams();
-		if ($params->get('database_join_display_type') !== 'checkbox' && JArrayHelper::getValue($opts, 'valueFormat', 'raw') == 'raw')
+		if (!$this->isJoin() && JArrayHelper::getValue($opts, 'valueFormat', 'raw') == 'raw')
 		{
 			$name .= '_raw';
 		}
@@ -896,7 +894,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			$query->select('f.id AS value, f.label AS text, l.id AS listid')
 			->from('#__{package}_forms AS f')
 			->join('LEFT', '#__{package}_lists As l ON f.id = l.form_id')
-			->where('f.published = 1 AND l.db_table_name = '.$db->Quote($params->get('join_db_name')))
+			->where('f.published = 1 AND l.db_table_name = '.$db->quote($params->get('join_db_name')))
 			->order('f.label');
 			$db->setQuery($query);
 
@@ -1010,13 +1008,13 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	 * return parent::renderListData($data, $thisRow);
 	 * to perform rendering that is applicable to all plugins
 	 *
-	 * shows the data formatted for the table view
+	 * shows the data formatted for the list view
 	 * @param string data
 	 * @param object all the data in the tables current row
 	 * @return string formatted value
 	 */
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$groupModel = $this->getGroup();
@@ -1024,7 +1022,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		if (!$groupModel->isJoin() && $groupModel->canRepeat())
 		{
 			$opts = $this->_getOptionVals();
-			$name = $this->getFullName(false, true, false) .'_raw';
+			$name = $this->getFullName(false, true, false) . '_raw';
 			//if coming from fabrikemail plugin oAllRowsdata is empty
 			if (isset($thisRow->$name))
 			{
@@ -1058,7 +1056,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	/**
 	 * Get the table filter for the element
 	 * @param int counter
-	 * @param bol do we render as a normal filter or as an advanced search filter
+	 * @param bool do we render as a normal filter or as an advanced search filter
 	 * if normal include the hidden fields as well (default true, use false for advanced filter rendering)
 	 * @return string filter html
 	 */
@@ -1120,7 +1118,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			case "auto-complete":
 				$defaultLabel = $this->getLabelForValue($default);
 				$return[] = '<input type="hidden" name="' . $v . '" class="inputbox fabrik_filter ' . $htmlid . '" value="' . $default . '" />';
-				$return[] = '<input type="text" name="' . $element->id . '-auto-complete" class="inputbox fabrik_filter autocomplete-trigger ' . $htmlid . '-auto-complete" size="' . $size . '" value="' .$defaultLabel. '" />';
+				$return[] = '<input type="text" name="' . $element->id . '-auto-complete" class="inputbox fabrik_filter autocomplete-trigger ' . $htmlid . '-auto-complete" size="' . $size . '" value="' . $defaultLabel . '" />';
 				$return[] = $this->filterHiddenFields();
 				$selector = '#listform_'.$listModel->getRenderContext().' .'.$htmlid;
 				FabrikHelperHTML::autoComplete($selector, $element->id, 'databasejoin');
@@ -1162,7 +1160,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	 * (non-PHPdoc)
-	 * @see components/com_fabrik/models/plgFabrik_Element::_buildFilterJoin()
+	 * @see components/com_fabrik/models/plgFabrik_Element::buildFilterJoin()
 	 */
 
 	protected function buildFilterJoin()
@@ -1208,7 +1206,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			$joinTable = $joinTableName;
 		}
 		// $$$ hugh - select all values for performance gain over selecting distinct records from recorded data
-		$sql 	= "SELECT DISTINCT( $joinVal ) AS text, $joinKey AS value \n FROM " . $fabrikDb->quoteName($joinTable) . " AS ".$fabrikDb->quoteName($joinTableName)." \n ";
+		$sql 	= "SELECT DISTINCT( $joinVal ) AS text, $joinKey AS value \n FROM " . $fabrikDb->quoteName($joinTable) . " AS " . $fabrikDb->quoteName($joinTableName)." \n ";
 		$where = $this->buildQueryWhere();
 
 		//ensure table prefilter is applied to query
@@ -1282,7 +1280,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	 * @see plgFabrik_Element::getFilterQuery()
 	 */
 
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		/* $$$ rob $this->_rawFilter set in tableModel::getFilterArray()
 		 used in prefilter dropdown in admin to allow users to prefilter on raw db join value */
@@ -1331,13 +1329,12 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				if ($this->isJoin())
 				{
 					$fType = $this->getElement()->filter_type;
-					if ($fType == 'auto-complete' || $fType == 'field')
-					{
-						$where = $db->quoteName($params->get('join_db_name')) . '.' . $db->quoteName($params->get('join_val_column'));
+					if ($fType == 'auto-complete' || $fType == 'field') {
+						$where = $db->quoteName($params->get('join_db_name')).'.'.$db->quoteName($params->get('join_val_column'));
 					}
 					else
 					{
-						$where = $db->quoteName($params->get('join_db_name')) . '.' . $db->quoteName($params->get('join_key_column'));
+						$where = $db->quoteName($params->get('join_db_name')).'.'.$db->quoteName($params->get('join_key_column'));
 					}
 					$rows = $this->checkboxRows('parent_id', $condition, $value, $where);
 					$joinIds = array_keys($rows);
@@ -1409,15 +1406,15 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		$element = $this->getElement();
 		$params = $this->getParams();
 		$fields = array('auto-complete', 'field');
-		if ($params->get('join_val_column_concat') !== '' && in_array($element->filter_type, $fields))
+		if ($params->get('join_val_column_concat', '') !== '' && in_array($element->filter_type, $fields))
 		{
 			return htmlspecialchars($this->getJoinLabelColumn(), ENT_QUOTES);
 		}
 		else
 		{
 			$join_db_name = $params->get('join_db_name');
-			$listModel =& $this->getlistModel();
-			$joins =& $listModel->getJoins();
+			$listModel = $this->getlistModel();
+			$joins = $listModel->getJoins();
 			foreach ($joins as $join)
 			{
 				if ($join->element_id == $element->id)
@@ -1458,19 +1455,17 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	 * Examples of where this would be overwritten include drop downs whos "please select" value might be "-1"
-	 * @param	mixed	data posted from form to check
-	 * @return	bol		if data is considered empty then returns true
+	 * @param mixed data posted from form to check
+	 * @return bool if data is considered empty then returns true
 	 */
 
 	function dataConsideredEmpty($data, $repeatCounter)
 	{
 		// $$$ hugh on validations (at least), we're getting arrays
-		if (is_array($data))
-		{
+		if (is_array($data)) {
 			return empty($data[0]);
 		}
-		if ($data == '' || $data == '-1')
-		{
+		if ($data == '' || $data == '-1') {
 			return true;
 		}
 		return false;
@@ -1478,15 +1473,15 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	 * create an instance of the elements js class
-	 * @param	int	group repeat counter
-	 * @return	string	js call
+	 * @param int group repeat counter
+	 * @return string js call
 	 */
 
 	function elementJavascript($repeatCounter)
 	{
 		$id = $this->getHTMLId($repeatCounter);
-		if ($this->getParams()->get('database_join_display_type') == 'auto-complete')
-		{
+
+		if ($this->getParams()->get('database_join_display_type') == 'auto-complete') {
 			FabrikHelperHTML::autoComplete($id, $this->getElement()->id, 'databasejoin');
 		}
 		$opts = $this->elementJavascriptOpts($repeatCounter);
@@ -1496,7 +1491,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 	/**
 	 * @since 3.0
 	 * get the class name for the element wrapping dom object
-	 * @return	string	of class names
+	 * @return string of class names
 	 */
 
 	protected function containerClass($element)
@@ -1602,7 +1597,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 				}
 				$db = FabrikWorker::getDbo(true);
 				$query = $db->getQuery(true);
-				$query->select('db_table_name')->from('#__{package}_lists')->where('id = '.(int)$id);
+				$query->select('db_table_name')->from('#__{package}_lists')->where('id = '.(int) $id);
 				$db->setQuery($query);
 				$this->dbname = $db->loadResult();
 			}
@@ -1772,7 +1767,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		{
 			$c = FabrikString::safeColName($c);
 		}
-		$this->_autocomplete_where = $c.' LIKE '.$db->Quote('%'.JRequest::getVar('value').'%');
+		$this->_autocomplete_where = $c . ' LIKE ' . $db->quote('%' . JRequest::getVar('value') . '%');
 		// $$$ hugh - changed last arg (incwhere) to true, not sure why it was false
 		$tmp = $this->_getOptions(array(), 0, true);
 		echo json_encode($tmp);
@@ -1823,7 +1818,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 
 	/**
 	 * does the element store its data in a join table (1:n)
-	 * @return bool
+	 * @return	bool
 	 */
 
 	public function isJoin()

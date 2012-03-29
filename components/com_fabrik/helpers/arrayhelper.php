@@ -10,7 +10,8 @@ class FArrayHelper extends JArrayHelper
 	 * @param string $val
 	 * @return null
 	 */
-	function setValue(&$array, $key, $val)
+	
+	public static function setValue(&$array, $key, $val)
 	{
 
 		if (strstr($key, '.'))
@@ -60,11 +61,11 @@ class FArrayHelper extends JArrayHelper
 	 * @static
 	 * @param	array	$array		The array to map.
 	 * @param	string	$calss 		Name of the class to create
-	 * @param bol recurse into each value and set any arrays to objects
+	 * @param bool recurse into each value and set any arrays to objects
 	 * @return	object	The object mapped from the given array
 	 * @since	1.5
 	 */
-	static function toObject(&$array, $class = 'stdClass', $recurse = true)
+	/* static function toObject($array, $class = 'stdClass', $recurse = true)
 	{
 		$obj = null;
 		if (is_array($array))
@@ -80,6 +81,20 @@ class FArrayHelper extends JArrayHelper
 				{
 					$obj->$k = $v;
 				}
+			}
+		}
+		return $obj;
+	} */
+	
+	static function toObjectNonRecursive($array, $class = 'stdClass')
+	{
+		$obj = null;
+		if (is_array($array))
+		{
+			$obj = new $class();
+			foreach ($array as $k => $v)
+			{
+				$obj->$k = $v;
 			}
 		}
 		return $obj;

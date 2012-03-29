@@ -44,11 +44,11 @@ class FabimageHelper
 	/**
 	 * load in the correct image library
 	 *
-	 * @param string image lib to load
-	 * @return object image lib
+	 * @param	string	image lib to load
+	 * @return	object	image lib
 	 */
 
-	public function loadLib($lib)
+	public static function loadLib($lib)
 	{
 		$class = "Fabimage" . $lib;
 		if (class_exists($class))
@@ -119,7 +119,7 @@ class FabimageHelper
 
 class Fabimage
 {
-	var $_thumbPath = null;
+	protected $thumbPath = null;
 
 	/**@var object storage class file/amazons3 etc*/
 	var $storage = null;
@@ -164,7 +164,7 @@ class FabimageGD extends Fabimage
 
 	function imageFromFile($file)
 	{
-		$ext = strtolower(end(explode('.', $file)));
+		$ext = JFile::getExt($file);
 		if ($ext == 'jpg' || $ext == 'jpeg')
 		{
 			$img = @imagecreatefromjpeg($file);
@@ -306,7 +306,7 @@ class FabimageGD extends Fabimage
 	 * @param string current images folder pathe (must have trailing end slash)
 	 * @param string destination folder path for resized image (must have trailing end slash)
 	 * @param string file name of the image to resize
-	 * @param bol save the resized image
+	 * @param bool save the resized image
 	 */
 
 	public function resize($maxWidth, $maxHeight, $origFile, $destFile)
@@ -363,7 +363,7 @@ class FabimageGD extends Fabimage
 		}
 		/* save the file */
 		$this->writeImg($img, $destFile, $header);
-		$this->_thumbPath = $destFile;
+		$this->thumbPath = $destFile;
 	}
 
 	/**
@@ -476,7 +476,7 @@ class FabimageGD2 extends FabimageGD
 	 * @param string current images folder pathe (must have trailing end slash)
 	 * @param string destination folder path for resized image (must have trailing end slash)
 	 * @param string file name of the image to resize
-	 * @param bol save the resized image
+	 * @param bool save the resized image
 	 * @return object? image
 	 *
 	 */
@@ -591,7 +591,7 @@ class FabimageGD2 extends FabimageGD
 				}
 			}
 		}
-		$this->_thumbPath = $destFile;
+		$this->thumbPath = $destFile;
 		ini_set('memory_limit', $memory);
 	}
 }
@@ -681,7 +681,7 @@ class FabimageIM extends Fabimage
 				/* Free resources associated to the Imagick object */
 				$im->destroy();
 			}
-			$this->_thumbPath = $destFile;
+			$this->thumbPath = $destFile;
 		}
 		else
 		{
@@ -692,7 +692,7 @@ class FabimageIM extends Fabimage
 				print_r(MagickGetException($resource));
 			}
 			$resource = MagickTransformImage($resource, '0x0', $maxWidth . 'x' . $maxWidth);
-			$this->_thumbPath = $destFile;
+			$this->thumbPath = $destFile;
 			MagickWriteImage($resource, $destFile);
 		}
 	}

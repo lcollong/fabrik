@@ -60,8 +60,7 @@ echo "
 }
 
 /*This controls the display of your form elements - note: ul stands for 'unordered list', see: http://www.w3schools.com/tags/tag_ul.asp*/  
-#{$view}_$c fieldset ul,
-#details_$c fieldset ul{
+#{$view}_$c fieldset ul{
 	padding:0;
 	list-style:none;
 	margin:0;
@@ -156,11 +155,13 @@ echo "
 	margin-right:7px;
 }
 
+/*This controls the styling of the form field when being validated by ajax*/
 #{$view}_$c .fabrikValidating{
 	color: #476767;
 	background: #EFFFFF url(../images/ajax-loader.gif) no-repeat right 7px !important;
 }
 
+/*This controls the styling of the form field when ajax validation has been successful*/
 #{$view}_$c .fabrikSuccess{
 	color: #598F5B;
 	background: #DFFFE0 url(../images/action_check.png) no-repeat right 7px !important;
@@ -252,7 +253,7 @@ section for dropdowns radio buttons etc**/
 	clear:left;
 }
 
-/** bump calendar above window in mootools 1.2**/
+/** bump calendar above mocha window in mootools 1.2**/
 #{$view}_$c div.calendar{
 	z-index:115 !important;
 }
@@ -369,12 +370,6 @@ section for dropdowns radio buttons etc**/
 #{$view}_$c .fabrikSubElement {
 	display: block;
 	margin-top: 10px;
-	margin-left: 100px;
-}
-
-#{$view}_$c .password .fabrikSubElement,
-#{$view}_$c .link .fabrikSubElement {
-	margin-left:0;
 }
 
 /*

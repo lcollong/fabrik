@@ -46,7 +46,7 @@ class plgFabrik_ElementCount extends plgFabrik_Element {
 			$r = "COUNT(".$params->get('count_field', '*').")";
 			$aFields[] 	= "$r AS $fullElName";
 			$aAsFields[] =  $fullElName;
-			$aAsFields[] =  "`$dbtable" . '___' . $this->getElement()->name . '_raw`';
+			$aAsFields[] =  $db->nameQuote($dbtable . '___' . $this->getElement()->name . '_raw');
 		}
 	}
 
@@ -65,7 +65,7 @@ class plgFabrik_ElementCount extends plgFabrik_Element {
 	 * @see components/com_fabrik/models/plgFabrik_Element#canUse()
 	 */
 	
-	public function canUse(&$model, $location, $event)
+	public function canUse(&$model = null, $location = null, $event = null)
 	{
 		return false;
 	}

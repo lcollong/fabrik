@@ -56,8 +56,7 @@ class JFormFieldConnections extends JFormFieldList
 		$options = $db->loadObjectList();
 
 		// Check for a database error.
-		if ($db->getErrorNum())
-		{
+		if ($db->getErrorNum()) {
 			JError::raiseWarning(500, $db->getErrorMsg());
 		}
 		$sel = JHtml::_('select.option', '', JText::_('COM_FABRIK_PLEASE_SELECT'));
@@ -75,30 +74,22 @@ class JFormFieldConnections extends JFormFieldList
 
 	protected function getInput()
 	{
-		if ((int)$this->form->getValue('id') == 0 && $this->value == '')
-		{
+		if ((int)$this->form->getValue('id') == 0 && $this->value == '') {
 			// default to default connection on new form where no value specified
 			$options = (array) $this->getOptions();
-			foreach ($options as $opt)
-			{
-				if ($opt->default == 1)
-				{
+			foreach ($options as $opt) {
+				if ($opt->default == 1) {
 					$this->value = $opt->value;
 				}
 			}
 		}
-		if ((int)$this->form->getValue('id') == 0 || !$this->element['readonlyonedit'])
-		{
+		if ((int)$this->form->getValue('id') == 0 || !$this->element['readonlyonedit']) {
 			return parent::getInput();
-		}
-		else
-		{
+		} else {
 			$options = (array)$this->getOptions();
 			$v = '';
-			foreach ($options as $opt)
-			{
-				if ($opt->value == $this->value)
-				{
+			foreach ($options as $opt) {
+				if ($opt->value == $this->value) {
 					$v = $opt->text;
 				}
 			}

@@ -38,16 +38,14 @@ class FabrikController extends JController
 	{
 		//menu links use fabriklayout parameters rather than layout
 		$flayout = JRequest::getVar('fabriklayout');
-		if ($flayout != '')
-		{
+		if ($flayout != '') {
 			JRequest::setVar('layout', $flayout);
 		}
 		$document = JFactory::getDocument();
 
 		$viewName = JRequest::getVar('view', 'form', 'default', 'cmd');
 		$modelName = $viewName;
-		if ($viewName == 'emailform')
-		{
+		if ($viewName == 'emailform') {
 			$modelName = 'form';
 		}
 
@@ -58,32 +56,27 @@ class FabrikController extends JController
 			$modelName = 'form';
 		}
 
-		$viewType = $document->getType();
+		$viewType	= $document->getType();
 		// Set the default view name from the Request
-		$view = $this->getView($viewName, $viewType);
+		$view = &$this->getView($viewName, $viewType);
 
 		// Push a model into the view
-		$model	= $this->getModel($modelName);
-		if (!JError::isError($model) && is_object($model))
-		{
+		$model	= &$this->getModel($modelName);
+		if (!JError::isError($model) && is_object($model)) {
 			$view->setModel($model, true);
 		}
 
 		// Display the view
 		$view->assign('error', $this->getError());
-		if (($viewName = 'form' || $viewName = 'details') )
-		{
+		if (($viewName = 'form' || $viewName = 'details') ) {
 			$cachable = true;
 		}
 		$user = JFactory::getUser();
 
-		if ($viewType != 'feed' && !$this->isMambot && $user->get('id') == 0) 
-		{
+		if ($viewType != 'feed' && !$this->isMambot && $user->get('id') == 0) {
 			$cache = JFactory::getCache('com_fabrik', 'view');
 			$cache->get($view, 'display');
-		}
-		else
-		{
+		} else {
 			return $view->display();
 		}
 	}

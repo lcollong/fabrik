@@ -19,15 +19,18 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 
 	protected $buttonPrefix = 'download';
 
+	protected $msg = null;
+
 	function button()
 	{
 		return "download files";
 	}
-	
+
 	protected function buttonLabel()
 	{
 		return $this->getParams()->get('download_button_label', parent::buttonLabel());
 	}
+
 
 	/**
 	 * (non-PHPdoc)
@@ -42,7 +45,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 	/**
 	 * determine if the table plugin is a button and can be activated only when rows are selected
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function canSelectRows()
@@ -55,6 +58,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 	 * @param object parameters
 	 * @param object table model
 	 */
+	
 	function process(&$params, &$model)
 	{
 		$ids = JRequest::getVar('ids', array(), 'method', 'array');
@@ -68,7 +72,6 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 		$table = $model->getTable();
 		$filelist = array();
 		$zip_err = '';
-
 		if (empty($download_fk) && empty($download_file) && empty($download_table))
 		{
 			return;
@@ -80,25 +83,22 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 				$row = $model->getRow($id);
 				if (isset($row->$download_file))
 				{
-					$this_file = JPATH_SITE. '/' .$row->$download_file;
-					if (is_file($this_file))
-					{
+					$this_file = JPATH_SITE . '/' . $row->$download_file;
+					if (is_file($this_file)) {
 						$filelist[] = $this_file;
 					}
 				}
 			}
 		}
-		else
-		{
+		else {
 			$db = FabrikWorker::getDbo();
 			$ids_string = implode(',',$ids);
-			$query = $db->getQuery(true);
-			$query->select($download_file)->from($download_table)->where($download_fk . ' IN (' . $ids_string . ')');
+			$query = "SELECT $download_file FROM $download_table WHERE $download_fk IN ($ids_string)";
 			$db->setQuery($query);
 			$results = $db->loadObjectList();
 			foreach ($results AS $result)
 			{
-				$this_file = JPATH_SITE. '/' .$result->$download_file;
+				$this_file = JPATH_SITE.DS.$result->$download_file;
 				if (is_file($this_file))
 				{
 					$filelist[] = $this_file;
@@ -108,7 +108,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 		if (!empty($filelist))
 		{
 			if ($download_resize)
-			{
+			 {
 				ini_set('max_execution_time', 300);
 				require_once(COM_FABRIK_FRONTEND . '/helpers/image.php');
 				$storage = $this->getStorage();
@@ -137,7 +137,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 					$zipadd = $zip->addFile($this_file, $this_basename);
 					if ($zipadd === true)
 					{
-						$ziptot ++;
+						$ziptot++;
 					}
 					else
 					{
@@ -151,8 +151,7 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 
 				if ($download_resize)
 				{
-					foreach ($tmp_files as $tmp_file)
-					{
+					foreach ($tmp_files as $tmp_file) {
 						$storage->delete($tmp_file);
 					}
 				}
@@ -179,12 +178,25 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 			{
 				$zip_err = JText::_('ZipArchive open error: ' . $zipres);
 			}
+
 		}
 		else
 		{
 			$zip_err = "No files to ZIP!";
 		}
-		return $zip_err;
+		if (empty($zip_err)) {
+			return true;
+		}
+		else
+		{
+			$this->msg = $zip_err;
+			return false;
+		}
+	}
+
+	function process_result($c)
+	{
+		return $this->msg;
 	}
 
 	/**
@@ -209,7 +221,9 @@ class plgFabrik_ListDownload extends plgFabrik_List {
 		if (!isset($this->storage))
 		{
 			$params = $this->getParams();
-			require_once(JPATH_ROOT. '/plugins/fabrik_element/fileupload/adaptors/filesystemstorage.php');
+			//$storageType = $params->get('fileupload_storage_type', 'filesystemstorage');
+			$storageType = 'filesystemstorage';
+			require_once(JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptors/' . $storageType . '.php');
 			$this->storage = new $storageType($params);
 		}
 		return $this->storage;

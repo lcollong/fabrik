@@ -84,9 +84,10 @@ class FabrikControllerPackage extends JControllerForm
 		$view = $this->getView('package', $viewType, '');
 		// Push a model into the view
 		$model = $this->getModel();
-		$model->setDbo(FabrikWorker::getDbo());
-		
-		if (!JError::isError($model)) {
+		$db = FabrikWorker::getDbo();
+		$model->setDbo($db);
+		if (!JError::isError($model))
+		{
 			$view->setModel($model, true);
 		}
 		$view->listform();

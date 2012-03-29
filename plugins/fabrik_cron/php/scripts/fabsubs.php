@@ -4,7 +4,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.mail.helper');
 JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabsubs/tables');
-require_once(JPATH_ROOT . '/fabrik_plugins/form/paypal/scripts/fabrikar_subs.php');
+require_once(JPATH_ROOT.DS.'fabrik_plugins/form/paypal/scripts/fabrikar_subs.php');
 
 $db = FabrikWorker::getDbo();
 
@@ -33,9 +33,9 @@ $expiration_mails = $db->loadObjectList('emailday');
 
 
 $config = JFactory::getConfig();
-$sitename = $config->get('sitename');
-$mailfrom = $config->get('mailfrom');
-$fromname = $config->get('fromname');
+$sitename = $config->getValue('sitename');
+$mailfrom = $config->getValue('mailfrom');
+$fromname = $config->getValue('fromname');
 $url = str_replace('/administrator', '', JURI::base());
 
 
@@ -73,7 +73,7 @@ foreach ($res as $row) {
 			$mail->subject = str_replace('{'.$k.'}', $v, $mail->subject);
 			$mail->body = str_replace('{'.$k.'}', $v, $mail->body);
 		}
-		$res =  JFactory::getMailer()->sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
+		$res = JUtility::sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
 	}
 
 	if (array_key_exists($row->daysleft, $expiration_mails) && $row->recurring == 0) {
@@ -82,7 +82,7 @@ foreach ($res as $row) {
 			$mail->subject = str_replace('{'.$k.'}', $v, $mail->subject);
 			$mail->body = str_replace('{'.$k.'}', $v, $mail->body);
 		}
-		$res =  JFactory::getMailer()->sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
+		$res = JUtility::sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
 	}
 }
 
@@ -103,7 +103,7 @@ foreach ($res as $row) {
 			$mail->subject = str_replace('{'.$k.'}', $v, $mail->subject);
 			$mail->body = str_replace('{'.$k.'}', $v, $mail->body);
 		}
-		$res =  JFactory::getMailer()->sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
+		$res = JUtility::sendMail( $mailfrom, $fromname, $row->email, $mail->subject, $mail->body, true);
 	}
 }
 

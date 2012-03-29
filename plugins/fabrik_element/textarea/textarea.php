@@ -189,7 +189,7 @@ class plgFabrik_ElementTextarea extends plgFabrik_Element
 			}
 			return $value;
 		}
-		if ($params->get('textarea_placeholder') !== '')
+		if ($params->get('textarea_placeholder', '') !== '')
 		{
 			$bits['placeholder'] = $params->get('textarea_placeholder');
 		}

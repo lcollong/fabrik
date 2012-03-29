@@ -34,7 +34,7 @@ JRequest::setVar('layout', $origLayout);
 
 require_once(COM_FABRIK_FRONTEND . '/views/package/view.html.php');
 JModel::addIncludePath(COM_FABRIK_FRONTEND . '/models');
-JTable::addIncludePath(COM_FABRIK_BASE . '/administrator/components/com_fabrik/tables');
+JTable::addIncludePath(COM_FABRIK_BASE.DS.'administrator/components/com_fabrik/tables');
 $document = JFactory::getDocument();
 require_once(COM_FABRIK_FRONTEND . '/controllers/package.php');
 require_once(COM_FABRIK_FRONTEND . '/views/form/view.html.php');

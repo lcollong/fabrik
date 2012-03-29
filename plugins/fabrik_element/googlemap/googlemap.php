@@ -25,7 +25,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		$str = '';
 		$params = $this->getParams();
@@ -51,7 +51,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 		return $str;
 	}
 
-	function renderListData_feed($data, &$thisRow)
+	function renderListData_feed($data, $thisRow)
 	{
 		$str = '';
 		$data = FabrikWorker::JSONtoData($data, true);
@@ -236,7 +236,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 	 * determine if we use a google static map
 	 * Option has to be turned on and element un-editable
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function _useStaticMap()
@@ -398,6 +398,23 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 		$lat = trim($o->coords[0]);
 		$lon = trim($o->coords[1]);
 
+		switch ($params->get('fb_gm_maptype'))
+		{
+			case "G_SATELLITE_MAP":
+				$type = 'satellite';
+				break;
+			case "G_HYBRID_MAP":
+				$type = 'hybrid';
+				break;
+			case "TERRAIN":
+				$type = 'terrain';
+				break;
+			case "G_NORMAL_MAP":
+			default:
+				$type = 'roadmap';
+				break;
+		}
+
 		// new api3 url:
 		$markers = '';
 		if ($icon !== '')
@@ -406,7 +423,7 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 		}
 		$markers .= "$lat,$lon";
 		$uri = JURI::getInstance();
-		$src = $uri->getScheme() . "://maps.google.com/maps/api/staticmap?center=$lat,$lon&amp;zoom={$z}&amp;size={$w}x{$h}&amp;maptype=mobile&amp;markers=$markers&amp;sensor=false";
+		$src = $uri->getScheme() . "://maps.google.com/maps/api/staticmap?center=$lat,$lon&amp;zoom={$z}&amp;size={$w}x{$h}&amp;maptype=$type&amp;mobile=true&amp;markers=$markers&amp;sensor=false";
 		$id = $tableView ? '' : "id=\"{$id}\"";
 		$str =  "<div $id class=\"gmStaticMap\"><img src=\"$src\" alt=\"static map\" />";
 		$str .= "</div>";

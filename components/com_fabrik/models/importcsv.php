@@ -202,7 +202,7 @@ class FabrikFEModelImportcsv extends JModelForm{
 				}
 				if (!$this->getSelectKey())
 				{
-					//if no table loaded and the user asked to automaticall add a key then put id at the beginning of the new headings
+					//if no table loaded and the user asked to automatically add a key then put id at the beginning of the new headings
 					$idheading = 'id';
 					if (in_array($idheading, $arr_data))
 					{
@@ -832,6 +832,11 @@ class FabrikFEModelImportcsv extends JModelForm{
 		// $$$ rob 30/01/2012 - if in csvimport cron plugin then we have to return true here
 		// otherwise a blank column is added to the import data meaniing overwrite date dunna workie
 		if (JRequest::getBool('cron_csvimport'))
+		{
+			return true;
+		}
+		//$$$ rob 13/03/2012 - reimporting into exisiting list - should return true
+		if (JRequest::getInt('listid') !== 0)
 		{
 			return true;
 		}

@@ -70,32 +70,24 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	}
 
 	/**
-	 * check user can view the read only element & view in table view
+	 * check user can view the read only element & view in list view
 	 * If user logged in return false
-	 * @return	bool	can view or not
+	 * $$$ rob 14/03/2012 always returns false now - cant see a need to show it in the details / list view
+	 * @return bool can view or not
 	 */
 
 	function canView()
 	{
-		$user = JFactory::getUser();
-		$params = $this->getParams();
-		if ($user->id != 0)
-		{
-			if ($params->get('captcha-showloggedin', 0) == 0)
-			{
-				return false;
-			}
-		}
-		return parent::canView();
+		return false;
 	}
 
 	/**
-	 * check user can use the active element
+	 * check user can user the active element
 	 * If user logged in return false
 	 * @return	bool	can use or not
 	 */
 
-	public function canUse(&$model, $location, $event)
+	public function canUse(&$model = null, $location = null, $event = null)
 	{
 		$user = JFactory::getUser();
 		$params = $this->getParams();
@@ -123,7 +115,18 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 		$element = $this->getElement();
 		$params = $this->getParams();
 		$user = JFactory::getUser();
-
+		$value = $this->getValue($data, $repeatCounter);
+		if (!$this->editable)
+		{
+			if ($element->hidden == '1')
+			{
+				return '<!-- '.stripslashes($value).' -->';
+			}
+			else
+			{
+				return stripslashes($value);
+			}
+		}
 		if ($params->get('captcha-method') == 'recaptcha')
 		{
 			$publickey = $params->get('recaptcha_publickey');
@@ -181,7 +184,6 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 			// *  /e-kinst
 			$str[] = '<br />';
 
-			$value = $this->getValue($data, $repeatCounter);
 			$type = ($params->get('password') == "1") ? "password" : "text";
 			if ($this->elementError != '')
 			{
@@ -192,18 +194,7 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 				$type = 'hidden';
 			}
 			$sizeInfo = ' size="' . $size . '"';
-			if (!$this->editable)
-			{
-				if ($element->hidden == '1')
-				{
-					return '<!-- '.stripslashes($value).' -->';
-				}
-				else
-				{
-					return stripslashes($value);
-				}
-			}
-			$str[] = '<input class="inputbox ' . $type . '" type="' . $type . '" name="' . $name . '" id="' . $id . '" ' . $sizeInfo . ' value="" />';
+			$str[] = '<input class="inputbox '.$type.'" type="'.$type.'" name="'.$name.'" id="'.$id.'" '.$sizeInfo.' value="" />';
 			return implode("\n", $str);
 		}
 	}
@@ -214,7 +205,7 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 	 * checks the posted form data against elements INTERNAL validataion rule - e.g. file upload size / type
 	 * @param string elements data
 	 * @param int repeat group counter
-	 * @return bol true if passes / false if falise validation
+	 * @return bool true if passes / false if falise validation
 	 */
 
 	function validate($data, $repeatCounter = 0)
@@ -333,6 +324,6 @@ class plgFabrik_ElementCaptcha extends plgFabrik_Element
 
 		return implode('+', $rgb);
 	}
-	//* /e-kinst
+
 }
 ?>

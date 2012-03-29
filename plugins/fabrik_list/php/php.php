@@ -25,7 +25,7 @@ class plgFabrik_ListPhp extends plgFabrik_List {
 	{
 		return "run php";
 	}
-	
+
 	protected function buttonLabel()
 	{
 		return $this->getParams()->get('table_php_button_label', parent::buttonLabel());
@@ -44,7 +44,7 @@ class plgFabrik_ListPhp extends plgFabrik_List {
 
 	/**
 	 * determine if the table plugin is a button and can be activated only when rows are selected
-	 * @return bol
+	 * @return bool
 	 */
 
 	function canSelectRows()
@@ -61,15 +61,12 @@ class plgFabrik_ListPhp extends plgFabrik_List {
 
 	function process(&$params, &$model, $opts = array())
 	{
-		$file = JFilterInput::clean($params->get('table_php_file'), 'CMD');
-		if ($file == -1 || $file == '')
-		{
+		$file = JFilterInput::getInstance()->clean($params->get('table_php_file'), 'CMD');
+		if ($file == -1 || $file == '') {
 			$code = $params->get('table_php_code');
 			@eval($code);
-		}
-		else
-		{
-			require_once(JPATH_ROOT. '/plugins/fabrik_list/php/scripts/' .$file);
+		} else {
+			require_once(JPATH_ROOT.DS.'plugins/fabrik_list/php/scripts'.DS.$file);
 		}
 		return true;
 	}
@@ -93,6 +90,7 @@ class plgFabrik_ListPhp extends plgFabrik_List {
 	{
 		parent::onLoadJavascriptInstance($params, $model, $args);
 		$opts = $this->getElementJSOptions($model);
+		$opts->js_code = $params->get('table_php_js_code', '');
 		$opts = json_encode($opts);
 		$this->jsInstance = "new FbListPHP($opts)";
 		return true;

@@ -80,6 +80,10 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 					}
 				}
 			}
+			else
+			{
+				$data_copy = $data;
+			}
 			$default = $w->parseMessageForPlaceHolder($params->get('calc_calculation'), $data, true, true);
 			$default = @eval($default);
 			FabrikWorker::logEval($default, 'Caught exception on eval of ' . $this->getElement()->name . '::_getV(): %s');
@@ -311,26 +315,25 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			}
 		}
 	}
+	
 	/**
-	 * shows the data formatted for the table view
-	 * @param	string	data
-	 * @param	object	current row's data
-	 * @return	string	formatted value
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Element::preFormatFormJoins()
 	 */
-
-	function renderListData($element_data, &$thisRow)
+	
+	public function preFormatFormJoins($element_data, $row)
 	{
 		$params = $this->getParams();
 		$format = trim($params->get('calc_format_string'));
 		// $$$ hugh - the 'calculated value' bit is for legacy data that was created
 		// before we started storing a value when row is saved
-		if ($params->get('calc_on_save_only', 0) && $element_data != 'calculated value')
+		if ($params->get('calc_on_save_only', 0))
 		{
 			if ($format != '')
 			{
 				$element_data = sprintf($format, $element_data);
 			}
-			return parent::renderListData($element_data, $thisRow);
+			return parent::preFormatFormJoins($element_data, $row);
 		}
 		else
 		{
@@ -338,7 +341,9 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			$cal = $params->get('calc_calculation', '');
 			$listModel = $this->getlistModel();
 			$formModel = $this->getFormModel();
-			$data = JArrayHelper::fromObject($thisRow);
+			
+			$data = JArrayHelper::fromObject($row);
+			
 			$data['rowid'] = $data['__pk_val'];
 			$data['fabrik'] = $formModel->getId();
 			// $$$ hugh - trying to standardize on $data so scripts know where data is,
@@ -354,8 +359,8 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 			// $$$ hugh - need to set _raw, might be needed if (say) calc is being used as 'use_as_row_class'
 			// See comments in formatData() in table model, we might could move this to a renderRawListData() method.
 			$raw_name = $this->getFullName(false, true, false) . '_raw';
-			$thisRow->$raw_name = str_replace(GROUPSPLITTER, ',', $res);
-			return parent::renderListData($res, $thisRow);
+			$row->$raw_name = str_replace(GROUPSPLITTER, ',', $res);
+			return parent::preFormatFormJoins($res, $row);
 		}
 	}
 
@@ -365,7 +370,7 @@ class plgFabrik_ElementCalc extends plgFabrik_Element
 	 * @see components/com_fabrik/models/plgFabrik_Element#renderListData($data, $thisRow)
 	 */
 
-	function renderListData_csv($data, &$thisRow)
+	public function renderListData_csv($data, &$thisRow)
 	{
 		$val = $this->renderListData($data, $thisRow);
 		$col = $this->getFullName(false, true, false);

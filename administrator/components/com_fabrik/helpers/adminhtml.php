@@ -25,7 +25,7 @@ class FabrikHelperAdminHTML
 	/**
 	 * get a list of directories
 	 * @param string path to read from
-	 * @param bol return full paths or not
+	 * @param bool return full paths or not
 	 */
 
 	function fabrikListDirs($path, $fullpath = false)

@@ -11,7 +11,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
@@ -27,13 +26,13 @@ class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
 
 	/**
 	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * @param	string	data to check
+	 * @param	object	element
+	 * @param	int		plugin sequence ref
+	 * @return	bool	true if validation passes, false if fails
 	 */
 
-	function validate($data, &$element, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		//for multiselect elements
 		if (is_array($data))
@@ -42,11 +41,12 @@ class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
 		}
 		$params = $this->getParams();
 		$domatch = $params->get('php-match');
-		$domatch = $domatch[$c];
+		$domatch = $domatch[$pluginc];
 		if ($domatch)
 		{
+			$formModel = $elementModel->getFormModel();
 			$php_code = $params->get('php-code');
-			$retval = eval($php_code[$c]);
+			$retval = eval($php_code[$pluginc]);
 			return $retval;
 		}
 		return true;
@@ -55,21 +55,22 @@ class plgFabrik_ValidationrulePhp extends plgFabrik_Validationrule
  	/**
  	 * checks if the validation should replace the submitted element data
  	 * if so then the replaced data is returned otherwise original data returned
- 	 * @param string original data
- 	 * @param model $element
- 	 * @param int $c validation plugin counter
- 	 * @return string original or replaced data
+ 	 * @param	string	original data
+ 	 * @param	object	element model
+ 	 * @param	int		validation plugin counter
+ 	 * @param	int		element repeat group 
+ 	 * @return	string	original or replaced data
  	 */
 
- 	function replace($data, &$element, $c)
+ 	public function replace($data, &$elementModel, $pluginc, $repeatCounter)
  	{
  		$params = $this->getParams();
 		$domatch = $params->get('php-match');
-		$domatch = $domatch[$c];
+		$domatch = $domatch[$pluginc];
 		if (!$domatch)
 		{
 			$php_code = $params->get('php-code');
-			return eval($php_code[$c]);
+			return eval($php_code[$pluginc]);
 		}
 		return $data;
  	}

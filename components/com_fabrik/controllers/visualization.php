@@ -11,7 +11,6 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.controller');
 
-require_once(COM_FABRIK_FRONTEND . '/helpers/params.php');
 require_once(COM_FABRIK_FRONTEND . '/helpers/string.php');
 
 /**
@@ -32,7 +31,7 @@ class FabrikControllerVisualization extends JController
 	 * Display the view
 	 */
 
-	function display()
+	function display($cachable = false, $urlparams = false)
 	{
 		$document = JFactory::getDocument();
 

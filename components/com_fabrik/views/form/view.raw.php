@@ -81,7 +81,7 @@ class fabrikViewForm extends JView
 			if ($eCounter === 0) {
 				$onLoad[] = "o.select();";
 				$onLoad[] = "o.focus();";
-				$onLoad[] = "Fabrik.inlineedit_$elementid.token = '" . JSession::getFormToken . "';";
+				$onLoad[] = "Fabrik.inlineedit_$elementid.token = '".JUtility::getToken()."';";
 			}
 			$eCounter ++;
 			$onLoad[] = "Fabrik.inlineedit_$elementid.elements[$id] = o";
@@ -176,8 +176,8 @@ class fabrikViewForm extends JView
 					$elementModels = $groupModel->getPublishedElements();
 					foreach ($elementModels as $tmpElement) {
 						$smallerElHTMLName = $tmpElement->getFullName(false, true, false);
-						if (array_key_exists($smallerElHTMLName.'_raw', $model->_data)) {
-							$d = $model->_data[$smallerElHTMLName.'_raw'];
+						if (array_key_exists($smallerElHTMLName . '_raw', $model->_data)) {
+							$d = $model->_data[$smallerElHTMLName . '_raw'];
 						} else {
 							$d = @$model->_data[$smallerElHTMLName];
 						}
@@ -208,27 +208,23 @@ class fabrikViewForm extends JView
 					}
 
 					//force reload?
-					$elementModel->set('HTMLids', null);
+					$elementModel->HTMLids = null;
 					$elementHTMLId 	= $elementModel->getHTMLId($c);
-					if (!$model->editable)
-					{
+					if (!$model->editable) {
 						$JSONarray[$elementHTMLId] = $elementModel->getROValue($model->_data, $c);
-					}
-					else
-					{
+					}else{
 						$JSONarray[$elementHTMLId] = $elementModel->getValue($model->_data, $c);
 					}
 					//test for paginate plugin
-					if (!$model->editable)
-					{
-						$elementModel->set('HTMLids', null);
+					if (!$model->editable) {
+						$elementModel->HTMLids = null;
 						$elementModel->inDetailedView = true;
 					}
 					$JSONHtml[$elementHTMLId] = htmlentities($elementModel->render($model->_data, $c), ENT_QUOTES, 'UTF-8');
 				}
 			}
 		}
-		$data = array("id"=>$model->getId(), 'model'=>'table', "errors"=> $model->_arErrors, "data" => $JSONarray, 'html'=>$JSONHtml, 'post'=>$_REQUEST);
+		$data = array("id"=>$model->getId(), 'model'=>'table', "errors"=> $model->errors, "data" => $JSONarray, 'html'=>$JSONHtml, 'post'=>$_REQUEST);
 		echo json_encode($data);
 	}
 

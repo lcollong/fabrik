@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.application.component.controller');
 
-require_once(COM_FABRIK_FRONTEND . '/helpers/params.php');
+//require_once(COM_FABRIK_FRONTEND . '/helpers/params.php');
 require_once(COM_FABRIK_FRONTEND . '/helpers/string.php');
 
 /**
@@ -30,17 +30,18 @@ class FabrikControllerCroncronnotification extends JController
 	function display()
 	{
 		$document = JFactory::getDocument();
+
 		$viewName = 'cronnotification';
-		$viewType = $document->getType();
+
+		$viewType	= $document->getType();
 
 		// Set the default view name from the Request
-		$view = $this->getView( $viewName, $viewType);
+		$view = &$this->getView( $viewName, $viewType);
 
 		// Push a model into the view
-		$model	= $this->getModel( $viewName);
+		$model	= &$this->getModel( $viewName);
 
-		if (!JError::isError($model))
-		{
+		if (!JError::isError($model )) {
 			$view->setModel( $model, true);
 		}
 		// Display the view
@@ -50,7 +51,7 @@ class FabrikControllerCroncronnotification extends JController
 
 	function delete()
 	{
-		$model = $this->getModel( 'cronnotification');
+		$model	= &$this->getModel( 'cronnotification');
 		$model->delete();
 		$this->setRedirect('index.php?option=com_fabrik&view=cron&controller=cron.cronnotification', JText::_('NOTIFICATIONS_REMOVED'));
 	}

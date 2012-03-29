@@ -32,7 +32,7 @@ class FabrikControllerDetails extends JController
 	 * Display the view
 	 */
 
-	function display()
+	public function display($cachable = false, $urlparams = false)
 	{
 		$session = JFactory::getSession();
 		//menu links use fabriklayout parameters rather than layout
@@ -62,10 +62,10 @@ class FabrikControllerDetails extends JController
 
 		//if errors made when submitting from a J plugin they are stored in the session
 		//lets get them back and insert them into the form model
-		if (!empty($model->_arErrors))
+		if (!empty($model->errors))
 		{
 			$context = 'com_fabrik.form.' . JRequest::getInt('formid');
-			$model->_arErrors = $session->get($context.'.errors', array());
+			$model->errors = $session->get($context.'.errors', array());
 			$session->clear($context . '.errors');
 		}
 		if (!JError::isError($model) && is_object($model))
@@ -125,9 +125,9 @@ class FabrikControllerDetails extends JController
 				//if its in a module with ajax or in a package
 				if (JRequest::getInt('_packageId') !== 0)
 				{
-					$data = array('modified' => $model->_modifiedValidationData);
+					$data = array('modified' => $model->modifiedValidationData);
 					//validating entire group when navigating form pages
-					$data['errors'] = $model->_arErrors;
+					$data['errors'] = $model->errors;
 					echo json_encode($data);
 					return;
 				}
@@ -135,7 +135,7 @@ class FabrikControllerDetails extends JController
 				{
 					//store errors in session
 					$context = 'com_fabrik.form.' . $model->get('id') . '.';
-					$session->set($context.'errors', $model->_arErrors);
+					$session->set($context.'errors', $model->errors);
 					//JRequest::setVar('fabrik_referrer', JArrayHelper::getValue($_SERVER, 'HTTP_REFERER', '' ), 'post');
 					// $$$ hugh - testing way of preserving form values after validation fails with form plugin
 					// might as well use the 'savepage' mechanism, as it's already there!
@@ -159,11 +159,11 @@ class FabrikControllerDetails extends JController
 		}
 
 		//reset errors as validate() now returns ok validations as empty arrays
-		$model->_arErrors = array();
+		$model->errors = array();
 
 		$defaultAction = $model->process();
 		//check if any plugin has created a new validation error
-		if (!empty($model->_arErrors))
+		if (!empty($model->errors))
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
@@ -327,9 +327,9 @@ class FabrikControllerDetails extends JController
 		$model->getForm();
 		$model->rowId = JRequest::getVar('rowid', '');
 		$model->validate();
-		$data = array('modified' => $model->_modifiedValidationData);
+		$data = array('modified' => $model->modifiedValidationData);
 		//validating entire group when navigating form pages
-		$data['errors'] = $model->_arErrors;
+		$data['errors'] = $model->errors;
 		echo json_encode($data);
 	}
 

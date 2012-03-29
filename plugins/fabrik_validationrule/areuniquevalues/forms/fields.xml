@@ -2,20 +2,9 @@
 <form>
 	<fields name="params">
 		<fieldset name="plg-validationrule-areuniquevalues">
-		
-			<field 
-				name="areuniquevalues-message"
-				type="text"
-				repeat="true"
-				size="30"
-				description="PLG_VALIDATIONRULE_AREUNIQUEVALUES_ERROR_DESC"
-				label="PLG_VALIDATIONRULE_AREUNIQUEVALUES_ERROR_LABEL" />
-				
-			<field name="areuniquevalues-otherfield"
-				type="listfields"
-				repeat="true"
-				description="PLG_VALIDATIONRULE_AREUNIQUEVALUES_OTHER_FIELD_DESC"
-				label="PLG_VALIDATIONRULE_AREUNIQUEVALUES_OTHER_FIELD_LABEL" />
+		<field description="PLG_VALIDATIONRULE_AREUNIQUEVALUES_ERROR_DESC" label="PLG_VALIDATIONRULE_AREUNIQUEVALUES_ERROR_LABEL" name="areuniquevalues-message" repeat="true" size="30" type="text"/>
+			
+		<field description="PLG_VALIDATIONRULE_AREUNIQUEVALUES_OTHER_FIELD_DESC" label="PLG_VALIDATIONRULE_AREUNIQUEVALUES_OTHER_FIELD_LABEL" name="areuniquevalues-otherfield" repeat="true" type="listfields"/>
 			
 		</fieldset>
 	</fields>

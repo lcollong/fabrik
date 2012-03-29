@@ -22,7 +22,7 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 	 * @see components/com_fabrik/models/FabrikModelFormPlugin#getBottomContent()
 	 */
 
-	function getBottomContent($params, $formModel)
+	public function getBottomContent($params, $formModel)
 	{
 		$this->html = '';
 		if ($params->get('only_process_curl') == 'getBottomContent')
@@ -114,7 +114,11 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
  		return true;
  	}
 
-
+ 	/**
+ 	 * (non-PHPdoc)
+ 	 * @see plgFabrik_Form::onBeforeCalculations()
+ 	 */
+ 	
  	function onBeforeCalculations($params, $formModel)
  	{
  	 	if ($params->get('only_process_curl') == 'onBeforeCalculations')
@@ -233,8 +237,8 @@ class plgFabrik_FormPHP extends plgFabrik_Form {
 			{
 				$fabrikFormDataWithTableName = $formModel->_formDataWithtableName;
 			}
-			$php_file = JFilterInput::clean($params->get('form_php_file'), 'CMD');
-			$php_file = JPATH_ROOT. '/plugins/fabrik_form/php/scripts/' .$php_file;
+			$php_file = JFilterInput::getInstance()->clean($params->get('form_php_file'), 'CMD');
+			$php_file = JPATH_ROOT . '/plugins/fabrik_form/php/scripts/' . $php_file;
 
 			if (!JFile::exists($php_file))
 			{

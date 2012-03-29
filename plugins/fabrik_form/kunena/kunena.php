@@ -45,20 +45,19 @@ class plgFabrik_FormKunena extends plgFabrik_Form {
 			return JError::raiseError(500, 'could not find the Kunena component');
 		}
 		require_once($define);
-		foreach ($files as $file)
-		{
+		foreach ($files as $file) {
 			require_once($file);
 		}
-		if (JFile::exists(KUNENA_ABSTMPLTPATH . '/post.php'))
-		{
+		if (JFile::exists(KUNENA_ABSTMPLTPATH . '/post.php')) {
 			$postfile = KUNENA_ABSTMPLTPATH . '/post.php';
 		}
-		else
-		{
-			$postfile = KUNENA_PATH_TEMPLATE_DEFAULT . '/' . 'post.php';
+		else {
+			$postfile = KUNENA_PATH_TEMPLATE_DEFAULT .DS. 'post.php';
 		}
 		$w = new FabrikWorker();
 		$fbSession = CKunenaSession::getInstance();
+
+
 		$catid =$params->get('kunena_category', 0);
 		$parentid = 0;
 		$action = 'post';

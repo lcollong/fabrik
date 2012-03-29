@@ -58,9 +58,9 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 		$label = $params->get('fusion_gantt_chart_label');
 		$hover = $params->get('fusion_gantt_chart_hover');
 		$milestone = $params->get('fusion_gantt_chart_milestone');
-		$milestoneraw = $milestone.'_raw';
+		$milestoneraw = $milestone . '_raw';
 		$connector = $params->get('fusion_gantt_chart_connector');
-		$connectorraw = $connector.'_raw';
+		$connectorraw = $connector . '_raw';
 		$fields = array();
 		$names = array();
 		$uses = array($process, $start, $end, $label, $hover, $milestone, $connector);
@@ -106,14 +106,7 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 					continue;
 				}
 				$startdate = JFactory::getDate($d->$startraw);
-				if (isset($d->$endraw))
-				{
-					$enddate = JFactory::getDate($d->$endraw);
-				}
-				else
-				{
-					$enddate = $startdate;
-				}
+				$enddate = isset($d->$endraw) ? JFactory::getDate($d->$endraw) : $startdate;
 				$strParam = 'start=' . $startdate->format('Y/m/d') . ';end=' . $enddate->format('Y/m/d') . ';';
 				if ($process !== '')
 				{
@@ -122,14 +115,7 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 				$strParam .= 'id=' . $d->__pk_val . ';color=99cc00;alpha=60;topPadding=19;hoverText=' . $hovertext . ';';
 				$strParam .= 'link=' . $d->fabrik_view_url . ';';
 				
-				if (isset($d->label))
-				{
-					$l = $this->prepData($d->$label);
-				}
-				else
-				{
-					$l = '';
-				}
+				$l = isset($d->label) ? $this->prepData($d->$label) : '';
 				$this->fc->addGanttTask($l, $strParam);
 	
 				if ($milestone !== '' && $d->$milestoneraw == 1)
@@ -213,7 +199,7 @@ class fabrikModelFusion_gantt_chart extends FabrikFEModelVisualization {
 		if (!isset($this->listids))
 		{
 			$params = $this->getParams();
-			$this->listids = (array)$params->get('fusion_gantt_chart_table');
+			$this->listids = (array) $params->get('fusion_gantt_chart_table');
 		}
 	}
 

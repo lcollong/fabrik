@@ -383,7 +383,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		return "new FbBirthday('$id', $opts)";
 	}
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		$db = FabrikWorker::getDbo();
 		$aNullDates = array('0000-00-000000-00-00','0000-00-00 00:00:00','0000-00-00','', $db->getNullDate());

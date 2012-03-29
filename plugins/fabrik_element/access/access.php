@@ -34,21 +34,19 @@ class plgFabrik_ElementAccess extends plgFabrik_Element
 	function render($data, $repeatCounter = 0)
 	{
 		$name = $this->getHTMLName($repeatCounter);
+
 		$arSelected = array('');
-		if (isset($data[$name]))
-		{
-			if (!is_array($data[$name]))
-			{
+
+		if (isset($data[$name])) {
+
+			if (!is_array($data[$name])) {
 				$arSelected = explode(',', $data[$name]);
-			}
-			else
-			{
+			} else {
 				$arSelected = $data[$name];
 			}
 		}
 		$gtree = $this->getOpts();
-		if (!$this->editable)
-		{
+		if (!$this->editable) {
 			return $this->renderListData($arSelected[0], null);
 		}
 		return JHTML::_('select.genericlist', $gtree, $name, 'class="inputbox" size="6"', 'value', 'text', $arSelected[0]);
@@ -57,12 +55,13 @@ class plgFabrik_ElementAccess extends plgFabrik_Element
 	private function getOpts($allowAll = true)
 	{
 		$db = JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level')
-		->from('#__usergroups AS a')
-		->join('LEFT', '#__usergroups AS b ON a.lft > b.lft AND a.rgt < b.rgt')
-		->group('a.id')->order('a.lft ASC');
-		$db->setQuery($query);
+		$db->setQuery(
+			'SELECT a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level' .
+			' FROM #__usergroups AS a' .
+			' LEFT JOIN `#__usergroups` AS b ON a.lft > b.lft AND a.rgt < b.rgt' .
+			' GROUP BY a.id' .
+			' ORDER BY a.lft ASC'
+		);
 		$options = $db->loadObjectList();
 
 		// Check for a database error.
@@ -71,27 +70,23 @@ class plgFabrik_ElementAccess extends plgFabrik_Element
 			return null;
 		}
 
-		for ($i = 0, $n = count($options); $i < $n; $i++)
-		{
+		for ($i=0,$n=count($options); $i < $n; $i++) {
 			$options[$i]->text = str_repeat('- ',$options[$i]->level).$options[$i]->text;
 		}
 
 		// If all usergroups is allowed, push it into the array.
-		if ($allowAll)
-		{
+		if ($allowAll) {
 			array_unshift($options, JHtml::_('select.option', '', JText::_('JOPTION_ACCESS_SHOW_ALL_GROUPS')));
 		}
 		return $options;
 	}
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		$gtree = $this->getOpts();
 		$filter = & JFilterInput::getInstance(null, null, 1, 1);
-		foreach ($gtree as $o)
-		{
-			if ($o->value == $data)
-			{
+		foreach ($gtree as $o) {
+			if ($o->value == $data) {
 				return ltrim($filter->clean($o->text, 'word'), '&nbsp;');
 			}
 		}
@@ -103,8 +98,7 @@ class plgFabrik_ElementAccess extends plgFabrik_Element
 	function getFieldDescription()
 	{
 		$p = $this->getParams();
-		if ($this->encryptMe())
-		{
+		if ($this->encryptMe()) {
 			return 'BLOB';
 		}
 		return "INT(3)";

@@ -22,14 +22,15 @@ class FabrikFEModelListfilter extends FabModel {
 	 * get the table from the listModel
 	 * @see libraries/joomla/application/component/JModel#getTable($name, $prefix, $options)
 	 */
-	function getTable()
+	
+	public function getTable($name = '', $prefix = 'Table', $options = array())
 	{
 		return $this->listModel->getTable();
 	}
 
 	/**
 	 * $$$ rob activelistid set in content plugin only clear filters on active list (otherwise with n tables in article all qs filters are removed)
-	 * @return bol - is the list currently being rendered the list that initially triggered the filter
+	 * @return bool - is the list currently being rendered the list that initially triggered the filter
 	 */
 
 	protected function activeTable()
@@ -80,7 +81,8 @@ class FabrikFEModelListfilter extends FabModel {
 		//$$$ fehers The filter is cleared and applied at once without having to clear it first and then apply it (would have to be two clicks).
 		//useful in querystring filters if you want to clear old filters and apply new filters
 
-		if ((JRequest::getVar('filterclear') == 1 || FabrikWorker::getMenuOrRequestVar('resetfilters', 0) == 1) && $this->activeTable())
+		// $$$ rob 20/03/2011 - request resetfilters should overwrite menu option - otherwise filter then nav will remove filter.
+		if ((JRequest::getVar('filterclear') == 1 || FabrikWorker::getMenuOrRequestVar('resetfilters', 0, false, 'request') == 1) && $this->activeTable())
 		{
 			$this->clearFilters();
 		}
@@ -88,7 +90,7 @@ class FabrikFEModelListfilter extends FabModel {
 		//overwrite filters with querystring filter
 		$this->getQuerystringFilters($filters);
 		FabrikHelperHTML::debug($filters, 'filter array: after querystring filters');
-		$request =& $this->getPostFilterArray();
+		$request = $this->getPostFilterArray();
 		$this->counter = count(JArrayHelper::getValue($request, 'key', array()));
 		//overwrite filters with session filters (fabrik_incsessionfilters set to false in listModel::getRecordCounts / for facted data counts
 		if(JRequest::getVar('fabrik_incsessionfilters', true))
@@ -344,9 +346,13 @@ class FabrikFEModelListfilter extends FabModel {
 		$registry = $session->get('registry');
 		$id = JRequest::getVar('listref', $this->listModel->getRenderContext());
 		$tid = 'list' . $id;
-		$context = 'com_fabrik.list' . $id . '.filter';
-		$app->setUserState($context . 'limitstart', 0);
-
+		$listContext = 'com_fabrik.list' . $id . '.';
+		$context = $listContext . 'filter';
+		$app->setUserState($listContext . 'limitstart', 0);
+		if (!is_object($registry))
+		{
+			return;
+		}
 		$reg = $registry->get($context, new stdClass());
 
 		// $$$ rob jpluginfilters search_types are those which have been set inside the
@@ -538,15 +544,10 @@ class FabrikFEModelListfilter extends FabModel {
 
 	private function getSearchFormFilters(&$filters)
 	{
+		$app = JFactory::getApplication();
 		$fromFormId = $this->getSearchFormId();
 		$formModel = $this->listModel->getFormModel();
 		$db = FabrikWorker::getDbo();
-		$session = JFactory::getSession();
-		$registry = $session->get('registry');
-		if (!is_object($registry))
-		{
-			return;
-		}
 		$lookupkeys = JArrayHelper::getValue($filters, 'key', array());
 		if ($fromFormId != $formModel->get('id'))
 		{
@@ -558,9 +559,8 @@ class FabrikFEModelListfilter extends FabModel {
 			// which we'll need in the case of $elid not being in $elements for search forms
 			$elements = $this->listModel->getElements('id');
 			$filter_elements = $this->listModel->getElements('filtername');
-			$key = 'com_fabrik.searchform.form'.$fromFormId.'.filters';
 			$tablename = $db->quoteName($this->listModel->getTable()->db_table_name);
-			$searchfilters = $registry->get($key);
+			$searchfilters = $app->getUserState('com_fabrik.searchform.form'.$fromFormId.'.filters');
 			for ($i = 0; $i < count($searchfilters['key']); $i++)
 			{
 				$eval = FABRIKFILTER_TEXT;
@@ -984,9 +984,11 @@ class FabrikFEModelListfilter extends FabModel {
 				{
 					if ($i == 0)
 					{
-						$joinMode = array_pop(JArrayHelper::getValue($filters, 'join', array('AND')));
+						$joinMode = JArrayHelper::getValue($filters, 'join', array('AND'));
+						$joinMode = array_pop($joinMode);
 						// $$$ rob - If search all made, then the post filters should filter further the results
-						$lastSearchType = array_pop(JArrayHelper::getValue($filters, 'search_type', array('normal')));
+						$lastSearchType = JArrayHelper::getValue($filters, 'search_type', array('normal'));
+						$lastSearchType = array_pop($lastSearchType);
 						if ($lastSearchType == 'searchall')
 						{
 							$joinMode = 'AND';

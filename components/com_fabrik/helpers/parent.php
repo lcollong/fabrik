@@ -25,43 +25,46 @@ class FabrikWorker {
 	protected $finalformat = null;
 
 	/** @var string image file extensions */
-	protected $_image_extensions_eregi = 'bmp|gif|jpg|jpeg|png';
+	protected $image_extensions_eregi = 'bmp|gif|jpg|jpeg|png';
 
 	/** @var string audio file extensions */
-	protected $_audio_extensions_eregi = 'mp3';
+	protected $audio_extensions_eregi = 'mp3';
 
-	static protected $_audio_mime_types = array(
+	static protected $audio_mime_types = array(
 		'mp3' => 'audio/x-mpeg'
 	);
 
 	/**
 	 * returns true if $file has an image extension type
+	 * @deprecated - not used
 	 * @param string filename
 	 * @return bool
 	 */
-	function isImageExtension($file)
+	public static function isImageExtension($file)
 	{
 		$path_parts = pathinfo($file);
-		return preg_match('/'.self::$_image_extensions_eregi.'/i', $path_parts['extension']);
+		return preg_match('/' . self::$image_extensions_eregi . '/i', $path_parts['extension']);
 	}
 
 	/**
 	 * returns true if $file has an image extension type
+	 * @deprecated - not used
 	 * @param string filename
 	 * @return bool
 	 */
-	function isAudioExtension($file)
+	
+	public static function isAudioExtension($file)
 	{
 		$path_parts = pathinfo($file);
-		return preg_match('/'.self::$_audio_extensions_eregi.'/i', $path_parts['extension']);
+		return preg_match('/' . self::$audio_extensions_eregi . '/i', $path_parts['extension']);
 	}
 
-	function getAudioMimeType($file)
+	public static function getAudioMimeType($file)
 	{
 		$path_parts = pathinfo($file);
-		if (array_key_exists($path_parts['extension'], self::$_audio_mime_types))
+		if (array_key_exists($path_parts['extension'], self::$audio_mime_types))
 		{
-			return self::$_audio_mime_types[$path_parts['extension']];
+			return self::$audio_mime_types[$path_parts['extension']];
 		}
 		return false;
 	}
@@ -72,12 +75,12 @@ class FabrikWorker {
 	 * http://fr.php.net/strftime
 	 * (use as strptime)
 	 *
-	 * @param string $date
-	 * @param string $format
-	 * @return array date info
+	 * @param	string	$date
+	 * @param	string	$format
+	 * @return	array	date info
 	 */
 
-	function strToDateTime($date, $format)
+	public static function strToDateTime($date, $format)
 	{
 
 		$weekdays = array(
@@ -165,11 +168,12 @@ class FabrikWorker {
 
 	/**
 	 *
-	 * @param string date representation
-	 * @param string format that the date should be in
-	 * @return array date bits keyed on date representations e.g.  m/d/Y
+	 * @param	string	date representation
+	 * @param	string	format that the date should be in
+	 * @return	array	date bits keyed on date representations e.g.  m/d/Y
 	 */
-	function str2Time($date, $format)
+	
+	public static function str2Time($date, $format)
 	{
 		static $finalformat;
 		/**
@@ -273,11 +277,11 @@ class FabrikWorker {
 	 *
 	 * @access protected
 	 * @param string $day The string date
-	 * @param bol abbreviated day?
+	 * @param bool abbreviated day?
 	 * @return string date
 	 */
 	
-	protected function stripDay($date, $abrv = false)
+	public static function stripDay($date, $abrv = false)
 	{
 		if ($abrv)
 		{
@@ -303,7 +307,7 @@ class FabrikWorker {
 	}
 
 	
-	protected function monthToInt($date, $abrv = false)
+	public function monthToInt($date, $abrv = false)
 	{
 		if ($abrv)
 		{
@@ -339,7 +343,7 @@ class FabrikWorker {
 
 	}
 
-	function isReserved($str)
+	public static function isReserved($str)
 	{
 		$_reservedWords = array("task", "view", "layout", "option", "formid", "submit", "ul_max_file_size", "ul_file_types", "ul_directory", "listid", 'rowid', 'itemid', 'adddropdownvalue', 'adddropdownlabel', 'ul_end_dir');
 		if (in_array(strtolower($str ), $_reservedWords))
@@ -361,7 +365,7 @@ class FabrikWorker {
 
 	public function parseMessageForPlaceHolder($msg, $searchData = null, $keepPlaceholders = true, $addslashes = false, $theirUser = null)
 	{
-		$this->_parseAddSlases = $addslashes;
+		$this->parseAddSlases = $addslashes;
 		if ($msg == '' || is_array($msg) || strpos($msg, '{') === false)
 		{
 			return $msg;
@@ -406,7 +410,7 @@ class FabrikWorker {
 	 * @param $msg string to parse
 	 */
 
-	function replaceRequest(&$msg)
+	public function replaceRequest(&$msg)
 	{
 		$request = JRequest::get('request');
 		foreach ($request as $key => $val)
@@ -432,7 +436,7 @@ class FabrikWorker {
 	 * @return string parsed message
 	 */
 
-	public function replaceWithUserData($msg, $user = null, $prefix = 'my')
+	public static function replaceWithUserData($msg, $user = null, $prefix = 'my')
 	{
 		if (is_null($user))
 		{
@@ -481,7 +485,7 @@ class FabrikWorker {
 	 * @return string parsed message
 	 */
 
-	public function replaceWithGlobals($msg)
+	public static function replaceWithGlobals($msg)
 	{
 		$app = JFactory::getApplication();
 		$menuItem = $app->getMenu('site')->getActive();
@@ -622,7 +626,7 @@ class FabrikWorker {
 			}
 			$match = $aPost;
 		}
-		if ($this->_parseAddSlases)
+		if ($this->parseAddSlases)
 		{
 			$match = htmlspecialchars($match, ENT_QUOTES, 'UTF-8');
 		}
@@ -635,10 +639,10 @@ class FabrikWorker {
 	 * @param string root path of this folder
 	 * @param array  Value array of all existing folders
 	 * @param array  Value array of all existing images
-	 * @param bol make options out for the results
+	 * @param bool make options out for the results
 	 */
 
-	public function readImages($imagePath, $folderPath, &$folders, &$images, $aFolderFilter, $makeOptions = true)
+	public static function readImages($imagePath, $folderPath, &$folders, &$images, $aFolderFilter, $makeOptions = true)
 	{
 		$imgFiles = FabrikWorker::fabrikReadDirectory($imagePath, '.', false, false, $aFolderFilter);
 		foreach ($imgFiles as $file)
@@ -674,7 +678,7 @@ class FabrikWorker {
 	 * @return array of file/folder names
 	 */
 
-	public function fabrikReadDirectory($path, $filter='.', $recurse=false, $fullpath=false, $aFolderFilter=array(), $foldersOnly = false)
+	public static function fabrikReadDirectory($path, $filter='.', $recurse=false, $fullpath=false, $aFolderFilter=array(), $foldersOnly = false)
 	{
 		$arr = array();
 		if (!@is_dir($path))
@@ -735,7 +739,7 @@ class FabrikWorker {
 	 * @return first two letters of lang code - e.g. nl from 'nl-NL'
 	 */
 
-	public function getJoomfishLang()
+	public static function getJoomfishLang()
 	{
 		$lang = JFactory::getLanguage();
 		return array_shift(explode('-', $lang->getTag()));
@@ -747,7 +751,7 @@ class FabrikWorker {
 	 * @return array(bool should the filter be used, object the filter to use)
 	 */
 
-	public function getContentFilter()
+	public static function getContentFilter()
 	{
 		$dofilter = false;
 		$filter = false;
@@ -896,7 +900,7 @@ class FabrikWorker {
 	 * @param string $msg error message, should contain %s as we spintf in the error_get_last()'s message property
 	 */
 
-	public function logEval($val, $msg)
+	public static function logEval($val, $msg)
 	{
 		if (version_compare( phpversion(), '5.2.0', '>='))
 		{
@@ -914,7 +918,7 @@ class FabrikWorker {
 	 * @param bool $jsonEncode
 	 */
 
-	public function log($type, $msg, $jsonEncode = true)
+	public static function log($type, $msg, $jsonEncode = true)
 	{
 		if ($jsonEncode)
 		{
@@ -942,7 +946,7 @@ class FabrikWorker {
 
 	public static function getDbo($loadJoomlaDb = false, $cnnId = null)
 	{
-		$sig = (int)$loadJoomlaDb.'.'.$cnnId;
+		$sig = (int)$loadJoomlaDb . '.' . $cnnId;
 		if (!self::$database)
 		{
 			self::$database = array();
@@ -1067,6 +1071,12 @@ class FabrikWorker {
 			$json = json_decode($data);
 			// only works in PHP5.3
 			//$data = (json_last_error() == JSON_ERROR_NONE) ? $json : $data;
+			if (is_null($json))
+			{
+				// if coming back froma  failed validation - the json string may habe been htmlspecialchars_encoded in
+				// the form model getGroupView method
+				$json = json_decode(stripslashes(htmlspecialchars_decode($data, ENT_QUOTES)));
+			}
 			$data = is_null($json) ? $data : $json;
 		}
 		$data = $toArray ? (array)$data : $data;
@@ -1079,7 +1089,7 @@ class FabrikWorker {
 	 * @return bool
 	 */
 
-	public function isDate($d)
+	public static function isDate($d)
 	{
 		try
 		{
@@ -1134,7 +1144,7 @@ class FabrikWorker {
 	 * @param string $priority - defaults that menu priorities override request - set to 'request' to inverse this priority
 	 */
 
-	public function getMenuOrRequestVar($name, $val = '', $mambot = false, $priority = 'menu')
+	public static function getMenuOrRequestVar($name, $val = '', $mambot = false, $priority = 'menu')
 	{
 		$app = JFactory::getApplication();
 		if ($priority === 'menu')
@@ -1142,13 +1152,12 @@ class FabrikWorker {
 			$val = JRequest::getVar($name, $val);
 			if (!$app->isAdmin())
 			{
-				$menus = JSite::getMenu();
-				$menu	= $menus->getActive();
+				$menus = $app->getMenu();
+				$menu = $menus->getActive();
 				//if there is a menu item available AND the form is not rendered in a content plugin or module then check the menu fabriklayout property
 				if (is_object($menu) && !$mambot)
 				{
-					$menu_params = new JParameter($menu->params);
-					$val = $menu_params->get($name, $val);
+					$val = $menu->params->get($name, $val);
 				}
 			}
 		}
@@ -1156,13 +1165,13 @@ class FabrikWorker {
 		{
 			if (!$app->isAdmin())
 			{
-				$menus = JSite::getMenu();
-				$menu	= $menus->getActive();
+				$app = JFactory::getApplication();
+				$menus = $app->getMenu();
+				$menu = $menus->getActive();
 				//if there is a menu item available AND the form is not rendered in a content plugin or module then check the menu fabriklayout property
 				if (is_object($menu) && !$mambot)
 				{
-					$menu_params = new JParameter($menu->params);
-					$val = $menu_params->get($name, $val);
+					$val = $menu->params->get($name, $val);
 				}
 			}
 			$val = JRequest::getVar($name, $val);

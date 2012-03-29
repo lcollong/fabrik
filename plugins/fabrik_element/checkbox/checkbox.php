@@ -115,7 +115,7 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 	 * @see plgFabrik_Element::getFilterQuery()
 	 */
 
-	public function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
+	function getFilterQuery($key, $condition, $value, $originalValue, $type = 'normal')
 	{
 		$originalValue = trim($value, "'");
 		$this->encryptFieldName($key);
@@ -124,10 +124,10 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 			case '=':
 				$db = FabrikWorker::getDbo();
 				$str = "($key $condition $value ".
-				" OR $key LIKE " . $db->Quote('["'.$originalValue.'"%') .
-				" OR $key LIKE " . $db->Quote('%"'.$originalValue.'"%') .
-				" OR $key LIKE " . $db->Quote('%"'.$originalValue.'"]') .")";
-				
+				" OR $key LIKE " . $db->quote('["'.$originalValue.'"%') .
+				" OR $key LIKE " . $db->quote('%"'.$originalValue.'"%') .
+				" OR $key LIKE " . $db->quote('%"'.$originalValue.'"]') .")";
+
 				break;
 			default:
 				$str = " $key $condition $value ";
@@ -178,10 +178,6 @@ class plgFabrik_ElementCheckbox extends plgFabrik_ElementList
 		if (is_array($val) || is_object($val))
 		{
 			return json_encode($val);
-		}
-		else
-		{
-			return $val;
 		}
 	}
 

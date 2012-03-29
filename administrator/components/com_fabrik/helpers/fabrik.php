@@ -29,9 +29,9 @@ class FabrikHelper
 
 	function prepareSaveDate(&$strdate)
 	{
-		$config = JFactory::getConfig();
-		$tzoffset = $config->get('offset');
-		$db = FabrikWorker::getDbo(true);
+		$config =& JFactory::getConfig();
+		$tzoffset = $config->getValue('config.offset');
+		$db =& FabrikWorker::getDbo(true);
 		// Handle never unpublish date
 		if (trim($strdate) == JText::_('Never') || trim($strdate) == '' || trim($strdate) == $db->getNullDate())
 		{
@@ -42,7 +42,7 @@ class FabrikHelper
 			if (strlen(trim($strdate )) <= 10) {
 				$strdate .= ' 00:00:00';
 			}
-			$date = JFactory::getDate($strdate, $tzoffset);
+			$date =& JFactory::getDate($strdate, $tzoffset);
 			$strdate = $date->toSql();
 		}
 	}

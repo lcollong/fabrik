@@ -23,7 +23,7 @@
 		</li>
 	<?php }
 	if ($this->advancedSearch !== '') {
-		echo '<li>'.$this->advancedSearch.'</li>';
+		echo '<li>' . $this->advancedSearch . '</li>';
 	}
 	if ($this->canGroupBy) {?>
 		<li>

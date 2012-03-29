@@ -34,13 +34,14 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
 	/**
 	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * @param	string	data to check
+	 * @param	object	element
+	 * @param	int		plugin sequence ref
+	 * @param	int		elements repeat group
+	 * @return	bool	true if validation passes, false if fails
 	 */
 
-	function validate($data, &$element, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		return true;
 	}
@@ -67,9 +68,7 @@ class plgFabrik_Validationrule extends FabrikPlugin
 		{
 			return true;
 		}
-
 		$w = new FabrikWorker();
-
 		// $$$ rob merge join data into main array so we can access them in parseMessageForPlaceHolder()
 		$joindata = JArrayHelper::getValue($post, 'join', array());
 		foreach ($joindata as $joinid => $joind)
@@ -82,9 +81,7 @@ class plgFabrik_Validationrule extends FabrikPlugin
 				}
 			}
 		}
-
 		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
-
 		$res = @eval($condition);
 		if (is_null($res))
 		{
@@ -100,7 +97,8 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
  	public function getPluginParams()
 	{
-		if (!isset($this->pluginParams)) {
+		if (!isset($this->pluginParams))
+		{
 			$this->pluginParams = $this->loadPluginParams();
 		}
 		return $this->pluginParams;
@@ -125,22 +123,29 @@ class plgFabrik_Validationrule extends FabrikPlugin
 
 	/**
 	 * get the warning message
-	 *
-	 * @return string
+	 * @param	int		validation rule number.
+	 * @return	string
 	 */
 
-	function getMessage($c)
+	function getMessage($c = 0)
 	{
 		$params = $this->getParams();
-		$v = (array)$params->get($this->pluginName . '-message', JText::_('COM_FABRIK_FAILED_VALIDATION'));
-		return JArrayHelper::getValue($v, $c, '');
+		$v = (array)$params->get($this->pluginName . '-message');
+		$v = JArrayHelper::getValue($v, $c, '');
+		if ($v === '')
+		{
+			$v = JText::_('COM_FABRIK_FAILED_VALIDATION');
+		}
+		return $v;
 	}
 
 	/**
+	 * @deprecated @since 3.0.5
+	 * now show only on validation icon next to the element name and put icons and text inside hover text
 	 * gets the validation rule icon
-	 * @param object element model
-	 * @param int $c repeat group counter
-	 * @param string $tmpl =
+	 * @param	object	element model
+	 * @param	int		$c repeat group counter
+	 * @param	string	$tmpl =
 	 */
 
 	public function getIcon($elementModel, $c = 0, $tmpl = '')
@@ -151,15 +156,26 @@ class plgFabrik_Validationrule extends FabrikPlugin
 			$name .= '_allowempty';
 		}
 		$label = '<span>' . $this->getLabel($elementModel, $c) . '</span>';
-		$str = FabrikHelperHTML::image($name.'.png', 'form', $tmpl, array('class' => 'fabrikTip ' . $this->_pluginName, 'opts' => "{notice:true}",  'title' => $label));
+		$str = FabrikHelperHTML::image($name.'.png', 'form', $tmpl, array('class' => 'fabrikTip ' . $this->pluginName, 'opts' => "{notice:true}",  'title' => $label));
 		return $str;
+	}
+	
+	public function getHoverText($elementModel, $c = 0, $tmpl = '')
+	{
+		$name = $this->icon === true ? $this->pluginName : $this->icon;
+		if ($this->allowEmpty($elementModel, $c))
+		{
+			$name .= '_allowempty';
+		}
+		$i = FabrikHelperHTML::image($name.'.png', 'form', $tmpl, array('class' => $this->pluginName));
+		return $i .  $this->getLabel($elementModel, $c) ;
 	}
 
 	/**
 	 * gets the hover/alt text that appears over the validation rule icon in the form
-	 * @param object element model
-	 * @param int repeat group counter
-	 * @return string label
+	 * @param	object	element model
+	 * @param	int		repeat group counter
+	 * @return	string	label
 	 */
 
 	protected function getLabel($elementModel, $c)
@@ -177,9 +193,9 @@ class plgFabrik_Validationrule extends FabrikPlugin
 	/**
 	* does the validation allow empty value?
 	* Default is false, can be overrideen on per-validation basis (such as isnumeric)
-	* @param object element model
-	* @param int repeat group counter
-	* @return bool
+	* @param	object	element model
+	* @param	int		repeat group counter
+	* @return	bool
 	*/
 
 	protected function allowEmpty($elementModel, $c)

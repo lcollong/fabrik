@@ -462,7 +462,7 @@ var FbForm = new Class({
 			next.disabled = "disabled";
 			next.setStyle('opacity', 0.5);
 		} else {
-			if (typeOf(submit) !== 'null' && this.options.rowid === '') {
+			if (typeOf(submit) !== 'null' && (this.options.rowid === '' || this.options.rowid.toString() === '0')) {
 				submit.disabled = "disabled";
 				submit.setStyle('opacity', 0.5);
 			}
@@ -699,7 +699,7 @@ var FbForm = new Class({
 		var gids = $A(this.options.pages.get(this.currentPage.toInt()));
 		var err = false;
 		$H(d).each(function (v, k) {
-			k = k.replace(/\[(.*)\]/, '');// for dropdown validations
+			k = k.replace(/\[(.*)\]/, '').replace(/%5B(.*)%5D/, '');// for dropdown validations
 			if (this.formElements.has(k)) {
 				var el = this.formElements.get(k);
 				if (gids.contains(el.groupid.toInt())) {
@@ -901,7 +901,7 @@ var FbForm = new Class({
 							Fabrik.loader.stop('form_' + this.id);
 							var saved_msg = json.msg !== undefined ? json.msg :Joomla.JText._('COM_FABRIK_FORM_SAVED');
 							if (json.baseRedirect !== true) {
-								clear_form = json.clear_form;
+								clear_form = json.reset_form;
 								if (json.url !== undefined) {
 									if (json.redirect_how === 'popup') {
 										var width = json.width ? json.width : 400;
@@ -923,6 +923,7 @@ var FbForm = new Class({
 									alert(saved_msg);
 								}
 							} else {
+								clear_form = json.reset_form !== undefined ? json.reset_form : clear_form;
 								alert(saved_msg);
 							}
 							//query the list to get the updated data
@@ -951,6 +952,13 @@ var FbForm = new Class({
 			e.stop();
 			// update global status error
 			this.updateMainError();
+		} else {
+			/**
+			 * enables the list to clean up the form and custom events
+			 */
+			if (this.options.ajax) {
+				Fabrik.fireEvent('fabrik.form.ajax.submit.end', [this]);
+			}
 		}
 	},
 
@@ -1156,6 +1164,8 @@ var FbForm = new Class({
 		document.id('fabrik_repeat_group_' + i + '_counter').value = document.id('fabrik_repeat_group_' + i + '_counter').get('value').toInt() - 1;
 		// $$$ hugh - no, musn't decrement this!  See comment in setupAll
 		this.repeatGroupMarkers.set(i, this.repeatGroupMarkers.get(i) - 1);
+		Fabrik.fireEvent('fabrik.form.group.delete.end', [this, e, i, delIndex]);
+
 	},
 
 	hideLastGroup : function (groupid, subGroup) {

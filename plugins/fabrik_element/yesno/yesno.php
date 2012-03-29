@@ -195,7 +195,7 @@ class plgFabrik_ElementYesno extends plgFabrik_ElementRadiobutton {
 
 	/**
 	 * Get the table filter for the element
-	 * @param bol do we render as a normal filter or as an advanced searc filter
+	 * @param bool do we render as a normal filter or as an advanced searc filter
 	 * if normal include the hidden fields as well (default true, use false for advanced filter rendering)
 	 * @return string filter html
 	 */

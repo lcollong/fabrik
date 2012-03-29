@@ -77,9 +77,9 @@ class FabrikControllerForm extends JControllerForm
 			//if its in a module with ajax or in a package
 			if (JRequest::getInt('_packageId') !== 0)
 			{
-				$data = array('modified' => $model->_modifiedValidationData);
+				$data = array('modified' => $model->modifiedValidationData);
 				//validating entire group when navigating form pages
-				$data['errors'] = $model->_arErrors;
+				$data['errors'] = $model->errors;
 				echo json_encode($data);
 				return;
 			}
@@ -99,12 +99,12 @@ class FabrikControllerForm extends JControllerForm
 		}
 
 		//reset errors as validate() now returns ok validations as empty arrays
-		$model->_arErrors = array();
+		$model->errors = array();
 
 		$defaultAction = $model->process();
 
 		//check if any plugin has created a new validation error
-		if (!empty($model->_arErrors))
+		if (!empty($model->errors))
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();

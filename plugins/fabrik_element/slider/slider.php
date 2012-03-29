@@ -42,7 +42,7 @@ class plgFabrik_ElementSlider extends plgFabrik_Element {
 		}
 		$labels = array_filter(explode(',', $params->get('slider-labels')));
 		$str = array();
-		$str[] = '<div id="' . $id . '">';
+		$str[] = '<div id="' . $id . '" class="fabrikSubElementContainer">';
 
 		FabrikHelperHTML::addPath(JPATH_SITE . '/plugins/fabrik_element/slider/images/', 'image', 'form', false);
 		$outsrc = FabrikHelperHTML::image('clear_rating_out.png', 'form', $this->tmpl, array(), true);

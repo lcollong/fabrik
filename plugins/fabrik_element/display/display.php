@@ -45,7 +45,7 @@ class plgFabrik_ElementDisplay extends plgFabrik_Element
 	 * @return	string	formatted value
 	 */
 	
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		unset($this->default);
 		$value = $this->getValue(JArrayHelper::fromObject($thisRow));

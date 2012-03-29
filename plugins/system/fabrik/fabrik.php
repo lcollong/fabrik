@@ -54,16 +54,6 @@ class plgSystemFabrik extends JPlugin
 		$doc = JFactory::getDocument();
 		//$doc->addCustomTag('<meta http-equiv="X-UA-Compatible" content="IE=9" />');
 		require_once($defines);
-		
-		$config = JComponentHelper::getParams('com_fabrik');
-		if ($config->get('use_fabrikdebug') == 1)
-		{
-			// Include the JLog class.
-			jimport('joomla.log.log');
-			
-			// Add the logger.
-			JLog::addLogger(array('text_file' => 'fabrik.log.php'));
-		}
 	}
 
 	/**
@@ -181,8 +171,8 @@ class plgSystemFabrik extends JPlugin
 			$requestKey = $filterModel->getSearchAllRequestKey();
 			//set the request variable that fabrik uses to search all records
 			JRequest::setVar($requestKey, $text, 'post');
-			$listModel->clearTable();
-			$table = $listModel->getTable();
+			
+			$table = $listModel->getTable(true);
 			$fabrikDb = $listModel->getDb();
 			$params = $listModel->getParams();
 

@@ -101,7 +101,7 @@ class FabrikFEModelPluginmanager extends JModel{
 			$this->group = 'element';
 		}
 		$query = $db->getQuery(true);
-		$folder = $db->Quote('fabrik_' . $this->group);
+		$folder = $db->quote('fabrik_' . $this->group);
 		$query->select('element AS value, name AS text')->from('#__extensions')->where('folder =' . $folder);
 		$db->setQuery($query);
 		$elementstypes = $db->loadObjectList();
@@ -194,7 +194,7 @@ class FabrikFEModelPluginmanager extends JModel{
 	 * load in the actual plugin objects for a given group
 	 * @param string $group
 	 */
-
+	
 	public function getPlugInGroupPlugins($group)
 	{
 		$plugins = $this->getPlugInGroup($group);
@@ -205,7 +205,7 @@ class FabrikFEModelPluginmanager extends JModel{
 		}
 		return $r;
 	}
-
+	
 	/**
 	 * @param string plugin name e.g. fabrikfield
 	 * @param string plugin type element/ form or table
@@ -340,8 +340,8 @@ class FabrikFEModelPluginmanager extends JModel{
 	{
 		return $this->getPluginFromId($id);
 	}
-
-	public function getPluginFromId($id, $type = 'Element')
+	
+	public function getPluginFromId($id, $type = 'Element') 
 	{
 		$el = FabTable::getInstance($type, 'FabrikTable');
 		$el->load($id);
@@ -351,7 +351,7 @@ class FabrikFEModelPluginmanager extends JModel{
 		{
 			default:
 				$o->getTable();
-			break;
+				break;
 			case 'Element':
 				$o->getElement();
 				break;
@@ -388,7 +388,7 @@ class FabrikFEModelPluginmanager extends JModel{
 	 * @return array of bools: false if error found and processed, otherwise true
 	 */
 
-	function runPlugins($method, &$oRequest, $type = 'form')
+	function runPlugins($method, $oRequest, $type = 'form')
 	{
 		if ($type == 'form')
 		{
@@ -506,7 +506,7 @@ class FabrikFEModelPluginmanager extends JModel{
 	 * test if a plugin is installed
 	 * @param $group
 	 * @param $plugin
-	 * @return bol
+	 * @return bool
 	 */
 
 	function pluginExists($group, $plugin)

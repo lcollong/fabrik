@@ -16,6 +16,8 @@ class fabrikViewForm extends JView
 
 	public $isMambot = null;
 
+	var $repeatableJoinGroupCount = 0;
+
 	public $access = null;
 
 	/**
@@ -131,7 +133,7 @@ class fabrikViewForm extends JView
 		$list->id = $form->record_in_database ? $model->getListModel()->getTable()->id : 0;
 		$this->assignRef('list', $list);
 		JDEBUG ? $profiler->mark('form view: before getRelatedTables()') : null;
-		$this->assignRef('linkedTables', $this->get('RelatedTables'));
+		$this->assign('linkedTables', $this->get('RelatedTables'));
 		JDEBUG ? $profiler->mark('form view: after getRelatedTables()') : null;
 		$this->setMessage();
 
@@ -197,21 +199,20 @@ class fabrikViewForm extends JView
 		$title = '';
 		if ($app->getName() !== 'administrator')
 		{
-			$menus = JSite::getMenu();
+			$menus = $app->getMenu();
 			$menu = $menus->getActive();
 			//if there is a menu item available AND the form is not rendered in a content plugin or module
 			if (is_object($menu) && !$this->isMambot)
 			{
-				$menu_params = new JRegistry($menu->params);
-				if (!$menu_params->get('page_title') || $menu_params->get('show_page_title') == 0)
+				if (!$menu->params->get('page_title') || $menu->params->get('show_page_title') == 0)
 				{
 					$params->set('page_title', $title);
 				}
 				else
 				{
-					$params->set('page_title', $menu_params->get('page_title'));
+					$params->set('page_title', $menu->params->get('page_title'));
 				}
-				$params->set('show_page_title', $menu_params->get('show_page_title', 0));
+				$params->set('show_page_title', $menu->params->get('show_page_title', 0));
 			}
 			else
 			{
@@ -256,7 +257,7 @@ class fabrikViewForm extends JView
 		if ($this->showPrint)
 		{
 			$text = JHTML::_('image.site',  'printButton.png', '/images/', NULL, NULL, JText::_('Print'));
-			$this->printLink = '<a href="#" onclick="window.print();return false;">' . $text . '</a>';
+			$this->printLink = '<a href="#" class="printlink" onclick="window.print();return false;">' . $text . '</a>';
 		}
 		if (JRequest::getVar('tmpl') != 'component')
 		{
@@ -350,7 +351,7 @@ class fabrikViewForm extends JView
 
 		$bkey = $model->editable ? 'form_'. $model->getId() : 'details_'. $model->getId();
 
-		FabrikHelperHTML::tips('.hasTip', array(), "$('$bkey')");
+		//FabrikHelperHTML::tips('.hasTip', array(), "$('$bkey')");
 		$key = FabrikString::safeColNameToArrayKey($table->db_primary_key);
 
 		$this->get('FormCss');
@@ -403,15 +404,35 @@ class fabrikViewForm extends JView
 		//for editing groups with joined data and an empty joined record (ie no joined records)
 		$hidden = array();
 		$maxRepeat = array();
+		$showMaxRepeats = array();
 		foreach ($this->groups as $g)
 		{
 			$hidden[$g->id] = $g->startHidden;
 			$maxRepeat[$g->id] = $g->maxRepeat;
+			$showMaxRepeats[$g->id] = $g->showMaxRepeats;
 		}
 		$opts->hiddenGroup = $hidden;
 		$opts->maxRepeat = $maxRepeat;
+		$opts->showMaxRepeats = $showMaxRepeats;
 		//$$$ rob 26/04/2011 joomfish translations of password validation error messages
 		//$opts->lang = FabrikWorker::getJoomfishLang();
+
+		// $$$ hugh adding these so calc element can easily find joined and repeated join groups
+		// when it needs to add observe events ... don't ask ... LOL!
+		$opts->join_group_ids = array();
+		$opts->group_repeats = array();
+		$opts->group_joins_ids = array();
+		$groups = $model->getGroupsHiarachy();
+
+		foreach ($groups as $groupModel)
+		{
+			if ($groupModel->getGroup()->is_join)
+			{
+				$opts->join_group_ids[$groupModel->getGroup()->join_id] = (int)$groupModel->getGroup()->id;
+				$opts->group_join_ids[$groupModel->getGroup()->id] = (int)$groupModel->getGroup()->join_id;
+				$opts->group_repeats[$groupModel->getGroup()->id] = $groupModel->canRepeat();
+			}
+		}
 
 		$opts = json_encode($opts);
 
@@ -470,7 +491,7 @@ class fabrikViewForm extends JView
 
 				// if the view is a form then we should always add the js as long as the element is editable or viewable
 				// if the view is details then we should only add hte js if the element is viewable.
-				if (($elementModel->canUse() && $model->isEditable()) || $elementModel->canView())
+				if (($elementModel->canUse() && $model->editable) || $elementModel->canView())
 				{
 					for ($c = 0; $c < $max; $c ++)
 					{
@@ -630,7 +651,8 @@ class fabrikViewForm extends JView
 			$form->prevButton = '<input type="button" class="fabrikPagePrevious button" name="fabrikPagePrevious" value="'.JText::_('COM_FABRIK_PREVIOUS').'" />';
 			$form->nextButton = '<input type="button" class="fabrikPageNext button" name="fabrikPageNext" value="'.JText::_('COM_FABRIK_NEXT').'" />';
 		}
-		else {
+		else
+		{
 			$form->nextButton = '';
 			$form->prevButton = '';
 		}
@@ -644,6 +666,12 @@ class fabrikViewForm extends JView
 			$c = $groupModel->repeatTotal;
 			//used for validations
 			$fields[] = '<input type="hidden" name="fabrik_repeat_group['.$group->id.']" value="'.$c.'" id="fabrik_repeat_group_'.$group->id.'_counter" />';
+		}
+
+		// $$$ hugh - testing social_profile_hash stuff
+		if (JRequest::getVar('fabrik_social_profile_hash', '') != '')
+		{
+			$fields[] = '<input type="hidden" name="fabrik_social_profile_hash" value="'.JRequest::getCmd('fabrik_social_profile_hash','').'" id="fabrik_social_profile_hash" />';
 		}
 
 		$this->_cryptQueryString($fields);
@@ -706,7 +734,7 @@ class fabrikViewForm extends JView
 	{
 		jimport('joomla.utilities.simplecrypt');
 		jimport('joomla.utilities.utility');
-		$crypt = new JSimpleCrypt();
+		$crypt = new JSimpleCrypt(null);
 		$formModel = $this->getModel();
 		$fields = array();
 		$ro = $this->get('readOnlyVals');
@@ -744,7 +772,8 @@ class fabrikViewForm extends JView
 			}
 			if (is_array($input))
 			{
-				for ($x =0; $x < count($input); $x++) {
+				for ($x = 0; $x < count($input); $x++)
+				{
 					if (trim($input[$x]) !== '')
 					{
 						$input[$x] = $crypt->encrypt($input[$x]);
@@ -832,5 +861,6 @@ class fabrikViewForm extends JView
 			);
 		}
 	}
+
 }
 ?>

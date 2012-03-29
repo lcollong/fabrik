@@ -23,6 +23,7 @@ class FabrikModelVisualization extends JModelAdmin
 	 */
 	protected $text_prefix = 'COM_FABRIK_VISUALIZATION';
 
+
 	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
@@ -51,8 +52,7 @@ class FabrikModelVisualization extends JModelAdmin
 	{
 		// Get the form.
 		$form = $this->loadForm('com_fabrik.visualization', 'visualization', array('control' => 'jform', 'load_data' => $loadData));
-		if (empty($form))
-		{
+		if (empty($form)) {
 			return false;
 		}
 		$form->model = $this;
@@ -69,10 +69,11 @@ class FabrikModelVisualization extends JModelAdmin
 	{
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.visualization.data', array());
-		if (empty($data))
-		{
+
+		if (empty($data)) {
 			$data = $this->getItem();
 		}
+
 		return $data;
 	}
 
@@ -86,19 +87,16 @@ class FabrikModelVisualization extends JModelAdmin
 	function getPluginHTML($plugin = null)
 	{
 		$item = $this->getItem();
-		if (is_null($plugin))
-		{
+		if (is_null($plugin)) {
 			$plugin = $item->plugin;
 		}
 		JRequest::setvar('view', 'visualization');
 		JPluginHelper::importPlugin('fabrik_visualizaton', $plugin);
 		$pluginManager = JModel::getInstance('Pluginmanager', 'FabrikFEModel');
-		if ($plugin == '')
-		{
+
+		if ($plugin == '') {
 			$str = JText::_('COM_FABRIK_SELECT_A_PLUGIN');
-		}
-		else
-		{
+		} else {
 			$plugin = $pluginManager->getPlugIn($plugin, 'Visualization');
 			$str = $plugin->onRenderAdminSettings(JArrayHelper::fromObject($item));
 		}
@@ -106,15 +104,10 @@ class FabrikModelVisualization extends JModelAdmin
 	}
 
 	/**
-	 * Method to validate the form data.
-	 *
-	 * @param	object	$form	The form to validate against.
-	 * @param	array	$data	The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 * @return	mixed	Array of filtered data if valid, false otherwise.
-	 * @since	1.1
+	 * (non-PHPdoc)
+	 * @see JModelForm::validate()
 	 */
-
+	
 	public function validate($form, $data, $group = null)
 	{
 		parent::validate($form, $data);

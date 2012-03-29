@@ -29,7 +29,7 @@ class plgFabrik_ElementFblike extends plgFabrik_Element {
 	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		$params = $this->getParams();
 		$meta = array();

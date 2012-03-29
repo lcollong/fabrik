@@ -25,26 +25,27 @@ class FabrikViewVisualization extends JView{
 		$pluginManager = JModel::getInstance('Pluginmanager', 'FabrikModel');
 		$plugin = $pluginManager->getPlugIn($visualization->plugin, 'visualization');
 		$plugin->_row = $visualization;
-		if ($visualization->published == 0)
-		{
+		if ($visualization->published == 0) {
 			return JError::raiseWarning(500, JText::_('COM_FABRIK_SORRY_THIS_VISUALIZATION_IS_UNPUBLISHED'));
 		}
 
 		//plugin is basically a model
+
+
 		$pluginTask = JRequest::getVar('plugintask', 'render', 'request');
 		// @FIXME cant set params directly like this, but I think plugin model setParams() is not right
-		$plugin->params = $pluginParams;
+		$plugin->_params = $pluginParams;
 		$tmpl = $plugin->getParams()->get('calendar_layout', $tmpl);
 		$plugin->$pluginTask($this);
 		$this->plugin = $plugin;
 		$viewName = $this->getName();
-		$this->addTemplatePath($this->_basePath . '/plugins/' . $this->_name . '/' . $plugin->_name . '/tmpl/' . $tmpl);
-		$this->addTemplatePath(JPATH_SITE . '/templates/' . $app->getTemplate() . '/html/com_fabrik/visualization/' . $plugin->_name . '/' . $tmpl);
+		$this->addTemplatePath($this->_basePath.DS.'plugins'.DS.$this->_name.DS.$plugin->_name.DS.'tmpl'.DS.$tmpl);
+		$this->addTemplatePath(JPATH_SITE . '/templates'.DS.$app->getTemplate().DS.'html/com_fabrik/visualization'.DS.$plugin->_name.DS.$tmpl);
 
-		$css = 'plugins/fabrik_visualization/' . $plugin->_name . '/tmpl/' . $tmpl . '/template.css';
-		if (JFile::exists(JPATH_SITE . '/' . $css))
+		$ab_css_file = JPATH_SITE."/plugins/fabrik_visualization/".$plugin->_name."/tmpl/$tmpl/template.css";
+		if (JFile::exists($ab_css_file))
 		{
-			JHTML::stylesheet($css);
+			JHTML::stylesheet('template.css', 'plugins/fabrik_visualization/'.$plugin->_name.'/tmpl/'.$tmpl.'/', true);
 		}
 		echo parent::display();
 	}

@@ -52,14 +52,14 @@ class plgSystemFabrikcron extends JPlugin
 			return;
 		}
 		//3.0 done in inAfterInitialize()
-		//$defines = JFile::exists(JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'user_defines.php') ? JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'user_defines.php' : JPATH_SITE . '/components'.DS.'com_fabrik'.DS.'defines.php';
+		//$defines = JFile::exists(JPATH_SITE . '/components/com_fabrik/user_defines.php') ? JPATH_SITE . '/components/com_fabrik/user_defines.php' : JPATH_SITE . '/components/com_fabrik/defines.php';
 		//require_once($defines);
 		/* jimport('joomla.application.component.model');
-		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'params.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'string.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'helpers'.DS.'html.php');
-		require_once(COM_FABRIK_FRONTEND.DS.'models'.DS.'parent.php');
-		JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_fabrik'.DS.'tables');
+		require_once(COM_FABRIK_FRONTEND . '/helpers/params.php');
+		require_once(COM_FABRIK_FRONTEND . '/helpers/string.php');
+		require_once(COM_FABRIK_FRONTEND . '/helpers/html.php');
+		require_once(COM_FABRIK_FRONTEND . '/models/parent.php');
+		JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
 		 */
 		//get all active tasks
 		$db = FabrikWorker::getDbo(true);
@@ -122,12 +122,14 @@ class plgSystemFabrikcron extends JPlugin
 			$log->id = null;
 			$log->referring_url = '';
 			//load in the plugin
+			//$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
+			//$plugin->setId($row->id);
 			$plugin = $pluginManager->getPluginFromId($row->id, 'Cron');
-			$log->message_type = 'plg.cron.' . $row->plugin;
+			$log->message_type = 'plg.cron.'.$row->plugin;
 			if (!$plugin->queryStringActivated())
 			{
 				// $$$ hugh - don't forget to make it runnable again before continuing
-				$db->setQuery('UPDATE #__{package}_cron SET published="1" WHERE id = ' . $row->id);
+				$db->setQuery('UPDATE #__{package}_cron SET published="1" WHERE id = '.$row->id);
 				$db->query();
 				continue;
 			}
@@ -185,7 +187,7 @@ class plgSystemFabrikcron extends JPlugin
 			//mark them as being run
 			// $$$ hugh - and make it runnable again by setting 'state' back to 1
 			$nextrun = JFactory::getDate($tmp);
-			$db->setQuery('UPDATE #__{package}_cron SET lastrun = "'.$nextrun->toMySQL() .'" WHERE id = '.$row->id);
+			$db->setQuery('UPDATE #__{package}_cron SET lastrun = "'.$nextrun->toSql() .'" WHERE id = '.$row->id);
 			$db->query();
 			//log if asked for
 			if ($plugin->getParams()->get('log', 0) == 1)

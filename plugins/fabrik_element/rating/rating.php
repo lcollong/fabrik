@@ -324,7 +324,7 @@ class plgFabrik_ElementRating extends plgFabrik_Element {
 			//store in elements table as well
 			$db = $listModel->getDb();
 			$element = $this->getElement();
-			$db->setQuery("UPDATE $list->db_table_name SET $element->name = $rating WHERE $list->db_primary_key = " . $db->Quote($row_id));
+			$db->setQuery("UPDATE $list->db_table_name SET $element->name = $rating WHERE $list->db_primary_key = " . $db->quote($row_id));
 			$db->query();
 		}
 		$this->getRatingAverage('', $listid, $formid, $row_id);
@@ -376,8 +376,8 @@ class plgFabrik_ElementRating extends plgFabrik_Element {
 		$config = JFactory::getConfig();
 		$tzoffset = $config->get('offset');
 		$date = JFactory::getDate('now', $tzoffset);
-		$strDate = $db->Quote($date->toSql());
-		$userid = $db->Quote($this->getStoreUserId($listid, $row_id));
+		$strDate = $db->quote($date->toSql());
+		$userid = $db->quote($this->getStoreUserId($listid, $row_id));
 		$elementid = $this->getElement()->id;
 		$db->setQuery("INSERT INTO #__fabrik_ratings (user_id, listid, formid, row_id, rating, date_created, element_id)
 		values ($userid, $listid, $formid, $row_id, $rating, $strDate, $elementid)

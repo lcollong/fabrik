@@ -40,7 +40,7 @@ class imageRender{
 		// $$$ hugh - added this hack to let people use elementname__title as a title element
 		// for the image, to show in the lightbox popup.
 		// So we have to work out if we're being called from a table or form
-		$formModel = $this->getFormModel();
+		$formModel = $model->getFormModel();
 		$title = basename($file);
 		if ($params->get('fu_title_element') == '')
 		{

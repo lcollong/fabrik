@@ -75,7 +75,8 @@ class FabrikViewList extends JView{
 		foreach ($joinsToThisKey as $element)
 		{
 			$element = $elementModel->getElement();
-			$elParams = new fabrikParams($element->attribs, JPATH_SITE . '/administrator/components/com_fabrik/xml/element.xml', 'component');
+			//$elParams = new fabrikParams($element->attribs, JPATH_SITE . '/administrator/components/com_fabrik/xml/element.xml', 'component');
+			$elParams = new JRegistry($element->attribs);
 			if ($elParams->get('show_in_rss_feed') == '1')
 			{
 				$heading = $element->label;

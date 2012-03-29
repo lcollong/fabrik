@@ -14,19 +14,20 @@ require_once(COM_FABRIK_FRONTEND . '/models/plugin-list.php');
 
 class plgFabrik_ListEmail extends plgFabrik_List {
 
+	var $useMocha = true;
+
 	protected $buttonPrefix = 'email';
 
 	var $name = "plgFabrik_ListEmail";
 
-	function onPopupwin()
-	{
+	function onPopupwin(){
 		echo ' hre lklfsd k popupwin';
 	}
 
 	/**
-	 * determine if the table plugin is a button and can be activated only when rows are selected
+	 * determine if the list plugin is a button and can be activated only when rows are selected
 	 *
-	 * @return bol
+	 * @return	bool
 	 */
 	function canSelectRows()
 	{
@@ -50,10 +51,10 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 
 	/**
 	 * return the javascript to create an instance of the class defined in formJavascriptClass
-	 * @param object parameters
-	 * @param object table model
-	 * @param array [0] => string table's form id to contain plugin
-	 * @return bool
+	 * @param	object	parameters
+	 * @param	object	table model
+	 * @param	array	[0] => string table's form id to contain plugin
+	 * @return	bool
 	 */
 
 	function onLoadJavascriptInstance($params, $model, $args)
@@ -68,7 +69,6 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 
 	function getToField()
 	{
-		//$this->_type = 'table';
 		$this->_id = JRequest::getInt('id');
 		$params = $this->getParams();
 		$renderOrder = JRequest::getInt('renderOrder');
@@ -78,7 +78,7 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		{
 			$to = $params->get('emailtable_to');
 			$to = is_array($to) ? $to[$renderOrder] : $to;
-			return "<input name=\"order_by\" id=\"order_by\" value=\"".$to."\" readonly=\"true\" />";
+			return '<input name="order_by" id="order_by" value="' . $to . '" readonly="true" />';
 		}
 		else
 		{
@@ -112,9 +112,9 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 
 	/**
 	 * get the selected records
-	 * @param string $key
-	 * @param bool $allData
-	 * @return array rows:
+	 * @param	string	$key
+	 * @param	bool	$allData
+	 * @return	array	rows:
 	 */
 
 	public function getRecords($key = 'ids', $allData = false)
@@ -134,8 +134,9 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		$whereClause = "($pk IN (" . implode(",", $ids). "))";
 		$cond = $params->get('emailtable_condition');
 		$cond = JArrayHelper::getValue($cond, $renderOrder);
-		if (trim($cond) !== '') {
-			$whereClause .= " AND ($cond)";
+		if (trim($cond) !== '')
+		{
+			$whereClause .= ' AND (' . $cond . ')';
 		}
 		$model->setPluginQueryWhere($this->buttonPrefix, $whereClause);
 		$data = $model->getData();
@@ -146,7 +147,7 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		$return = array();
 		foreach ($data as $gdata)
 		{
-			foreach ($gdata as $row)
+			foreach($gdata as $row)
 			{
 				$return[] = $row->$pk2;
 			}
@@ -158,7 +159,7 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 	 * upload the attachments to the server
 	 * @access private
 	 *
-	 * @return bol success/fail
+	 * @return bool success/fail
 	 */
 
 	function _upload()
@@ -167,17 +168,18 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		jimport('joomla.client.helper');
 		JClientHelper::setCredentialsFromRequest('ftp');
 		$files = JRequest::getVar('attachement', array(), 'files');
-		$folder = JPATH_ROOT. '/images/stories';
+		$folder = JPATH_ROOT.DS.'images/stories';
 		$this->filepath = array();
 		$c = 0;
 		if (array_key_exists('name', $files))
 		{
-			foreach ($files['name'] as $name) {
+			foreach ($files['name'] as $name)
+			{
 				if ($name == '')
 				{
 					continue;
 				}
-				$path = $folder. '/' .strtolower($name);
+				$path = $folder.DS.strtolower($name);
 				if (!JFile::upload($files['tmp_name'][$c], $path))
 				{
 					JError::raiseWarning(100, JText::_('PLG_LIST_EMAIL_ERR_CANT_UPLOAD_FILE'));
@@ -225,11 +227,11 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		}
 		else
 		{
-			$from = $config->get('mailfrom');
-			$fromname = $config->get('fromname');
+			$from = $config->getValue('mailfrom');
+			$fromname = $config->getValue('fromname');
 		}
 
-		$email_from = $config->get('mailfrom');
+		$email_from = $config->getValue('mailfrom');
 		$cc = null;
 		$bcc = null;
 		$sent = 0;
@@ -237,8 +239,7 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 		$updated = array();
 		foreach ($data as $group)
 		{
-			foreach ($group as $row)
-			{
+			foreach ($group as $row) {
 				if ($toType == 'list')
 				{
 					$process = isset($row->$to);
@@ -259,7 +260,7 @@ class plgFabrik_ListEmail extends plgFabrik_List {
 						{
 							$thissubject = $w->parseMessageForPlaceholder($subject, $row);
 							$thismessage = $w->parseMessageForPlaceholder($message, $row);
-							$res =  JFactory::getMailer()->sendMail($email_from, $email_from, $mailto, $thissubject, $thismessage, 1, $cc, $bcc, $this->filepath);
+							$res = JUtility::sendMail($email_from, $email_from, $mailto, $thissubject, $thismessage, 1, $cc, $bcc, $this->filepath);
 							if ($res)
 							{
 								$sent ++;

@@ -25,7 +25,7 @@ class Kapow extends JObject{
 		foreach ($smstos as $smsto)
 		{
 			$url = sprintf($this->_url, $username, $password, $smsto, $message);
-			fabrikSMS::_doRequest('GET', $url, '');
+			fabrikSMS::doRequest('GET', $url, '');
 		}
 	}
 

@@ -50,10 +50,10 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 			$params	= $this->getPluginParams();
 			$lists = (array)$params->get('calendar_table');
 			JArrayHelper::toInteger($lists);
-			$dateFields = $params->get('calendar_startdate_element', array(), '_default', 'array');
-			$dateFields2 = $params->get('calendar_enddate_element', array(), '_default', 'array');
-			$labels = $params->get('calendar_label_element', array(), '_default', 'array');
-			$colours = $params->get('colour', array(), '_default', 'array');
+			$dateFields = (array) $params->get('calendar_startdate_element');
+			$dateFields2 = (array) $params->get('calendar_enddate_element');
+			$labels = (array) $params->get('calendar_label_element');
+			$colours = (array) $params->get('colour');
 
 			$query = $db->getQuery(true);
 			$query->select('id AS value, label AS text')->from('#__{package}_lists')->where('id IN (' . implode("','", $lists) . ')');
@@ -115,12 +115,12 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 		$this->params = json_encode($params);
 		if ($this->id == 0)
 		{
-			$this->created = date( 'Y-m-d H:i:s');
+			$this->created = date('Y-m-d H:i:s');
 			$this->created_by = $user->get('id');
 		}
 		else
 		{
-			$this->modified = date( 'Y-m-d H:i:s');
+			$this->modified = date('Y-m-d H:i:s');
 			$this->modified_by = $user->get('id');
 		}
 
@@ -245,7 +245,7 @@ class fabrikModelCalendar extends FabrikFEModelVisualization {
 
 	/**
 	 * can the user add a record into the calendar
-	 * @return bol
+	 * @return bool
 	 */
 	
 	function getCanAdd()

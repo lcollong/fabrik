@@ -12,7 +12,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleIsNot extends plgFabrik_Validationrule
@@ -27,14 +26,11 @@ class plgFabrik_ValidationruleIsNot extends plgFabrik_Validationrule
 	protected $icon = 'notempty';
 	
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element model
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($data, &$elementModel, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		if (is_array($data))
 		{
@@ -42,11 +38,11 @@ class plgFabrik_ValidationruleIsNot extends plgFabrik_Validationrule
 		}
 		$params = $this->getParams();
 		$isnot = $params->get('isnot-isnot');
-		$isnot = $isnot[$c];
+		$isnot = $isnot[$pluginc];
 		$isnot = explode('|', $isnot);
 		foreach ($isnot as $i)
 		{
-			if ($data == $i)
+			if((string) $data === (string) $i)
 			{
 				return false;
 			}

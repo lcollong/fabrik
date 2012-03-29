@@ -28,6 +28,7 @@ class FabrikControllerPlugin extends JController
 	 * Means that any method in Fabrik 2, e.e. 'ajax_upload' should
 	 * now be changed to 'onAjax_upload'
 	 * ajax action called from element
+	 *
 	 */
 
 	function pluginAjax()
@@ -36,17 +37,15 @@ class FabrikControllerPlugin extends JController
 		$method = JRequest::getVar('method', '');
 		$group = JRequest::getVar('g', 'element');
 
-		if (!JPluginHelper::importPlugin('fabrik_' . $group, $plugin))
-		{
+		if (!JPluginHelper::importPlugin('fabrik_'.$group, $plugin)) {
 			$o = new stdClass();
-			$o->err = 'unable to import plugin fabrik_' . $group . ' ' . $plugin;
+			$o->err = 'unable to import plugin fabrik_'.$group.' '.$plugin;
 			echo json_encode($o);
 			return;
 		}
 
 		$dispatcher = JDispatcher::getInstance();
-		if (substr($method, 0, 2) !== 'on')
-		{
+		if (substr($method, 0, 2) !== 'on') {
 			$method = 'on'.JString::ucfirst($method);
 		}
 		$dispatcher->trigger($method);
@@ -56,11 +55,10 @@ class FabrikControllerPlugin extends JController
 	function userAjax()
 	{
 		$db = FabrikWorker::getDbo();
-		require_once(COM_FABRIK_FRONTEND . '/user_ajax.php');
+		require_once(COM_FABRIK_FRONTEND . DS. "user_ajax.php");
 		$method = JRequest::getVar('method', '');
 		$userAjax = new userAjax($db);
-		if (method_exists($userAjax, $method))
-		{
+		if (method_exists($userAjax, $method)) {
 			$userAjax->$method();
 		}
 	}

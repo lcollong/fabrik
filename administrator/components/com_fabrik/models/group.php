@@ -53,8 +53,7 @@ class FabrikModelGroup extends FabModelAdmin
 	{
 		// Get the form.
 		$form = $this->loadForm('com_fabrik.group', 'group', array('control' => 'jform', 'load_data' => $loadData));
-		if (empty($form))
-		{
+		if (empty($form)) {
 			return false;
 		}
 		return $form;
@@ -71,8 +70,7 @@ class FabrikModelGroup extends FabModelAdmin
 	{
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.group.data', array());
-		if (empty($data))
-		{
+		if (empty($data)) {
 			$data = $this->getItem();
 		}
 
@@ -88,8 +86,7 @@ class FabrikModelGroup extends FabModelAdmin
 
 	public function swapFormToGroupIds($ids = array())
 	{
-		if (empty($ids))
-		{
+		if (empty($ids)) {
 			return array();
 		}
 		JArrayHelper::toInteger($ids);
@@ -97,7 +94,7 @@ class FabrikModelGroup extends FabModelAdmin
 		$query = $db->getQuery(true);
 		$query->select('group_id')->from('#__{package}_formgroup')->where('form_id IN ('. implode(',', $ids).')');
 		$db->setQuery($query);
-		$res = $db->loadColumn();
+		$res = $db->loadResultArray();
 		return $res;
 	}
 	
@@ -108,10 +105,8 @@ class FabrikModelGroup extends FabModelAdmin
 		$listModel = $groupModel->getListModel();
 		$pk = FabrikString::safeColName($listModel->getTable()->db_primary_key);
 		$elementModels = $groupModel->getMyElements();
-		foreach ($elementModels as $elementModel)
-		{
-			if(FabrikString::safeColName($elementModel->getFullName(false, false, false)) == $pk)
-			{
+		foreach ($elementModels as $elementModel) {
+			if(FabrikString::safeColName($elementModel->getFullName(false, false, false)) == $pk) {
 				return false;
 			}
 		}
@@ -125,26 +120,21 @@ class FabrikModelGroup extends FabModelAdmin
 
 	public function save($data)
 	{
-		if ($data['id'] == 0)
-		{
+		if ($data['id'] == 0) {
 			$user = JFactory::getUser();
 			$data['created_by'] = $user->get('id');
 			$data['created_by_alias'] = $user->get('username');
 			$data['created'] = JFactory::getDate()->toSql();
 
 		}
-		if ($this->checkRepeatAndPK($data))
-		{
+		if ($this->checkRepeatAndPK($data)) {
+		
 			$makeJoin = ($data['params']['repeat_group_button'] == 1);
-			if ($makeJoin)
-			{
+			if ($makeJoin) {
 				$data['is_join'] = 1;
 			}
-		}
-		else
-		{
-			if (($data['params']['repeat_group_button'] == 1))
-			{
+		} else {
+			if (($data['params']['repeat_group_button'] == 1)) {
 				$data['params']['repeat_group_button'] = 0;
 				JError::raiseNotice(500, 'You can not set the group containing the list primary key to be repeatable');
 			}
@@ -153,25 +143,19 @@ class FabrikModelGroup extends FabModelAdmin
 		$return = parent::save($data);
 		
 		$data['id'] = $this->getState($this->getName().'.id');
-		if ($return)
-		{
+		if ($return) {
 			$this->makeFormGroup($data);
-			if ($makeJoin)
-			{
+			if ($makeJoin) {
 				// $$$ rob added this check as otherwise toggling group from repeat 
 				// to norepeat back to repeat incorrectly created a 2nd join 
-				if (!$this->joinedGroupExists($data['id']))
-				{
+				if (!$this->joinedGroupExists($data['id'])) {
 					$return = $this->makeJoinedGroup($data);
 				}
 				//update for the is_join change
-				if ($return)
-				{
+				if ($return) {
 					$return = parent::save($data);
 				}
-			}
-			else
-			{
+			} else {
 				//$data['is_join'] =  0; // NO! none repeat joined groups were getting unset here - not right!
 				$return = parent::save($data);
 			}
@@ -199,20 +183,18 @@ class FabrikModelGroup extends FabModelAdmin
 
 	protected function makeFormGroup($data)
 	{
-		if ($data['form'] == '')
-		{
+		if ($data['form'] == '') {
 			return;
 		}
 		$formid = (int)$data['form'];
 		$id = (int)$data['id'];
 		$item = FabTable::getInstance('FormGroup', 'FabrikTable');
 		$item->load(array('form_id' => $formid, 'group_id' => $id));
-		if ($item->id == '')
-		{
+		if ($item->id == '') {
 			//get max group order
 			$db = FabrikWorker::getDbo(true);
 			$query = $db->getQuery(true);
-			$query->select('MAX(ordering)')->from('#__{package}_formgroup')->where('form_id = ' . $formid);
+			$query->select('MAX(ordering)')->from('#__{package}_formgroup')->where('form_id = '.$formid);
 			$db->setQuery($query);
 			$next = (int)$db->loadResult() + 1;
 			$item->ordering = $next;
@@ -243,68 +225,57 @@ class FabrikModelGroup extends FabModelAdmin
 		$fields = $listModel->getDBFields(null, 'Field');
 		$names['id'] = "id INT( 6 ) NOT NULL AUTO_INCREMENT PRIMARY KEY";
 		$names['parent_id'] = "parent_id INT(6)";
-		foreach ($elements as $element)
-		{
+		foreach ($elements as $element) {
 			$fname = $element->getElement()->name;
 			// if we are making a repeat group from the primary group then we dont want to
 			// overwrite the repeat group tables id definition with that of the main tables
-			if (!array_key_exists($fname, $names))
-			{
+			if (!array_key_exists($fname, $names)) {
 				$str = FabrikString::safeColName($fname);
 				$field = JArrayHelper::getValue($fields, $fname);
-				if (is_object($field))
-				{
-					$str .= ' ' . $field->Type . ' ';
+				if (is_object($field)) {
+					$str .= " ".$field->Type." ";
 					if ($field->Null == 'NO') {
 						$str .= "NOT NULL ";
 					}
 					$names[$fname] = $str;
-				}
-				else
-				{
-					$names[$fname] = $db->quoteName($fname) . ' ' . $element->getFieldDescription();
+				} else {
+					$names[$fname] = $db->quoteName($fname).' '.$element->getFieldDescription();
 				}
 			}
 
 		}
-		$db->setQuery('show tables');
-		$newTableName = $list->db_table_name . '_' . $data['id'] . '_repeat';
-		$existingTables = $db->loadColumn();
-		if (!in_array($newTableName, $existingTables))
-		{
+		$db->setQuery("show tables");
+		$newTableName = $list->db_table_name.'_'.$data['id'].'_repeat';
+		$existingTables = $db->loadResultArray();
+		if (!in_array($newTableName, $existingTables)) {
 			// no existing repeat group table found so lets create it
 			$query = "CREATE TABLE IF NOT EXISTS ".$db->quoteName($newTableName)." (".implode(",", $names).")";
 			$db->setQuery($query);
-			if (!$db->query())
-			{
+			if (!$db->query()) {
 				JError::raiseError(500, $db->getErrorMsg());
 			}
 			//create id and parent_id elements
 			$listModel->makeIdElement($data['id']);
 			$listModel->makeFkElement($data['id']);
-		}
-		else
-		{
-			if (trim($list->db_table_name) == '')
-			{
+
+			
+		} else {
+			if (trim($list->db_table_name) == '') {
 				//new group not attached to a form
 				$this->setError(JText::_('COM_FABRIK_GROUP_CANT_MAKE_JOIN_NO_DB_TABLE'));
 				return false;
 			}
 			//repeat table already created - lets check its structure matches the group elements
-			$db->setQuery('DESCRIBE ' . $db->quoteName($newTableName));
+			$db->setQuery("DESCRIBE ".$db->quoteName($newTableName));
 			$existingFields = $db->loadObjectList('Field');
 			$newFields = array_diff(array_keys($names), array_keys($existingFields));
-			if (!empty($newFields))
-			{
+			if (!empty($newFields)) {
 				$lastfield = array_pop($existingFields);
 				$lastfield = $lastfield->Field;
-				foreach ($newFields as $newField)
-				{
+				foreach ($newFields as $newField) {
 					$info = $names[$newField];
-					$db->setQuery('ALTER TABLE ' . $db->quoteName($newTableName) . ' ADD COLUMN ' . $info . ' AFTER ' . $lastfield);
-					if (!$db->query())
-					{
+					$db->setQuery("ALTER TABLE ".$db->quoteName($newTableName)." ADD COLUMN $info AFTER $lastfield");
+					if (!$db->query()) {
 						JError::raiseError(500, $db->getErrorMsg());
 					}
 				}
@@ -339,20 +310,14 @@ class FabrikModelGroup extends FabModelAdmin
 
 	public function delete(&$pks, $deleteElements = false)
 	{
-		if (empty($pks))
-		{
+		if (empty($pks)) {
 			return true;
 		}
-		if (parent::delete($pks))
-		{
+		if (parent::delete($pks)) {
 			if ($this->deleteFormGroups($pks)) {
-				
-				if ($deleteElements)
-				{
+				if ($deleteElements) {
 					return $this->deleteElements($pks);
-				}
-				else
-				{
+				} else {
 					return true;
 				}
 			}
@@ -367,7 +332,7 @@ class FabrikModelGroup extends FabModelAdmin
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__{package}_elements')->where('group_id IN ('.implode(',', $pks).')');
 		$db->setQuery($query);
-		$elids = $db->loadColumn();
+		$elids = $db->loadResultArray();
 		$elementModel = JModel::getInstance('Element', 'FabrikModel');
 		return $elementModel->delete($elids);
 	}

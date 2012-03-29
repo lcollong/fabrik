@@ -136,7 +136,7 @@ class FabrikViewPackage {
 		JHTML::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
 		JRequest::setVar('hidemainmenu', 1);
 		jimport('joomla.html.pane');
-		$pane = JPane::getInstance();
+		$pane	= JPane::getInstance();
 		FabrikViewPackage::setPackageToolbar();
 		FabrikHelperHTML::script('administrator/components/com_fabrik/views/adminpackage.js');
 		?>

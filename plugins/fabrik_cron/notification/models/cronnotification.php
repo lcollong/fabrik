@@ -19,13 +19,11 @@ class fabrikModelCronnotification extends fabrikModelPlugin {
 	{
 		$user = JFactory::getUser();
 		$db = FabrikWorker::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('*')->from('#__{package}_notification')->where('user_id = ' . (int)$user->get('id'));
-		$db->setQuery($query);
+		$sql = "SELECT * FROM #__{package}_notification WHERE user_id = " . $user->get('id');
+		$db->setQuery($sql);
 		$rows = $db->loadObjectList();
 		$listModel = JModel::getInstance('list', 'FabrikFEModel');
-		foreach ($rows as &$row)
-		{
+		foreach ($rows as &$row) {
 			/*
 			 * {observer_name, creator_name, event, record url
 			 * dear %s, %s has %s on %s
@@ -37,11 +35,9 @@ class fabrikModelCronnotification extends fabrikModelPlugin {
 			$data = $listModel->getRow($rowid);
 			$row->url = JRoute::_('index.php?option=com_fabrik&view=details&listid='.$listid.'&formid='.$formid.'&rowid='.$rowid);
 			$row->title = $row->url;
-			foreach ($data as $key => $value)
-			{
+			foreach ($data as $key => $value) {
 				$k = strtolower(array_pop(explode('___', $key)));
-				if ($k == 'title')
-				{
+				if ($k == 'title') {
 					$row->title = $value;
 				}
 			}
@@ -56,9 +52,7 @@ class fabrikModelCronnotification extends fabrikModelPlugin {
 		$ids = JRequest::getVar('cid', array());
 		JArrayHelper::toInteger($ids);
 		$db = FabrikWorker::getDbo();
-		$query = $db->getQuery(true);
-		$query->delete('#__{package}_notification')->where('id IN (' . implode(',', $ids) . ')');
-		$db->setQuery($query);
+		$db->setQuery("DELETE FROM #__{package}_notification WHERE id IN (".implode(',', $ids).")");
 		$db->query();
 	}
 

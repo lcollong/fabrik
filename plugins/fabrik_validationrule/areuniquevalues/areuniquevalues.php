@@ -12,7 +12,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
@@ -27,14 +26,11 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 	protected $icon = 'notempty';
 
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element Model
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($data, &$elementModel, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		//could be a dropdown with multivalues
 		if (is_array($data))
@@ -43,7 +39,7 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 		}
 		$params = $this->getParams();
 		$otherfield = (array)$params->get('areuniquevalues-otherfield', array());
-		$otherfield = $otherfield[$c];
+		$otherfield = $otherfield[$pluginc];
 
 		$element = $elementModel->getElement();
 		$listModel = $elementModel->getlistModel();
@@ -51,24 +47,24 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 
 		if ((int)$otherfield !== 0)
 		{
-			$otherElementModel = $this->getOtherElement($elementModel, $c);
+			$otherElementModel = $this->getOtherElement($elementModel, $pluginc);
 			$otherFullName = $otherElementModel->getFullName(false, true, false);
 			$otherfield = $otherElementModel->getFullName(false, false, false);
 		}
 		else
 		{
 			//old fabrik 2.x params stored element name as a string
-			$otherFullName = $table->db_table_name.'___'.$otherfield;
+			$otherFullName = $table->db_table_name . '___' . $otherfield;
 		}
 
 		$db = $listModel->getDb();
-		$lookuptable = $db->NameQuote($table->db_table_name);
-		$data = $db->Quote($data);
+		$lookuptable = $db->quoteName($table->db_table_name);
+		$data = $db->quote($data);
 
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*)')
 		->from($lookuptable)
-		->where($elementModel->getFullName(false, false, false)." = $data");
+		->where($elementModel->getFullName(false, false, false) . ' = ' . $data);
 
 		$listModel->buildQueryJoin($query);
 
@@ -76,12 +72,12 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 		{
 			// $$$ the array thing needs fixing, for now just grab 0
 			$formdata = $elementModel->getForm()->_formData;
-			$v = JArrayHelper::getValue($formdata, $otherFullName.'_raw', JArrayHelper::getValue($formdata, $otherFullName, ''));
+			$v = JArrayHelper::getValue($formdata, $otherFullName . '_raw', JArrayHelper::getValue($formdata, $otherFullName, ''));
 			if (is_array($v))
 			{
 				$v = JArrayHelper::getValue($v, 0, '');
 			}
-			$query->where("$otherfield = ".$db->Quote($v));
+			$query->where($otherfield . ' = ' . $db->quote($v));
 		}
 
 		// $$$ hugh - need to check to see if we're editing a record, otherwise
@@ -90,7 +86,7 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 		$rowid = JRequest::getVar('rowid');
 		if (!empty($rowid))
 		{
-			$query->where("$table->db_primary_key != " . $db->Quote($rowid));
+			$query->where($table->db_primary_key . ' != ' . $db->quote($rowid));
 		}
 		$db->setQuery($query);
 		$c = $db->loadResult();
@@ -100,23 +96,23 @@ class plgFabrik_ValidationruleAreUniqueValues extends plgFabrik_Validationrule
 	private function getOtherElement($elementModel, $c)
 	{
 		$params = $this->getParams();
-		$otherfield = (array)$params->get('areuniquevalues-otherfield', array());
+		$otherfield = (array) $params->get('areuniquevalues-otherfield');
 		$otherfield = $otherfield[$c];
 		return FabrikWorker::getPluginManager()->getElementPlugin($otherfield);
 	}
 
 	/**
 	* gets the hover/alt text that appears over the validation rule icon in the form
-	* @param object element model
-	* @param int repeat group counter
-	* @return string label
+	* @param	object	element model
+	* @param	int		repeat group counter
+	* @return	string	label
 	*/
 
 	protected function getLabel($elementModel, $c)
 	{
 		$otherElementModel = $this->getOtherElement($elementModel, $c);
 		$params = $this->getParams();
-		$otherfield = (array)$params->get('areuniquevalues-otherfield', array());
+		$otherfield = (array) $params->get('areuniquevalues-otherfield');
 		$otherfield = $otherfield[$c];
 		if ((int)$otherfield !== 0)
 		{

@@ -38,12 +38,10 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 		$href = 'index.php?option=com_fabrik&view=list&listid='.$model->getId();
 		$html = array();
 		$html[] = '<div class="filter_view" style="width:200px">';
-		if (!empty($labels))
-		{
+		if (!empty($labels)) {
 			$links = $opts->url;
 			$html[] = '<ul class="fabrik_filter_view">';
-			for ($i = 0; $i < count($labels); $i ++)
-			{
+			for ($i = 0; $i < count($labels); $i ++) {
 				$base = JURI::base();
 				$base .= strpos($base, '?') ? '&' : '?';
 				$class = $links[$i] == urldecode($_SERVER['QUERY_STRING']) ? 'active' : '';
@@ -51,20 +49,18 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 				$url = $base.$links[$i];
 
 				$subhtml = array();
-				if (strstr($links[$i], 'group_by'))
-				{
+				if (strstr($links[$i], 'group_by')) {
+
 					$pairs = explode('&', $links[$i]);
 					$subSel = false;
-					foreach ($pairs as $pair)
-					{
+					foreach ($pairs as $pair) {
 						list($key, $val) = explode("=", $pair);
-						if ($key == 'group_by')
-						{
+
+						if ($key == 'group_by') {
 							$query = $db->getQuery(true);
 							$query = $model->buildQueryWhere(false, $query);
 							$element = $model->getFormModel()->getElement($val);
-							if (!$element)
-							{
+							if (!$element) {
 								JError::raiseNotice(500, 'could not load group by element '.$val);
 								continue;
 							}
@@ -81,16 +77,13 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 
 							$subhtml[] = '<ul class="floating-tip">';
 							$vraw = $val.'_raw';
-							foreach ($rows as $row)
-							{
+							foreach ($rows as $row) {
+								//$qs = $val.'_raw='.$row->$vraw;
 								$qs = str_replace("$key=$val", $val.'_raw='.$row->$vraw, $links[$i]);
-								if ($qs == $_SERVER['QUERY_STRING'])
-								{
+								if ($qs == $_SERVER['QUERY_STRING']) {
 									$subclass = 'active';
 									$subSel = true;
-								}
-								else
-								{
+								} else {
 									$subclass = '';
 								}
 								$subhtml[] = '<li class="'.$subclass.'"><a style="display:block" href="'.$base.$qs.'">'.$row->$val.'</a></li>';
@@ -98,14 +91,13 @@ class plgFabrik_ListFilter_view extends plgFabrik_List {
 							$subhtml[] = '</ul>';
 						}
 					}
-					if ($class == '' && $subSel)
-					{
+					if ($class == '' && $subSel)  {
 						$class = 'active';
 					}
 					$class .= " hasSubOptions";
 					$url = '#';
 				}
-				$html[] = '<li class="' . $class . '"><a style="display:block" href="' . $url . '">' . $labels[$i] . '</a></li>';
+				$html[] = '<li class="'.$class.'"><a style="display:block" href="'.$url.'">'.$labels[$i].'</a></li>';
 				$html = array_merge($html, $subhtml);
 			}
 			$html[] = '</ul>';

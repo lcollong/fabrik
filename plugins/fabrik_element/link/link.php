@@ -106,7 +106,8 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 				$link = $data['link'];
 			}
 			$w = new FabrikWorker();
-			$link = $listModel->parseMessageForRowHolder($link, JArrayHelper::fromObject($thisRow));
+			$arow = JArrayHelper::fromObject($thisRow);
+			$link = $listModel->parseMessageForRowHolder($link, $arow);
 			return $link;
 		}
 		return $data;
@@ -125,7 +126,6 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
 		$bits = $this->inputProperties($repeatCounter);
-		
 		$value = $this->getValue($data, $repeatCounter);
 		if ($value == "")
 		{
@@ -145,7 +145,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 
 		if (count($value) == 0)
 		{
-			$value = array('label'=>'', 'link'=>'');
+			$value = array('label' => '', 'link' => '');
 		}
 
 		if (JRequest::getVar('rowid') == 0)
@@ -185,10 +185,9 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 		$bits['value'] = $value['label'];
 		$bits['class'] .= ' fabrikSubElement';
 		unset($bits['id']);
-		
+
 		$html[] = '<div class="fabrikSubElementContainer" id="'.$id.'">';
 		$html[] = $this->buildInput('input', $bits);
-		
 		$bits['placeholder'] = JText::_('PLG_ELEMENT_LINK_URL');
 		$bits['name'] = $linkname;
 		$bits['value'] = JArrayHelper::getValue($value, 'link');
@@ -316,8 +315,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 		if ($group->canRepeat())
 		{
 			// $$$ rob - I've not actually tested this bit!
-			if (!array_key_exists($name, $values))
-			{
+			if (!array_key_exists($name, $values)) {
 				$values[$name]['data']['label'] = array();
 				$values[$name]['data']['link'] = array();
 			}
@@ -367,12 +365,10 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 	/**
 	 * can be overwritten by plugin class
 	 * determines the value for the element in the form view
-	 * @TODO: whats the diff between this and getValue() ?????
-	 * $$$ROB - TESTING POINTING getValue() to here
-	 * @param array data
-	 * @param int when repeating joinded groups we need to know what part of the array to access
-	 * @param array options
-	 * @return string default value
+	 * @param	array	data
+	 * @param	int		when repeating joinded groups we need to know what part of the array to access
+	 * @param	array	options
+	 * @return	string	default value
 	 */
 
 	function getValue($data, $repeatCounter = 0, $opts = array())
@@ -579,7 +575,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 	 * Examples of where this would be overwritten include drop downs whos "please select" value might be "-1"
 	 * @param string data posted from form to check
 	 * @param int repeat group counter
-	 * @return bol if data is considered empty then returns true
+	 * @return bool if data is considered empty then returns true
 	 */
 
 	function dataConsideredEmpty($data, $repeatCounter)

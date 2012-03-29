@@ -15,6 +15,7 @@ if ($version->RELEASE == '1.6') {
 		 * @param	string  The class prefix. Optional.
 		 * @return	mixed	Model object or boolean false if failed
 		 */
+		
 		private function _createTable($name, $prefix = 'Table', $config = array())
 		{
 			// Clean the model name

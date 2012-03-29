@@ -197,7 +197,7 @@ class fabrikParams extends JParameter
 	 * @access	public
 	 * @param	string	The name of the control, or the default text area if a setup file is not found
 	 * @param string group
-	 * @param bol write out or return
+	 * @param bool write out or return
 	 * @param int if set and group is repeat only return int row from rendered params
 	 * used for form plugin admin pages.
 	 * @return	string	HTML

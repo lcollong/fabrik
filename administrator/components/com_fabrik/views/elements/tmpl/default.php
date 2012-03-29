@@ -8,7 +8,7 @@
 
 // no direct access
 defined('_JEXEC') or die;
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+JHtml::addIncludePath(JPATH_COMPONENT.DS.'helpers/html');
 JHtml::_('behavior.tooltip');
 JHTML::_('script','system/multiselect.js', false, true);
 $user	= JFactory::getUser();
@@ -29,6 +29,13 @@ $saveOrder	= $listOrder == 'e.ordering';
 		</div>
 		<div class="filter-select fltrt">
 
+			<?php if (!empty($this->packageOptions)) {?>
+			<select name="package" class="inputbox" onchange="this.form.submit()">
+				<option value="fabrik"><?php echo JText::_('COM_FABRIK_SELECT_PACKAGE');?></option>
+				<?php echo JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true);?>
+			</select>
+			<?php }?>
+			
 			<select name="filter_form" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('COM_FABRIK_SELECT_FORM');?></option>
 				<?php echo JHtml::_('select.options', $this->formOptions, 'value', 'text', $this->state->get('filter.form'), true);?>
@@ -63,7 +70,7 @@ $saveOrder	= $listOrder == 'e.ordering';
 				<th width="2%"></th>
 				<th width="2%"><?php echo JHTML::_( 'grid.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?></th>
 				<th width="1%"> <input type="checkbox" name="toggle" value="" onclick="checkAll(this);" /> </th>
-				<th width="15%" >
+				<th width="13%" >
 					<?php echo JHTML::_('grid.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
 				</th>
 				<th width="15%">
@@ -72,13 +79,13 @@ $saveOrder	= $listOrder == 'e.ordering';
 				<th width="20%">
 					<?php echo JText::_('COM_FABRIK_FULL_ELEMENT_NAME');?>
 				</th>
-				<th width="15%">
+				<th width="12%">
 				<?php echo JHTML::_('grid.sort', 'COM_FABRIK_GROUP', 'g.label', $listDirn, $listOrder); ?>
 				</th>
 				<th width="10%">
 					<?php echo JHTML::_('grid.sort', 'COM_FABRIK_PLUGIN', 'e.plugin', $listDirn, $listOrder); ?>
 				</th>
-				<th width="5%">
+				<th width="10%">
 					<?php echo JHTML::_('grid.sort', 'COM_FABRIK_SHOW_IN_LIST', 'e.show_in_list_summary', $listDirn, $listOrder); ?>
 				</th>
 				<th width="5%">

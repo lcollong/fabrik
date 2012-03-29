@@ -19,7 +19,6 @@ class fabrikViewChart extends JView
 		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0))));
 		$this->row = $model->getVisualization();
 		$model->setListIds();
-
 		if ($this->row->published == 0)
 		{
 			JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
@@ -40,11 +39,11 @@ class fabrikViewChart extends JView
 		$plugin = $pluginManager->getPlugIn('chart', 'visualization');
 		$this->assign('containerId', $this->get('ContainerId'));
 		$this->assignRef('filters', $this->get('Filters'));
-		$this->assign('showFilters', JRequest::getInt('showfilters', 1) === 1 ?  1 : 0);
+		$this->assign('showFilters', JRequest::getInt('showfilters', $params->get('show_filters')) === 1 ?  1 : 0);
 		$this->assign('filterFormURL', $this->get('FilterFormURL'));
 
 		$pluginParams = $model->getPluginParams();
-		$this->assignRef('params', $pluginParams);
+		$this->assignRef('params', $model->getParams());
 		$tmpl = $pluginParams->get('chart_layout', $tmpl);
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/chart/views/chart/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);

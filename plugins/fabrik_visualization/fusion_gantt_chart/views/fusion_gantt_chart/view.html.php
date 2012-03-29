@@ -18,7 +18,6 @@ class fabrikViewFusion_gantt_chart extends JView
 		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0) )));
 		$this->row = $model->getVisualization();
 		$model->setListIds();
-
 		if ($this->row->published == 0)
 		{  
 			JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
@@ -34,10 +33,11 @@ class fabrikViewFusion_gantt_chart extends JView
 		$plugin = $pluginManager->getPlugIn('fusion_gantt_chart', 'visualization');
 		$this->assign('containerId', $this->get('ContainerId'));
 		$this->assignRef('filters', $this->get('Filters'));
-		$this->assign('showFilters', JRequest::getInt('showfilters', 1));
+		$this->assign('showFilters', JRequest::getInt('showfilters', $params->get('show_filters')) === 1 ?  1 : 0);
+		$this->assign('params', $model->getParams());
 		$pluginParams = $model->getPluginParams();
 		$tmpl = $pluginParams->get('fusion_gantt_chart_layout', $tmpl);
-		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/fusion_gantt_chart/views/fusion_gantt_chart/tmpl/' .$tmpl;
+		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/fusion_gantt_chart/views/fusion_gantt_chart/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);
 		
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/fusion_gantt_chart/views/fusion_gantt_chart/tmpl/' . $tmpl . '/template.css');

@@ -24,7 +24,7 @@ class uploader extends JObject
 
 	/**
 	 * perform upload of files
-	 * @return bol true if error occured
+	 * @return bool true if error occured
 	 */
 
 	function upload()
@@ -47,7 +47,7 @@ class uploader extends JObject
 	 * moves  a file from one location to another
 	 * @param string file to move
 	 * @param string location to move file to
-	 * @param bol do we overwrite any existing files found at pathTo?
+	 * @param bool do we overwrite any existing files found at pathTo?
 	 */
 
 	function move($pathFrom , $pathTo, $overwrite = true)
@@ -89,7 +89,7 @@ class uploader extends JObject
 
 	/**
 	 * iterates through $_FILE data to see if any files have been uploaded
-	 * @return bol true if files uploaded
+	 * @return bool true if files uploaded
 	 */
 
 	function check()

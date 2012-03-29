@@ -48,7 +48,7 @@ class FabrikPlugin extends JPlugin
 
 	function getName()
 	{
-		return $this->name;
+		return isset($this->name) ? $this->name : get_class($this);
 	}
 
 	/**
@@ -89,7 +89,9 @@ class FabrikPlugin extends JPlugin
 
 	/**
 	 * render the element admin settings
-	 * @return string admin html
+	 * @param	array	data
+	 * @param	int		repeat plugin counter
+	 * @return	string	admin html
 	 */
 
 	function onRenderAdminSettings($data = array(), $repeatCounter = null)
@@ -140,7 +142,7 @@ class FabrikPlugin extends JPlugin
 			{
 				$opts = new stdClass();
 				$opts->repeatmin = (isset($fieldset->repeatmin)) ? $fieldset->repeatmin : 1;
-				$repeatScript[] = "new FbRepeatGroup('$fieldset->name', ".json_encode($opts). ");";
+				$repeatScript[] = "new FbRepeatGroup('$fieldset->name', " . json_encode($opts) . ');';
 				$repeatData = array();
 				foreach ($form->getFieldset($fieldset->name) as $field)
 				{
@@ -151,15 +153,16 @@ class FabrikPlugin extends JPlugin
 				}
 				$form->bind($repeatData);
 			}
-			$id = isset($fieldset->name) ? ' id="'.$fieldset->name.'"' : '';
-			$str .= '<fieldset class="'.$class.'"'.$id.'>';
+
+			$id = isset($fieldset->name) ? ' id="' . $fieldset->name . '"' : '';
+			$str .= '<fieldset class="' . $class . '"' . $id . '>';
+
 			$form->repeat = $repeat;
 			if ($repeat)
 			{
 				$str .= '<a class="addButton" href="#">' . JText::_('COM_FABRIK_ADD') . '</a>';
 			}
-			$str .= '
-			<legend>' . JText::_($fieldset->label) . '</legend>';
+			$str .= '<legend>' . JText::_($fieldset->label) . '</legend>';
 			for ($r = 0; $r < $repeatDataMax; $r ++)
 			{
 				if ($repeat)
@@ -182,7 +185,7 @@ class FabrikPlugin extends JPlugin
 				}
 				if ($repeat)
 				{
-					$str .= '<li><a class="removeButton delete" href="#">'.JText::_('COM_FABRIK_REMOVE').'</a></li>';
+					$str .= '<li><a class="removeButton delete" href="#">' . JText::_('COM_FABRIK_REMOVE') . '</a></li>';
 				}
 				$str .= '</ul>';
 				if ($repeat)
@@ -204,8 +207,8 @@ class FabrikPlugin extends JPlugin
 	 *
 	 * used in plugin manager runPlugins to set the correct repeat set of
 	 * data for the plugin
-	 * @param object original params $params
-	 * @param int plugin $repeatCounter
+	 * @param	object	original params $params
+	 * @param	int		plugin $repeatCounter
 	 */
 
 	function setParams(&$params, $repeatCounter)
@@ -219,7 +222,8 @@ class FabrikPlugin extends JPlugin
 				$data[$key] = JArrayHelper::getValue($val, $repeatCounter);
 			}
 		}
-		$this->params = new JParameter(json_encode($data));
+		//$this->params = new JParameter(json_encode($data));
+		$this->params = new JRegistry(json_encode($data));
 		return $this->params;
 	}
 
@@ -252,7 +256,8 @@ class FabrikPlugin extends JPlugin
 		}
 		if (!isset($this->params))
 		{
-			$this->params = new fabrikParams($a, $this->_xmlPath, 'component');
+			//$this->params = new fabrikParams($a, $this->_xmlPath, 'component');
+			$this->params = new JRegistry($a);
 		}
 		return $this->params;
 	}
@@ -363,7 +368,6 @@ class FabrikPlugin extends JPlugin
 				$query = $db->getQuery(true);
 				$query->select('id, label')->from('#__{package}_lists')->where('connection_id = ' . $cid)
 				->order('label ASC');
-				//$query = "SELECT id, label FROM #__{package}_lists WHERE connection_id = $cid ORDER BY label ASC";
 				$db->setQuery($query);
 				$rows = $db->loadObjectList();
 			}
@@ -415,13 +419,14 @@ class FabrikPlugin extends JPlugin
 			if ($tid != '')
 			{
 				if (is_numeric($tid))
-				{ //if loading on a numeric list id get the list db table name
+				{
+					//if loading on a numeric list id get the list db table name
 					$query = $db->getQuery(true);
-					$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . (int)$tid);
+					$query->select('db_table_name')->from('#__{package}_lists')->where('id = ' . (int) $tid);
 					$db->setQuery($query);
 					$tid = $db->loadResult();
 				} 
-				$db->setQuery("DESCRIBE " . $db->quoteName($tid));
+				$db->setQuery('DESCRIBE ' . $db->quoteName($tid));
 
 				$rows = $db->loadObjectList();
 				if (is_array($rows))
@@ -464,8 +469,8 @@ class FabrikPlugin extends JPlugin
 				{
 					$elementModels = $groups[$g]->getPublishedElements();
 				}
-				else {
-					
+				else
+				{
 					$elementModels = $groups[$g]->getMyElements();
 				}
 				foreach ($elementModels as $e => $eVal)
@@ -494,44 +499,44 @@ class FabrikPlugin extends JPlugin
 						$label = $join->table_join . '.' . $label;
 					}
 					$c->label = $label;
-					$arr[] = $c; //dont use =
+					$arr[] = $c;
 					if ($incCalculations)
 					{
 						$params = $eVal->getParams();
 						if ($params->get('sum_on', 0))
 						{
 							$c = new stdClass();
-							$c->value = 'sum___'.$v;
-							$c->label = JText::_('COM_FABRIK_SUM') .': ' .$label;
-							$arr[] = $c; //dont use =
+							$c->value = 'sum___' . $v;
+							$c->label = JText::_('COM_FABRIK_SUM') . ': ' .$label;
+							$arr[] = $c;
 						}
 						if ($params->get('avg_on', 0))
 						{
 							$c = new stdClass();
-							$c->value = 'avg___'.$v;
-							$c->label = JText::_('COM_FABRIK_AVERAGE') .': ' .$label;
-							$arr[] = $c; //dont use =
+							$c->value = 'avg___' . $v;
+							$c->label = JText::_('COM_FABRIK_AVERAGE') . ': ' .$label;
+							$arr[] = $c;
 						}
 						if ($params->get('median_on', 0))
 						{
 							$c = new stdClass();
-							$c->value = 'med___'.$v;
-							$c->label = JText::_('COM_FABRIK_MEDIAN') .': ' .$label;
-							$arr[] = $c; //dont use =
+							$c->value = 'med___' . $v;
+							$c->label = JText::_('COM_FABRIK_MEDIAN') . ': ' .$label;
+							$arr[] = $c;
 						}
 						if ($params->get('count_on', 0))
 						{
 							$c = new stdClass();
-							$c->value = 'cnt___'.$v;
-							$c->label = JText::_('COM_FABRIK_COUNT') .': ' .$label;
-							$arr[] = $c; //dont use =
+							$c->value = 'cnt___' . $v;
+							$c->label = JText::_('COM_FABRIK_COUNT') . ': ' .$label;
+							$arr[] = $c;
 						}
 						if ($params->get('custom_calc_on', 0))
 						{
 							$c = new stdClass();
-							$c->value = 'cnt___'.$v;
-							$c->label = JText::_('COM_FABRIK_CUSTOM') .': ' .$label;
-							$arr[] = $c; //dont use =
+							$c->value = 'cnt___' . $v;
+							$c->label = JText::_('COM_FABRIK_CUSTOM') . ': ' .$label;
+							$arr[] = $c;
 						}
 					}
 				}
@@ -560,8 +565,8 @@ class FabrikPlugin extends JPlugin
 	/**
 	 * if true then the plugin is stating that any subsequent plugin in the same group
 	 * should not be run.
-	 * @param string current plug-in call method e.g. onBeforeStore
-	 * @return bool
+	 * @param	string	current plug-in call method e.g. onBeforeStore
+	 * @return	bool
 	 */
 
 	public function runAway($method)
@@ -572,8 +577,8 @@ class FabrikPlugin extends JPlugin
 	/**
 	 * process the plugin, called when form is submitted
 	 *
-	 * @param string param name which contains the PHP code to eval
-	 * @param array data
+	 * @param	string	param name which contains the PHP code to eval
+	 * @param	array	data
 	 */
 
 	function shouldProcess($paramName, $data = null)
@@ -611,7 +616,8 @@ class FabrikPlugin extends JPlugin
 		}
 		$no_bytes = 0;
 		$byte = array();
-		if ($ord < 128) {
+		if ($ord < 128)
+		{
 			return chr($ord);
 		}
 		elseif ($ord < 2048)
@@ -630,7 +636,6 @@ class FabrikPlugin extends JPlugin
 		{
 			return;
 		}
-
 		switch($no_bytes)
 		{
 			case 2:

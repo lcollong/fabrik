@@ -109,14 +109,12 @@ class FabrikFEModel extends JModel
 					$prefix = array(7, 240);
 				}
 		}
-		for ($i = 0; $i < $no_bytes; $i++)
-		{
+		for ($i = 0; $i < $no_bytes; $i++) {
 			$byte[$no_bytes - $i - 1] = (($ord & (63 * pow(2, 6 * $i))) / pow(2, 6 * $i)) & 63 | 128;
 		}
 		$byte[0] = ($byte[0] & $prefix[0]) | $prefix[1];
 		$ret = '';
-		for ($i = 0; $i < $no_bytes; $i++)
-		{
+		for ($i = 0; $i < $no_bytes; $i++) {
 			$ret .= chr($byte[$i]);
 		}
 		return $ret;
@@ -126,11 +124,10 @@ class FabrikFEModel extends JModel
 	 * required for compatibility with mambo 4.5.4
 	 */
 
-	function reset($value = null)
+	function reset($value=null)
 	{
 		$keys = $this->getProperties();
-		foreach ($keys as $k)
-		{
+		foreach ($keys as $k) {
 			$this->$k = $value;
 		}
 	}

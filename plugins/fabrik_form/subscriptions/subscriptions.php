@@ -123,9 +123,9 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 		
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('cost, label, plan_name, duration AS p3, period_unit AS t3, ' . $db->Quote($item_raw) . ' AS item_number ')
+		$query->select('cost, label, plan_name, duration AS p3, period_unit AS t3, ' . $db->quote($item_raw) . ' AS item_number ')
 		->from('#__fabrik_subs_plan_billing_cycle')
-		->where('id = ' . $db->Quote($item_raw));
+		->where('id = ' . $db->quote($item_raw));
 
 		$db->setQuery($query);
 		$sub = $db->loadObject();
@@ -172,7 +172,7 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 	 * @param	object	form model
 	 */
 
-	function onAfterProcess(&$params, &$formModel)
+	public function onAfterProcess($params, &$formModel)
 	{
 		$this->params = $params;
 		$this->formModel = $formModel;
@@ -209,11 +209,10 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 		}
 		$url .= implode('&', $qs);
 		// $$$ rob 04/02/2011 no longer doing redirect from ANY plugin EXCEPT the redirect plugin
-		// - instead a session var is set (com_fabrik.form.X.redirect.url)
-		// as the preferred redirect url
+		// - instead a session var is set as the preferred redirect url
 
 		$session = JFactory::getSession();
-		$context = 'com_fabrik.form.' . $formModel->getId() . '.redirect.';
+		$context = $formModel->getRedirectContext();
 
 		// $$$ hugh - fixing issue with new redirect, which now needs to be an array.
 		// Not sure if we need to preserve existing session data, or just create a new surl array,
@@ -439,7 +438,7 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 
 						$query = $db->getQuery(true);
 						$query->select($ipn_status_field)->from('#__fabrik_subs_invoices')
-						->where($db->quoteName($ipn_txn_field) . ' = ' . $db->Quote($txn_id));
+						->where($db->quoteName($ipn_txn_field) . ' = ' . $db->quote($txn_id));
 						$db->setQuery($query);
 						$txn_result = $db->loadResult();
 						if (!empty($txn_result))
@@ -499,13 +498,13 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 								$set_array = array();
 								foreach ($set_list as $set_field => $set_value)
 								{
-									$set_value = $db->Quote($set_value);
+									$set_value = $db->quote($set_value);
 									$set_field = $db->quoteName($set_field);
 									$set_array[] = "$set_field = $set_value";
 								}
 								$query = $db->getQuery(true);
 								$query->update('#__fabrik_subs_invoices')
-								->set( implode(',', $set_array))->where('id = ' . $db->Quote($rowid));
+								->set( implode(',', $set_array))->where('id = ' . $db->quote($rowid));
 								$db->setQuery($query);
 								if (!$db->query())
 								{
@@ -539,14 +538,14 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 			if ($receive_debug_emails == '1')
 			{
 				$subject = $config->get('sitename').": Error with Fabrik Subscriptions IPN";
-				 JFactory::getMailer()->sendMail($email_from, $email_from, $admin_email, $subject, $emailtext, false);
+				JUtility::sendMail($email_from, $email_from, $admin_email, $subject, $emailtext, false);
 			}
 			$log->message_type = $status;
 			$log->message = $emailtext ."\n//////////////\n" . $res ."\n//////////////\n". $req .  "\n//////////////\n".$err_msg;
 			if ($send_default_email == '1')
 			{
 				$payer_emailtext = "There was an error processing your Subscriptions payment.  The administrator of this site has been informed.";
-				 JFactory::getMailer()->sendMail($email_from, $email_from, $payer_email, $subject, $payer_emailtext, false);
+				JUtility::sendMail($email_from, $email_from, $payer_email, $subject, $payer_emailtext, false);
 			}
 		}
 		else
@@ -558,7 +557,7 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 			if ($receive_debug_emails == '1')
 			{
 				$subject = $config->get('sitename') . ': IPN ' . $payment_status;
-				 JFactory::getMailer()->sendMail($email_from, $email_from, $admin_email, $subject, $emailtext, false);
+				JUtility::sendMail($email_from, $email_from, $admin_email, $subject, $emailtext, false);
 			}
 			$log->message_type = 'form.subscriptions.ipn.' . $payment_status;
 			$query = $db->getQuery();
@@ -568,7 +567,7 @@ class plgFabrik_FormSubscriptions extends plgFabrik_Form {
 			{
 				$payer_subject = "Subscriptions success";
 				$payer_emailtext = "Your Subscriptions payment was succesfully processed.  The Subscriptions transaction id was $txn_id";
-				 JFactory::getMailer()->sendMail( $email_from, $email_from, $payer_email, $payer_subject, $payer_emailtext, false);
+				JUtility::sendMail( $email_from, $email_from, $payer_email, $payer_subject, $payer_emailtext, false);
 			}
 		}
 

@@ -50,8 +50,9 @@ $cName = JRequest::getCmd('controller');
 if (JString::strpos($cName, '.') != false)
 {
 	list($type, $name) = explode('.', $cName);
-	if ($type == 'visualization') {
-		
+	if ($type == 'visualization')
+	{
+
 		require_once(JPATH_COMPONENT . '/controllers/visualization.php');
 	}
 	$path = JPATH_SITE . '/plugins/fabrik_'.$type . '/' . $name . '/controllers/' . $name.'.php';
@@ -100,14 +101,16 @@ else
 // required controller class
 if (strpos(JRequest::getCmd('task'), '.') !== false)
 {
-	$controller = array_shift(explode('.', JRequest::getCmd('task')));
+	$controller = explode('.', JRequest::getCmd('task'));
+	$controller = array_shift($controller);
 	$classname	= 'FabrikController' . ucfirst($controller);
 	$path = JPATH_COMPONENT . '/controllers/' . $controller . '.php';
 	if (JFile::exists($path))
 	{
 		require_once $path;
 		JRequest::setVar('view', $controller); //needed to process J content plugin (form)
-		$task = array_pop(explode('.', JRequest::getCmd('task')));
+		$task = explode('.', JRequest::getCmd('task'));
+		$task = array_pop($task);
 		$controller = new $classname();
 	}
 	else

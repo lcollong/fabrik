@@ -48,9 +48,9 @@ class FabrikFEModelExport {
 	 /**
 	 * export table data
 	 * @param string export format xml/csv
-	 * @param bol export the table actual records
-	 * @param bol export the msoform records associated with the table (group.elements, forms etc)
-	 * @param bol save the exported file as a zip
+	 * @param bool export the table actual records
+	 * @param bool export the msoform records associated with the table (group.elements, forms etc)
+	 * @param bool save the exported file as a zip
 	 */
 
 	function export() {

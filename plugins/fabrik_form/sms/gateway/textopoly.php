@@ -21,12 +21,12 @@ class Textopoly extends JObject{
 		$username = $params->get('sms-username');
 		$password = $params->get('sms-password');
 		$smsto = $params->get('sms-to');
-		$smsfrom = $params->get('sms-from');
+		$smsfrom  = $params->get('sms-from');
 		$smstos = explode(",", $smsto);
 		foreach ($smstos as $smsto)
 		{
 			$url = sprintf($this->_url, $username, $password, $smsfrom, $smsto, $message);
-			$response = fabrikSMS::_doRequest('GET', $url, '');
+			$response = fabrikSMS::doRequest('GET', $url, '');
 		}
 	}
 

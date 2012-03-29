@@ -179,7 +179,8 @@ class FabrikFEModelGroup extends FabModel{
 			$this->elements = array();
 			$form = $this->getFormModel();
 			$pluginManager = FabrikWorker::getPluginManager();
-			$allGroups = $pluginManager->getFormPlugins($this->getFormModel());
+			$formModel = $this->getFormModel();
+			$allGroups = $pluginManager->getFormPlugins($formModel);
 			if (empty($this->elements))
 			{
 				//horrible hack for when saving group
@@ -315,7 +316,7 @@ class FabrikFEModelGroup extends FabModel{
 	/*
 	 * is the group a repeat group
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	public function canRepeat()
@@ -327,7 +328,7 @@ class FabrikFEModelGroup extends FabModel{
 	/**
 	 * is the group a join?
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	public function isJoin()
@@ -372,7 +373,8 @@ class FabrikFEModelGroup extends FabModel{
 
 	function loadParams()
 	{
-		$this->params = new fabrikParams($this->group->params);
+		//$this->params = new fabrikParams($this->group->params);
+		$this->params = new JRegistry($this->group->params);
 		return $this->params;
 	}
 
@@ -452,6 +454,7 @@ class FabrikFEModelGroup extends FabModel{
 		$group->name = $groupTable->name;
 		$group->displaystate = ($group->canRepeat == 1 && $formModel->editable) ? 1 : 0;
 		$group->maxRepeat = (int)$params->get('repeat_max');
+		$group->showMaxRepeats = $params->get('show_repeat_max', '0') == '1';
 		return $group;
 	}
 

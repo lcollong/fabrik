@@ -10,13 +10,13 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+JHtml::addIncludePath(JPATH_COMPONENT.DS.'helpers/html');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
 
 $fbConfig = JComponentHelper::getParams('com_fabrik');
-FabrikHelperHTML::windows();
+FabrikHelperHTML::mocha();
 FabrikHelperHTML::script('media/com_fabrik/js/lib/art.js');
 FabrikHelperHTML::script('media/com_fabrik/js/icons.js');
 FabrikHelperHTML::script('media/com_fabrik/js/icongen.js');

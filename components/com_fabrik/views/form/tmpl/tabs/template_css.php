@@ -224,7 +224,7 @@ section for dropdowns radio buttons etc**/
 	clear:left;
 }
 
-/** bump calendar above window in mootools 1.2**/
+/** bump calendar above mocha window in mootools 1.2**/
 #{$view}_$c div.calendar{
 	z-index:115 !important;
 }
@@ -341,14 +341,7 @@ section for dropdowns radio buttons etc**/
 #{$view}_$c .fabrikSubElement {
 	display: block;
 	margin-top: 10px;
-	margin-left: 100px;
 }
-
-#{$view}_$c .password .fabrikSubElement,
-#{$view}_$c .link .fabrikSubElement {
-	margin-left:0;
-}
-
 
 /* tabs */
 #{$view}_$c dl.tabs {

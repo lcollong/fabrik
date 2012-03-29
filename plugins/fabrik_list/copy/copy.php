@@ -37,7 +37,7 @@ class plgFabrik_ListCopy extends plgFabrik_List {
 	/**
 	 * determine if the table plugin is a button and can be activated only when rows are selected
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function canSelectRows()
@@ -70,7 +70,7 @@ class plgFabrik_ListCopy extends plgFabrik_List {
 				JRequest::setVar($key, $val, 'post');
 			}
 			$formModel->setFormData();
-			$formModel->_formDataWithTableName = $formModel->_formData;
+			$formModel->formDataWithTableName = $formModel->_formData;
 			$formModel->processToDB();
 		}
 

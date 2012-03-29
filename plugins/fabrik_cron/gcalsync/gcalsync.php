@@ -17,7 +17,12 @@ require_once(COM_FABRIK_FRONTEND . '/models/plugin-cron.php');
 
 class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 
-	protected function _getGcalShortId( $long_id )
+	public function canUse(&$model = null, $location = null, $event = null)
+	{
+		return true;
+	}
+
+	protected function getGcalShortId($long_id)
 	{
 		$matches = array();
 		if (preg_match('#/(\w+)$#', $long_id, $matches))
@@ -94,7 +99,7 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 			$our_userid = 0;
 			if ($gcal_userid_element_long)
 			{
-				$query = $db->getQuery();
+				$query->clear();
 				$query->select('id')->from('#__users')->where('email = ' . $db->quote($gcal_email));
 				$db->setQuery($query);
 				$our_userid = $db->loadResult();
@@ -126,12 +131,14 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 				try
 				{
 				   $client = Zend_Gdata_ClientLogin::getHttpClient($email, $passwd, 'cl');
-				} catch (Zend_Gdata_App_CaptchaRequiredException $cre)
+				}
+				catch (Zend_Gdata_App_CaptchaRequiredException $cre)
 				{
 					echo 'URL of CAPTCHA image: ' . $cre->getCaptchaUrl() . "\n";
 					echo 'Token ID: ' . $cre->getCaptchaToken() . "\n";
 					return;
-				} catch (Zend_Gdata_App_AuthException $ae)
+				}
+				catch (Zend_Gdata_App_AuthException $ae)
 				{
 					echo 'Problem authenticating: ' . $ae->exception() . "\n";
 					return;
@@ -144,17 +151,17 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 			}
 
 			// set up and execute the call to grab the feed from google
-			$query = $gdataCal->newEventQuery();
-			$query->setUser($gcal_user);
-			$query->setVisibility($gcal_visibility);
-			$query->setProjection($gcal_projection);
-			$eventFeed = $gdataCal->getCalendarEventFeed($query);
+			$eventQuery = $gdataCal->newEventQuery();
+			$eventQuery->setUser($gcal_user);
+			$eventQuery->setVisibility($gcal_visibility);
+			$eventQuery->setProjection($gcal_projection);
+			$eventFeed = $gdataCal->getCalendarEventFeed($eventQuery);
 
 			// build an array of the events from the feed, indexed by the Google ID
 			$event_ids = array();
 			foreach ($eventFeed as $key => $event)
 			{
-				$short_id = $this->_getGcalShortId($event->id->text);
+				$short_id = $this->getGcalShortId($event->id->text);
 				$gcal_event_ids[$short_id] = $eventFeed[$key];
 			}
 
@@ -204,19 +211,20 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 			// if upload syncing (from us to gcal) is enabled ...
 			if ($gcal_sync_upload == 'both' || $gcal_sync_upload == 'to')
 			{
-				// Grab the tzOffset.  Note that gcal want +/-XX (like -06)
-				// but J! gives us +/-X (like -6) so we sprintf it to the right format
+				// Grab the tzOffset.  
 				$config = JFactory::getConfig();
-				// @TODO tzoffset isnt an int in Joomla 2.5 I think!
-				$timeZone = new DateTimeZone(JFactory::getConfig()->get('offset'));
-				$tzOffset = $timeZone->getOffset() / (60 * 60); //getoffset() returns seconds
+				$tzOffset = (int)$config->get('offset');
+				$tz = DateTimeZone($tzOffset);
+				//Note that gcal want +/-XX (like -06)
+				// but J! gives us +/-X (like -6) so we sprintf it to the right format
+				$tzOffset = sprintf('%+03d', $tzOffset);
 				
 				// loop thru the array we built earlier of events we have that aren't in gcal
 				foreach ($our_upload_ids as $id => $event)
 				{
 					// skip if a userid element is specified, and doesn't match the owner of this gcal
-					if ($gcal_userid_element_long)
-					{
+					if ($gcal_userid_element_long) {
+						
 						if ($event->$gcal_userid_element != $our_userid)
 						{
 							continue;
@@ -229,31 +237,31 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 					{
 						$newEvent->content = $gdataCal->newContent($event->$gcal_desc_element);
 					}
-					else
-					{
+					else {
+						
 						$newEvent->content = $gdataCal->newContent($event->$gcal_label_element);
 					}
 					$when = $gdataCal->newWhen();
 
 					// grab the start date, apply the tx offset, and format it for gcal
 					$start_date = JFactory::getDate( $event->$gcal_start_date_element);
-					$start_date->setTimezone($timeZone);
-					$start_fdate = $start_date->fomat('Y-m-d H:i:s');
+					$start_date->setTimezone($tz);
+					$start_fdate = $start_date->format('Y-m-d H:i:s');
+					
 					$date_array = explode(' ',$start_fdate);
 					$when->startTime = "{$date_array[0]}T{$date_array[1]}.000{$tzOffset}:00";
 
 					// we have to provide an end date for gcal, so if we don't have one,
 					// default it to start date + 1 hour
-					if ($event->$gcal_end_date_element == '0000-00-00 00:00:00')
-					{
+					if ($event->$gcal_end_date_element == '0000-00-00 00:00:00') {
 						$startstamp = strtotime($event->$gcal_start_date_element);
 						$endstamp = $startstamp + (60 * 60);
 						$event->$gcal_end_date_element = strftime('%Y-%m-%d %H:%M:%S', $endstamp);
 					}
 					// grab the end date, apply the tx offset, and format it for gcal
 					$end_date = JFactory::getDate( $event->$gcal_end_date_element);
-					$end_date->setTimezone($timeZone);
-					$end_fdate = $end_date->fomat('Y-m-d H:i:s');
+					$end_date->setTimezone($tz);
+					$end_fdate = $end_date->format('Y-m-d H:i:s');
 					$date_array = explode(' ',$end_fdate);
 					$when->endTime = "{$date_array[0]}T{$date_array[1]}.000{$tzOffset}:00";
 					$newEvent->when = array($when);
@@ -271,9 +279,9 @@ class plgFabrik_CronGcalsync extends plgFabrik_Cron {
 
 					// insertEvent worked, so grab the gcal ID from the returned event data,
 					// and update our event record with the short version of the ID
-					$gcal_id = $this->_getGcalShortId( $retEvent->id->text);
+					$gcal_id = $this->getGcalShortId( $retEvent->id->text);
 					$our_id = $event->id;
-					$query = $db->getQuery(true);
+					$query->clear();
 					$query->update($table_name)->set($gcal_id_element . ' = ' . $db->quote($gcal_id))
 					->where('id = ' . $db->quote($our_id));
 					$db->setQuery($query);

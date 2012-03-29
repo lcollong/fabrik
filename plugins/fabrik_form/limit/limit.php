@@ -23,42 +23,34 @@ class plgFabrik_FormLimit extends plgFabrik_Form {
 	 * @returns bol
 	 */
 
-	function onLoad($params, $formModel)
+	function onLoad($params, &$formModel)
 	{
 		//FabrikHelperHTML::script('administrator/components/com_fabrik/views/namespace.js');
 		return $this->_process($params, $formModel);
 	}
 
-	private function _process($params, $formModel)
+	private function _process(&$params, &$formModel)
 	{
 		$user = JFactory::getUser();
 		$db = FabrikWorker::getDbo();
-		if ($params->get('limit_allow_anonymous'))
-		{
+		if ($params->get('limit_allow_anonymous')) {
 			return true;
 		}
-
-		if (JRequest::getCmd('view') === 'details' || JRequest::getInt('rowid', 0) > 0)
-		{
+		if (JRequest::getCmd('view') === 'details' || JRequest::getInt('rowid', 0) > 0) {
 			return true;
 		}
 
 		$listid = (int)$params->get('limit_table');
-		if ($listid === 0)
-		{
+		if ($listid === 0) {
 			//use the limit setting supplied in the admin params
 			$limit = (int)$params->get('limit_length');
-		}
-		else
-		{
+		} else {
 			//look up the limit from the table spec'd in the admin params
 			$listModel = JModel::getInstance('List', 'FabrikFEModel');
 			$listModel->setId($listid);
-			$max = $db->NameQuote(FabrikString::shortColName($params->get('limit_max')));
-			$userfield = $db->NameQuote(FabrikString::shortColName($params->get('limit_user')));
-			$query = $db->getQuery(true);
-			$query->select($max)->from($listModel->getTable()->db_table_name)->where($userfield . ' = ' . (int)$user->get('id'));
-			$db->setQuery($query);
+			$max = $db->quoteName(FabrikString::shortColName($params->get('limit_max')));
+			$userfield = $db->quoteName(FabrikString::shortColName($params->get('limit_user')));
+			$db->setQuery("SELECT $max FROM " . $listModel->getTable()->db_table_name . " WHERE $userfield = " . (int)$user->get('id'));
 			$limit = (int)$db->loadResult();
 
 		}
@@ -66,19 +58,15 @@ class plgFabrik_FormLimit extends plgFabrik_Form {
 		$listModel = $formModel->getlistModel();
 		$list = $listModel->getTable();
 		$db = $listModel->getDb();
-		$query = $db->getQuery(true);
-		$query->select('COUNT(' . $field . ')')->from($list->db_table_name)->where($field . ' = ' . (int)$user->get('id'));
-		$db->setQuery(query);
+		$db->setQuery("SELECT COUNT($field) FROM $list->db_table_name WHERE $field = " . (int)$user->get('id'));
+
 		$c = $db->loadResult();
-		if ($c >= $limit)
-		{
+		if ($c >= $limit) {
 			$msg = $params->get('limit_reached_message');
 			$msg = str_replace('{limit}', $limit, $msg);
 			JError::raiseNotice(1, $msg);
 			return false;
-		}
-		else
-		{
+		} else {
 			$app = JFactory::getApplication();
 			$app->enqueueMessage(JText::sprintf('ENTRIES_LEFT_MESSAGE', $limit - $c, $limit));
 		}

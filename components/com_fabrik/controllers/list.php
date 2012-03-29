@@ -30,18 +30,11 @@ class FabrikControllerList extends JController
 	 * Display the view
 	 */
 
-	function display($model = null)
+	public function display($model = false, $urlparams = false)
 	{
-
-		//menu links use fabriklayout parameters rather than layout
-		$flayout = JRequest::getVar('fabriklayout');
-		if ($flayout != '')
-		{
-			JRequest::setVar('layout', $flayout);
-		}
-
+		$cachable = is_object($model) ? false : $model;
+		$model = is_bool($model) ? null : $model;
 		$document = JFactory::getDocument();
-
 		$viewName = JRequest::getVar('view', 'list', 'default', 'cmd');
 		$modelName = $viewName;
 		$layout = JRequest::getWord('layout', 'default');
@@ -194,7 +187,7 @@ class FabrikControllerList extends JController
 	}
 
 	/**
-	 * run a table plugin
+	 * run a list plugin
 	 */
 
 	function doPlugin()
@@ -229,13 +222,19 @@ class FabrikControllerList extends JController
 		}
 		//3.0 use redirect rather than calling view() as that gave an sql error (joins seemed not to be loaded for the list)
 		$format = JRequest::getVar('format', 'html');
+		$defaultRef = 'index.php?option=com_fabrik&view=list&listid=' . $model->getId() . '&format=' . $format;
 		if ($format !== 'raw')
 		{
-			$ref = JRequest::getVar('fabrik_referrer', 'index.php?option=com_fabrik&view=list&listid=' . $model->getId() . '&format=' . $format, 'post');
+			$ref = JRequest::getVar('fabrik_referrer', $defaultRef, 'post');
+			// for some reason fabrik_referrer is sometimes empty, so a little defensive coding ...
+			if (empty($ref))
+			{
+				$ref = JRequest::getVar('HTTP_REFERER', $defaultRef, 'server');
+			}
 		}
 		else
 		{
-			$ref = 'index.php?option=com_fabrik&view=list&listid=' . $model->getId() . '&format=' . $format;
+			$ref = $defaultRef;
 		}
 		$app->redirect($ref);
 	}

@@ -19,7 +19,6 @@ class fabrikViewFusionchart extends JView
 		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0) )));
 		$this->row = $model->getVisualization();
 		$model->setListIds();
-
 		if ($this->row->published == 0)
 		{
 			JError::raiseWarning(500, JText::_('JERROR_ALERTNOAUTHOR'));
@@ -34,19 +33,18 @@ class fabrikViewFusionchart extends JView
 		{
 			$this->assign('chart', '');
 		}
-
 		$viewName = $this->getName();
 		$pluginManager = JModel::getInstance('Pluginmanager', 'FabrikFEModel');
 		$plugin = $pluginManager->getPlugIn('calendar', 'visualization');
 		$this->assign('containerId', $this->get('ContainerId'));
-		$this->assignRef('filters', $this->get('Filters'));
-		$this->assign('showFilters', JRequest::getInt('showfilters', 1));
+		$this->assign('filters', $this->get('Filters'));
+		$this->assign('params', $model->getParams());
+		$this->assign('showFilters', JRequest::getInt('showfilters', $this->params->get('show_filters')) === 1 ?  1 : 0);
 		$this->assign('filterFormURL', $this->get('FilterFormURL'));
-		$this->assign('showTitle', JRequest::getInt('show-title', 1));
 		$pluginParams = $model->getPluginParams();
 		$tmpl = $pluginParams->get('fusionchart_layout', $tmpl);
-		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' .$tmpl;
-		$this->_setPath('template', $tmplpath);
+		
+		$this->_setPath('template', JPATH_ROOT . '/plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' . $tmpl);
 
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/fusionchart/views/fusionchart/tmpl/' . $tmpl . '/template.css');
 		//assign something to Fabrik.blocks to ensure we can clear filters

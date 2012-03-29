@@ -24,8 +24,7 @@ class FabrikModelVisualizations extends FabModelList
 
 	public function __construct($config = array())
 	{
-		if (empty($config['filter_fields']))
-		{
+		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'v.id', 'v.label', 'v.plugin', 'v.published'
 				);
@@ -42,8 +41,8 @@ class FabrikModelVisualizations extends FabModelList
 	protected function getListQuery()
 	{
 		// Initialise variables.
-		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$db		= $this->getDbo();
+		$query	= $db->getQuery(true);
 
 		// Select the required fields from the table.
 		$query->select(
@@ -54,37 +53,34 @@ class FabrikModelVisualizations extends FabModelList
 		);
 		$query->from('#__{package}_visualizations AS v');
 
+
 		// Join over the users for the checked out user.
 		$query->select('u.name AS editor');
 		$query->join('LEFT', '#__users AS u ON checked_out = u.id');
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
-		if (is_numeric($published))
-		{
-			$query->where('v.published = ' . (int)$published);
-		}
-		else if ($published === '')
-		{
+		if (is_numeric($published)) {
+			$query->where('v.published = '.(int)$published);
+		} else if ($published === '') {
 			$query->where('(v.published IN (0, 1))');
 		}
 
 		//Filter by search in title
 		$search = $this->getState('filter.search');
-		if (!empty($search))
-		{
-			$search = $db->Quote('%' . $db->escape($search, true) . '%');
-			$query->where('(v.label LIKE ' . $search . ')');
+		if (!empty($search)) {
+			$search = $db->quote('%'.$db->getEscaped($search, true).'%');
+			$query->where('(v.label LIKE '.$search.')');
 		}
 
 		// Add the list ordering clause.
-		$orderCol = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
-		if ($orderCol == 'ordering' || $orderCol == 'category_title')
-		{
-			$orderCol = 'category_title ' . $orderDirn . ', ordering';
+		$orderCol	= $this->state->get('list.ordering');
+		$orderDirn	= $this->state->get('list.direction');
+		if ($orderCol == 'ordering' || $orderCol == 'category_title') {
+			$orderCol = 'category_title '.$orderDirn.', ordering';
 		}
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
+
 		return $query;
 	}
 

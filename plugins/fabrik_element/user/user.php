@@ -94,18 +94,18 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 					// so wrong uid is written to form, and wipes out real ID when form is submitted.
 					// OK, problem was we were using $id firther on as the html ID, so if we added _raw, element
 					// on form had wrong ID.  Added $html_id above, to use as (duh) html ID instead of $id.
-
 					if (!strstr($id, '_raw') && array_key_exists($id . '_raw', $data))
 					{
 						$id .= '_raw';
 					}
 				}
-				$uid = JArrayHelper::getValue($data, $id, '');
-				if ($uid === '')
+				$id = JArrayHelper::getValue($data, $id, '');
+				if ($id === '')
 				{
-					$uid = $this->getValue($data, $repeatCounter);
+					$id = $this->getValue($data, $repeatCounter);
 				}
-				$user = $id == '' ? JFactory::getUser() : JFactory::getUser((int)$uid);
+				$id = is_array($id) ? $id[0] : $id;
+				$user = $id === '' ? JFactory::getUser() : JFactory::getUser((int)$id);
 			}
 		}
 
@@ -113,15 +113,15 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		// we should simply return a hidden field with the user id in it.
 		if (!$this->inJDb())
 		{
-			return $this->getHiddenField($name, $user->get('id'), $html_id);
+			return $this->_getHiddenField($name, $user->get('id'), $html_id);
 		}
 		$str = '';
 		if ($this->editable)
 		{
-			$value = $user->get('id');
+			$value = is_object($user) ? $user->get('id') : '';
 			if ($element->hidden)
 			{
-				$str = $this->getHiddenField($name, $value, $html_id);
+				$str = $this->_getHiddenField($name, $value, $html_id);
 			}
 			else
 			{
@@ -131,8 +131,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		else
 		{
 			$displayParam = $this->getValColumn();
-			if (is_a($user, 'JUser'))
-			{
+			if (is_a($user, 'JUser')) {
 				$str = $user->get($displayParam);
 			}
 			else
@@ -147,7 +146,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	 * if the table db isnt the same as the joomla db the element
 	 * will be rendered as a hidden field so return true from isHidden()
 	 *
-	 * @return bol
+	 * @return bool
 	 */
 
 	function isHidden()
@@ -183,10 +182,15 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		{
 			if (JRequest::getInt('rowid') == 0 && JRequest::getCmd('task') !== 'doimport')
 			{
-				$session = JFactory::getSession();
-				if ($session->has('fabrik.plugin.profile_id'))
+				$context = 'fabrik.plugin.profile_id';
+				if (JRequest::getVar('fabrik_social_profile_hash', '') != '')
 				{
-					$profile_id = $session->get('fabrik.plugin.profile_id');
+					$context = 'fabrik.plugin.' . JRequest::getVar('fabrik_social_profile_hash', '') . '.profile_id';
+				}
+				$session = JFactory::getSession();
+				if ($session->has($context))
+				{
+					$profile_id = $session->get($context);
 					$form = $this->getFormModel();
 					$group = $this->getGroup();
 					$joinid = $group->getGroup()->join_id;
@@ -443,17 +447,18 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	/**
 	 * get the value
+	 *
 	 * @param array $data
 	 * @param int $repeatCounter
 	 * @param array options
 	 * @return unknown
 	 */
 
-	function getValue($data, $repeatCounter = 0, $opts = array())
+	function getValue($data, $repeatCounter = 0, $opts = array() )
 	{
+
 		//cludge for 2 scenarios
-		if (array_key_exists('rowid', $data))
-		{
+		if (array_key_exists('rowid', $data)) {
 			//when validating the data on form submission
 			$key = 'rowid';
 		}
@@ -497,7 +502,7 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 
 	/**
 	 * Get the table filter for the element
-	 * @param bol do we render as a normal filter or as an advanced searc filter
+	 * @param bool do we render as a normal filter or as an advanced searc filter
 	 * if normal include the hidden fields as well (default true, use false for advanced filter rendering)
 	 * @return string filter html
 	 */
@@ -633,14 +638,14 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			// value if it was then we want to filter on the key and not the label
 			if (!array_key_exists($key, JRequest::get('get')))
 			{
-				$key = $db->quoteName($joinTableName) . '.' . $db->quoteName('id');
+				$key = $db->quoteName($joinTableName . '.id');
 				$this->encryptFieldName($key);
 				return "$key $condition $value";
 			}
 		}
 		if ($type == 'advanced')
 		{
-			$key = $db->quoteName($joinTableName) . '.' . $db->quoteName('id');
+			$key = $db->quoteName($joinTableName . '.id');
 			$this->encryptFieldName($key);
 			return "$key $condition $value";
 		}
@@ -659,18 +664,18 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 					$tabletype = $this->getValColumn();
 					break;
 			}
-			$k = $db->quoteName($joinTableName) . '.' . $db->quoteName($tabletype);
+			$k = $db->quoteName($joinTableName . '.' . $tabletype);
 		}
 		else
 		{
 			if ($this->_rawFilter)
 			{
-				$k = $db->quoteName($joinTableName) . '.' . $db->quoteName('id');
+				$k = $db->quoteName($joinTableName . '.' . 'id');
 			}
 			else
 			{
 				$tabletype = $this->getValColumn();
-				$k = $db->quoteName($joinTableName ). '.' . $db->quoteName($tabletype);
+				$k = $db->quoteName($joinTableName . '.' . $tabletype);
 			}
 		}
 		$this->encryptFieldName($k);

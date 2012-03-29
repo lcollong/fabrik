@@ -17,17 +17,19 @@ require_once(COM_FABRIK_FRONTEND . '/models/plugin-form.php');
 
 class plgFabrik_FormRedirect extends plgFabrik_Form {
 
+	var $_result = true;
+
 	/**
 	 * process the plugin, called afer form is submitted
 	 *
-	 * @param object $params (with the current active plugin values in them)
-	 * @param object form
+	 * @param	object	$params (with the current active plugin values in them)
+	 * @param	object	form model
 	 */
 
 	function onLastProcess($params, &$formModel)
 	{
 		$session = JFactory::getSession();
-		$context = 'com_fabrik.form.' . $formModel->get('id') . '.redirect.';
+		$context = $formModel->getRedirectContext();
 		//get existing session params
 		$surl = (array)$session->get($context . 'url', array());
 		$stitle = (array)$session->get($context . 'title', array());
@@ -37,15 +39,15 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		$app = JFactory::getApplication();
 		$this->formModel = $formModel;
 		$w = new FabrikWorker();
-		$this->data = new stdClass();
+		$this->_data = new stdClass();
 
-		$this->data->append_jump_url = $params->get('append_jump_url');
-		$this->data->save_in_session = $params->get('save_insession');
+		$this->_data->append_jump_url = $params->get('append_jump_url');
+		$this->_data->save_in_session = $params->get('save_insession');
 		$form = $formModel->getForm();
 
 		$this->data = array_merge($this->getEmailData(), $formModel->_formData);
-		$this->data->jump_page = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
-		$this->data->thanks_message = $w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data);
+		$this->_data->jump_page = $w->parseMessageForPlaceHolder($params->get('jump_page'), $this->data);
+		$this->_data->thanks_message = $w->parseMessageForPlaceHolder($params->get('thanks_message'), $this->data);
 		if (!$this->shouldRedirect($params))
 		{
 			//clear any sessoin redirects
@@ -63,11 +65,11 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		$this->_storeInSession($formModel);
 		$sshowsystemmsg[$this->renderOrder] = true;
 		$session->set($context . 'showsystemmsg', $sshowsystemmsg);
-		if ($this->data->jump_page != '')
+		if ($this->_data->jump_page != '')
 		{
-			$this->data->jump_page = $this->buildJumpPage($formModel);
+			$this->_data->jump_page = $this->buildJumpPage($formModel);
 			//3.0 ajax/module redirect logic handled in form controller not in plugin
-			$surl[$this->renderOrder] = $this->data->jump_page;
+			$surl[$this->renderOrder] = $this->_data->jump_page;
 			$session->set($context.'url', $surl);
 			$session->set($context.'redirect_content_how', $params->get('redirect_content_how', 'popup'));
 			$session->set($context.'redirect_content_popup_width', $params->get('redirect_content_popup_width', '300'));
@@ -89,7 +91,7 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 			$session->set($context.'url', $surl);
 		}
 
-		$smsg[$this->renderOrder] = $this->data->thanks_message;
+		$smsg[$this->renderOrder] = $this->_data->thanks_message;
 		$session->set($context . 'msg', $smsg);
 		return true;
 	}
@@ -141,42 +143,32 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 	 *
 	 * @param string $method
 	 * @param object form model
-	 * @return bol
+	 * @return bool
 	 */
 
-	public function customProcessResult($method, &$formModel)
+	function customProcessResult($method, &$formModel)
 	{
 		// if we are applying the form don't run redirect
-		if (is_array($formModel->_formData) && array_key_exists('apply', $formModel->_formData))
-		{
+		if (is_array($formModel->_formData) && array_key_exists('apply', $formModel->_formData)) {
 			return true;
 		}
-		if ($method != 'onLastProcess')
-		{
+		if ($method != 'onLastProcess') {
 			return true;
 		}
-		if (JRequest::getVar('fabrik_ajax'))
-		{
+		if (JRequest::getVar('fabrik_ajax')) {
 			//return false to stop the default redirect occurring
 			return false;
-		}
-		else
-		{
-			if (!empty($this->data->jump_page))
-			{
-				//ajax form submit load redirect page in window
-				if (strstr($this->data->jump_page, '?'))
-				{
-					$this->data->jump_page .= '&tmpl=component';
-				}
-				else
-				{
-					$this->data->jump_page .= '?tmpl=component';
+		} else {
+			if (!empty($this->_data->jump_page)) {
+				//ajax form submit load redirect page in mocha window
+				if (strstr($this->_data->jump_page, "?")) {
+					$this->_data->jump_page .= "&tmpl=component";
+				} else {
+					$this->_data->jump_page .= "?tmpl=component";
 				}
 				return false;
 			}
-			else
-			{
+			else {
 				return true;
 			}
 		}
@@ -195,35 +187,26 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 		//being appended to the element name. But I can't reproduce the issue (Testing locally php 5.2.6 on my Gigs table)
 		// if there is still an issue it would make a lot more sense to manually set the element's table model rather than calling
 		//force in the getFullName() code - as doing so increases the table query count by a magnitude of 2
-		$jumpPage = $this->data->jump_page;
+		$jumpPage = $this->_data->jump_page;
 		$reserved = array('format','view','layout','task');
 		$queryvars = array();
-		if ($this->data->append_jump_url == '1')
-		{
+		if ($this->_data->append_jump_url == '1') {
 			$groups = $formModel->getGroupsHiarachy();
-			foreach ($groups as $group)
-			{
+			foreach ($groups as $group) {
 				$elements = $group->getPublishedElements();
-				if ($group->isJoin())
-				{
+				if ($group->isJoin()) {
 					$tmpData = $formModel->_fullFormData['join'][$group->getGroup()->join_id];
-				}
-				else
-				{
+				} else {
 					$tmpData = $formModel->_fullFormData;
 				}
-				foreach ($elements as $elementModel)
-				{
+				foreach ($elements as $elementModel) {
+
 					$name = $elementModel->getFullName(false, true, false);
-					if (array_key_exists($name, $tmpData))
-					{
+					if (array_key_exists($name, $tmpData)) {
 						$this->_appendQS($queryvars, $name, $tmpData[$name]);
-					}
-					else
-					{
+					} else {
 						$element = $elementModel->getElement();
-						if (array_key_exists($element->name, $tmpData))
-						{
+						if (array_key_exists($element->name, $tmpData)) {
 							$this->_appendQS($queryvars, $element->name, $tmpData[$element->name]);
 						}
 					}
@@ -233,8 +216,7 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 
 		// $$$ rob removed url comparison as this stopped form js vars being appeneded to none J site urls (e.g. http://google.com)
 		//if ((!strstr($jumpPage, COM_FABRIK_LIVESITE) && strstr($jumpPage, 'http')) || empty($queryvars)) {
-		if (empty($queryvars))
-		{
+		if (empty($queryvars)) {
 			return $jumpPage;
 		}
 		$jumpPage .= (!strstr($jumpPage, "?")) ? "?" : "&";
@@ -244,17 +226,13 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 
 	function _appendQS(&$queryvars, $key, $val)
 	{
-		if (is_array($val))
-		{
-			foreach ($val as $v)
-			{
+		if (is_array($val)) {
+			foreach ($val as $v) {
 				$this->_appendQS($queryvars, "{$key}[value]", $v);
 			}
-		}
-		else
-		{
+		} else {
 			$val = urlencode(stripslashes($val));
-			$queryvars[] = $key . '=' . $val;
+			$queryvars[] = "$key=$val";
 		}
 	}
 
@@ -273,8 +251,7 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 	{
 		$app = JFactory::getApplication();
 		$store = array();
-		if ($this->data->save_in_session == '1')
-		{
+		if ($this->_data->save_in_session == '1') {
 			//@TODO - rob, you need to look at this, I really only put this in as a band-aid.
 			// $$$ hugh - we need to guesstimate the 'type', otherwise when the session data is processed
 			// on table load as filters, everything will default to 'field', which borks up if (say) it's
@@ -289,47 +266,37 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 				*/
 
 			$groups = $formModel->getGroupsHiarachy();
-			foreach ($groups as $group)
-			{
+			foreach ($groups as $group) {
 				$elements = $group->getPublishedElements();
-				foreach ($elements as $element)
-				{
-					if ($group->isJoin())
-					{
+				foreach ($elements as $element) {
+
+					if ($group->isJoin()) {
 						$tmpData = $formModel->_fullFormData['join'][$group->getGroup()->join_id];
-					}
-					else
-					{
+					} else {
 						$tmpData = $formModel->_fullFormData;
 					}
-					if ($element->getElement()->name == 'fabrik_list_filter_all')
-					{
+					if ($element->getElement()->name == 'fabrik_list_filter_all') {
 						continue;
 					}
 					$name =  $element->getFullName(false);
-					if (array_key_exists($name, $tmpData))
-					{
+					if (array_key_exists($name, $tmpData)) {
 						$value = $tmpData[$name];
+
 						$match = $element->getElement()->filter_exact_match;
-						if (!is_array($value))
-						{
+						if (!is_array($value)) {
 							$value = array($value);
 						}
+
 						$c = 0;
-						foreach ($value as $v)
-						{
-							if (count($value) == 1 || $c == 0)
-							{
+						foreach ($value as $v) {
+							if (count($value) == 1 || $c == 0) {
 								$join = 'AND';
 								$grouped = false;
-							}
-							else
-							{
+							} else {
 								$join = 'OR';
 								$grouped = true;
 							}
-							if ($v != '')
-							{
+							if ($v != '') {
 								$store['join'][] = $join;
 								$store['key'][] = FabrikString::safeColName($name);
 								$store['condition'][] = '=';
@@ -344,33 +311,25 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 								$store['hidden'][] = 0;
 								$store['elementid'][] = $element->getElement()->id;
 							}
+
 							$c ++;
 						}
 					}
 				}
 			}
 
-			$session = JFactory::getSession();
-			$registry = $session->get('registry');
-
 			//clear registry search form entries
 			$key = 'com_fabrik.searchform';
-			//test for this err - http://fabrikar.com/forums/showthread.php?t=14149&page=3
-			if (is_a($registry, 'JRegistry'))
-			{
-				$registry->setValue($key, null);
-			}
-			//$session->destroy();
 
 			$listModel = $formModel->getlistModel();
 			//check for special fabrik_list_filter_all element!
-			$searchAll = JRequest::getVar($listModel->getTable()->db_table_name .'___fabrik_list_filter_all');
-
-			$registry->setValue('com_fabrik.searchform.form'.$formModel->get('id').'.searchall', $searchAll);
-
-			$registry->setValue('com_fabrik.searchform.form'.$formModel->get('id').'.filters', $store);
-
-			$registry->setValue('com_fabrik.searchform.fromForm', $formModel->get('id'));
+			$searchAll = JRequest::getVar($listModel->getTable()->db_table_name . '___fabrik_list_filter_all');
+			
+			$app->setUserState('com_fabrik.searchform.form' . $formModel->get('id') . '.searchall', $searchAll);
+			$app->setUserState($key, $id);
+			
+			$app->setUserState('com_fabrik.searchform.form' . $formModel->get('id') . '.filters', $store);
+			$app->setUserState('com_fabrik.searchform.fromForm', $formModel->get('id'));
 
 		}
 	}
@@ -379,14 +338,13 @@ class plgFabrik_FormRedirect extends plgFabrik_Form {
 	 * determines if a condition has been set and decides if condition is matched
 	 *
 	 * @param object $params
-	 * @return bol true if you should redirect, false ignores redirect
+	 * @return bool true if you should redirect, false ignores redirect
 	 */
 
 	function shouldRedirect(&$params)
 	{
 		// if we are applying the form dont run redirect
-		if (array_key_exists('apply', $this->formModel->_formData))
-		{
+		if (array_key_exists('apply', $this->formModel->_formData)) {
 			return false;
 		}
 		return $this->shouldProcess('redirect_conditon');

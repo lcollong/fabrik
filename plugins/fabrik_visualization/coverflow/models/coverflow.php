@@ -78,12 +78,12 @@ class fabrikModelCoverflow extends FabrikFEModelVisualization { //JModel
 										$event->image = COM_FABRIK_LIVESITE . 'images/stories/' . $rootFolder . '/' . $row->{$image.'_raw'};
 										break;
 									default:
-										$event->image = isset($row->{$image.'_raw'}) ? $row->{$image.'_raw'} : '';
+										$event->image = isset($row->{$image . '_raw'}) ? $row->{$image . '_raw'} : '';
 									break;
 								}
 
 							} else {
-								$event->image = $imageElement->getStorage()->pathToURL($row->{$image.'_raw'});
+								$event->image = $imageElement->getStorage()->pathToURL($row->{$image . '_raw'});
 							}
 							$event->title = (string)strip_tags($row->$title);
 							$event->subtitle = (string)strip_tags($row->$subtitle);
@@ -104,7 +104,7 @@ class fabrikModelCoverflow extends FabrikFEModelVisualization { //JModel
 		if (!isset($this->listids))
 		{
 			$params = $this->getParams();
-			$this->listids = (array)$params->get('coverflow_table');
+			$this->listids = (array) $params->get('coverflow_table');
 		}
 	}
 }

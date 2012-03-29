@@ -23,6 +23,7 @@ class FabrikModelConnection extends JModelAdmin
 	 */
 	protected $text_prefix = 'COM_FABRIK_CONNECTION';
 
+
 	/**
 	 * Returns a reference to the a Table object, always creating it.
 	 *
@@ -55,8 +56,7 @@ class FabrikModelConnection extends JModelAdmin
 	{
 		// Get the form.
 		$form = $this->loadForm('com_fabrik.connection', 'connection', array('control' => 'jform', 'load_data' => $loadData));
-		if (empty($form))
-		{
+		if (empty($form)) {
 			return false;
 		}
 		return $form;
@@ -72,10 +72,11 @@ class FabrikModelConnection extends JModelAdmin
 	{
 		// Check the session for previously entered form data.
 		$data = JFactory::getApplication()->getUserState('com_fabrik.edit.connection.data', array());
-		if (empty($data))
-		{
+
+		if (empty($data)) {
 			$data = $this->getItem();
 		}
+
 		return $data;
 	}
 
@@ -115,14 +116,15 @@ class FabrikModelConnection extends JModelAdmin
 		$session = JFactory::getSession();
 		$model = JModel::getInstance('Connection', 'FabrikFEModel');
 		$model->setId($data['id']);
+
 		$options = $model->getConnectionOptions(JArrayHelper::toObject($data));
 		$db = JDatabase::getInstance($options);
-		if (JError::isError($db))
-		{
+
+		if (JError::isError($db)) {
 			$this->setError(JText::_('COM_FABRIK_UNABLE_TO_CONNECT'));
 			return false;
 		}
-		$key = 'fabrik.connection.' . $data['id'];
+		$key = 'fabrik.connection.'.$data['id'];
 		// erm yeah will remove the session connection for the admin user, but not any other user whose already using the site
 		// would need to clear out the session table i think - but that would then log out all users.
 		$session->clear($key);
@@ -130,19 +132,13 @@ class FabrikModelConnection extends JModelAdmin
 	}
 	
 	/**
-	 * Method to validate the form data.
-	 *
-	 * @param	object	$form	The form to validate against.
-	 * @param	array	$data	The data to validate.
-	 * @param   string  $group  The name of the field group to validate.
-	 * @return	mixed	Array of filtered data if valid, false otherwise.
-	 * @since	1.1
+	 * (non-PHPdoc)
+	 * @see JModelForm::validate()
 	 */
-
+	
 	public function validate($form, $data, $group = null)
 	{
-		if ($data['password'] !== $data['passwordConf'])
-		{
+		if ($data['password'] !== $data['passwordConf']) {
 			$this->setError(JText::_('COM_FABRIK_PASSWORD_MISMATCH'));
 			return false;
 		}

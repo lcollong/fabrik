@@ -1,11 +1,9 @@
-<?php if ($this->params->get('show_page_title', 1))
-{ ?>
+<?php if ($this->params->get('show_page_title', 1)) { ?>
 	<div class="componentheading<?php echo $this->params->get('pageclass_sfx')?>"><?php echo $this->escape($this->params->get('page_title')); ?></div>
 <?php } ?>
 <?php $form = $this->form;
 echo $form->startTag;
-if ($this->params->get('show-title', 1))
-{?>
+if ($this->params->get('show-title', 1)) {?>
 <h1><?php echo $form->label;?></h1>
 <?php }
 echo $form->intro;
@@ -14,28 +12,22 @@ $active = ($form->error != '') ? '' : ' fabrikHide';
 echo "<div class='fabrikMainError fabrikError$active'>" . $form->error . "</div>";?>
 
 	<?php
-	if ($this->showEmail)
-	{
+	if ($this->showEmail) {
 		echo $this->emailLink;
 	}
-	if ($this->showPDF)
-	{
+	if ($this->showPDF) {
 		echo $this->pdfLink;
 	}
-	if ($this->showPrint)
-	{
+	if ($this->showPrint) {
 		echo $this->printLink;
 	}
 	echo $this->loadTemplate('relateddata');
-	foreach ( $this->groups as $group)
-	{
+	foreach ( $this->groups as $group) {
 		?>
 		<fieldset class="fabrikGroup" id="group<?php echo $group->id;?>" style="<?php echo $group->css;?>">
 		<legend><?php echo $group->title;?></legend>
-		<?php if ($group->canRepeat)
-		{
-			foreach ($group->subgroups as $subgroup)
-			{
+		<?php if ($group->canRepeat) {
+			foreach ($group->subgroups as $subgroup) {
 			?>
 				<div class="fabrikSubGroup">
 					<div class="fabrikSubGroupElements">
@@ -44,8 +36,7 @@ echo "<div class='fabrikMainError fabrikError$active'>" . $form->error . "</div>
 						echo $this->loadTemplate('group');
 						?>
 					</div>
-					<?php if ($group->editable)
-					{ ?>
+					<?php if ($group->editable) { ?>
 						<div class="fabrikGroupRepeater">
 							<a class="addGroup" href="#">
 								<img src="<?php echo COM_FABRIK_LIVESITE?>/components/com_fabrik/views/form/tmpl/default/images/add.png" alt="<?php echo JText::_('COM_FABRIK_ADD_GROUP');?>" />
@@ -58,9 +49,7 @@ echo "<div class='fabrikMainError fabrikError$active'>" . $form->error . "</div>
 				</div>
 				<?php
 			}
-		}
-		else
-		{
+		} else {
 			$this->elements = $group->elements;
 			echo $this->loadTemplate('group');
 		}?>
@@ -71,7 +60,7 @@ echo "<div class='fabrikMainError fabrikError$active'>" . $form->error . "</div>
 	?>
 	<?php echo $this->pluginbottom; ?>
 	<div class="fabrikActions"><?php echo $form->resetButton;?> <?php echo $form->submitButton;?>
-	<?php echo $form->copyButton  . ' ' . $form->gobackButton . ' ' . $this->message?>
+	<?php echo $form->copyButton  . " " . $form->gobackButton . ' ' . $this->message?>
 	</div>
 
 <?php

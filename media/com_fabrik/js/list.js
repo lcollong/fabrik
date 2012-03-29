@@ -82,7 +82,10 @@ var FbListPlugin = new Class({
 			row = e.target.getParent('.fabrik___heading');
 			if (row && ok === false) {
 				this.listform.getElements('input[name^=ids]').set('checked', true);
-				this.listform.getElement('input[name=checkAll]').set('checked', true);
+				var all = this.listform.getElement('input[name=checkAll]');
+				if (typeOf(all) !== 'null') {
+					all.set('checked', true);
+				}
 				ok = true;
 			}
 			if (!ok && this.options.requireChecked) {
@@ -97,7 +100,7 @@ var FbListPlugin = new Class({
 	},
 
 	buttonAction: function () {
-		this.list.submit('doPlugin');
+		this.list.submit('list.doPlugin');
 	}
 });
 
@@ -200,6 +203,22 @@ var FbListFilter = new Class({
 		}
 		this.filters.get(plugin).push(f);
 	},
+	
+	onSubmit: function () {
+		if (this.filters.date) {
+			this.filters.date.each(function (f) {
+				f.onSubmit();
+			});
+		}
+	},
+	
+	onUpdateData: function () {
+		if (this.filters.date) {
+			this.filters.date.each(function (f) {
+				f.onUpdateData();
+			});
+		}
+	},
 
 	// $$$ hugh - added this primarily for CDD element, so it can get an array to
 	// emulate submitted form data
@@ -262,13 +281,15 @@ var FbList = new Class({
 		'popup_width': 300,
 		'popup_height': 300,
 		'popup_offset_x': null,
-		'popup_offset_y': null
+		'popup_offset_y': null,
+		'listRef': '' // e.g. '1_com_fabrik_1'
 	},
 
 	initialize: function (id, options) {
 		this.id = id;
 		this.setOptions(options);
 		this.getForm();
+		this.result = true; //used with plugins to determine if list actions should be performed
 		this.plugins = [];
 		this.list = document.id('list_' + this.options.listRef);
 		this.actionManager = new FbListActions(this, {
@@ -292,6 +313,16 @@ var FbList = new Class({
 		Fabrik.addEvent('fabrik.form.submitted', function () {
 			this.updateRows();
 		}.bind(this));
+		
+		/**
+		 * once an ajax form has been submitted lets clear out any loose events and the form object itself
+		 */
+		Fabrik.addEvent('fabrik.form.ajax.submit.end', function (form) {
+			form.formElements.each(function (el) {
+				el.removeCustomEvents();
+			});
+			delete Fabrik.blocks['form_' + form.id];
+		});
 	},
 
 	setRowTemplate: function () {
@@ -837,6 +868,7 @@ var FbList = new Class({
 		}
 		Fabrik.loader.start('listform_' + this.options.listRef);
 		if (task === 'list.filter') {
+			Fabrik['filter_listform_' + this.options.listRef].onSubmit();
 			this.form.task.value = task;
 			if (this.form['limitstart' + this.id]) {
 				this.form.getElement('#limitstart' + this.id).value = 0;
@@ -860,6 +892,7 @@ var FbList = new Class({
 						json = JSON.decode(json);
 						this._updateRows(json);
 						Fabrik.loader.stop('listform_' + this.options.listRef);
+						Fabrik['filter_listform_' + this.options.listRef].onUpdateData();
 					}.bind(this)
 				});
 			}
@@ -869,6 +902,7 @@ var FbList = new Class({
 			this.form.submit();
 			Fabrik.loader.stop('listform_' + this.options.listRef);
 		}
+		//Fabrik['filter_listform_' + this.options.listRef].onUpdateData();
 		return false;
 	},
 
@@ -1181,6 +1215,17 @@ var FbList = new Class({
 				}.bind(this));
 			}
 		}
+		
+		if (this.options.admin) {
+			Fabrik.addEvent('fabrik.block.added', function (block) {
+				if (block.options.listRef === this.options.listRef) {
+					block.form.getElement('.fabrikNav').getElements('a').addEvent('click', function (e) {
+						e.stop();
+						block.fabrikNav(e.target.get('href'));
+					});  
+				}
+			}.bind(this));
+		}
 		this.watchCheckAll();
 	},
 	
@@ -1279,8 +1324,9 @@ var FbListKeys = new Class({
 
 var FbGroupedToggler = new Class({
 	initialize: function (container) {
-		container.addEvent('click:relay(.fabrik_groupheading a.toggle)', function (e) {
+		container.addEvent('mouseup:relay(.fabrik_groupheading a.toggle)', function (e) {
 			e.stop();
+			e.preventDefault(); //should work according to http://mootools.net/blog/2011/09/10/mootools-1-4-0/
 			var h = e.target.getParent('.fabrik_groupheading');
 			var img = h.getElement('img');
 			var state = img.retrieve('showgroup', true);
@@ -1293,6 +1339,7 @@ var FbGroupedToggler = new Class({
 			}
 			state = state ? false : true;
 			img.store('showgroup', state);
+			return false;
 		});
 	}
 });

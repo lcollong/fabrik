@@ -22,8 +22,12 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 
 	protected $db = null;
 
-	function requiresTableData()
+	public function canUse(&$model = null, $location = null, $event = null)
 	{
+		return true;
+	}
+
+	function requiresTableData() {
 		/* we don't need cron to load $data for us */
 		return false;
 	}
@@ -38,12 +42,11 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 	protected function getListIdFromFileName($tableName)
 	{
 		//get site's database
-		if (!isset($this->db))
-		{
+		if (!isset($this->db)) {
 			 $this->db = FabrikWorker::getDbo(true);
 		}
 		$query = $this->db->getQuery(true);
-		$query->select('id')->from('#__{package}_lists')->where('db_table_name = ' . $this->db->Quote($tableName));
+		$query->select('id')->from('#__{package}_lists')->where('db_table_name = ' . $this->db->quote($tableName));
 		$this->db->setQuery($query);
 		$id = $this->db->loadResult();
 		return $id;
@@ -80,8 +83,8 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 		$orig_listid = JRequest::getInt('listid', -1);
 
 		//Fabrik use this as the base directory, so we need a new directory under 'media'
-		define("FABRIK_CSV_IMPORT_ROOT",JPATH_ROOT . '/media');
-		$d = FABRIK_CSV_IMPORT_ROOT . '/' . $cronDir;
+		define("FABRIK_CSV_IMPORT_ROOT",JPATH_ROOT.DS.'media');
+		$d = FABRIK_CSV_IMPORT_ROOT.DS.$cronDir;
 
 		//TODO: Need to also have a FILTER for CSV files ONLY.
 		$filter = "\.CSV$|\.csv$";
@@ -91,23 +94,19 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 		// the csv import class needs to know we are doing a cron import
 		JRequest::setVar('cron_csvimport', true);
 		$xfiles = 0;
-		foreach ($arrfiles as $full_csvfile)
-		{
-			if (++$xfiles > $maxFiles)
-			{
+		foreach ($arrfiles as $full_csvfile) {
+			if (++$xfiles > $maxFiles) {
 				break;
 			}
 			FabrikWorker::log('plg.cron.cronimportcsv.information', "Starting import: $full_csvfile:  ");
 
 			$clsImportCSV = JModel::getInstance('Importcsv', 'FabrikFEModel');
 
-			if ($useTableName)
-			{
+			if ($useTableName) {
 				$listid = $this->getListIdFromFileName(basename($full_csvfile));
 			}
-			else
-			{
-				$table = $listModel->getTable();
+			else {
+				$table =& $listModel->getTable();
 				$listid = $table->id;
 			}
 
@@ -127,26 +126,21 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 			$clsImportCSV->findExistingElements();
 
 			$msg = $clsImportCSV->makeTableFromCSV();
-			if ($app->isAdmin())
-			{
+			if ($app->isAdmin()) {
 				$app->enqueueMessage($msg);
 			}
 
-			if ($deleteFile == '1')
-			{
+			if ($deleteFile == '1') {
 				JFile::delete($full_csvfile);
 			}
-			else if ($deleteFile == '2')
-			{
+			else if ($deleteFile == '2') {
 				$new_csvfile = $full_csvfile . '.' . time();
 				JFile::move($full_csvfile, $new_csvfile);
 			}
-			else if ($deleteFile == '3')
-			{
-				$done_folder = dirname($full_csvfile) . '/' . 'done';
-				if (JFolder::exists($done_folder))
-				{
-					$new_csvfile = $done_folder . '/' . basename($full_csvfile);
+			else if ($deleteFile == '3') {
+				$done_folder = dirname($full_csvfile) . DS . 'done';
+				if (JFolder::exists($done_folder)) {
+					$new_csvfile = $done_folder . DS . basename($full_csvfile);
 					JFile::move($full_csvfile, $new_csvfile);
 				}
 				else {
@@ -159,28 +153,26 @@ class plgFabrik_Cronimportcsv extends plgFabrik_Cron {
 		}
 
 	 	// Leave the request array how we found it
-		if (!empty($orig_listid))
-		{
+		if (!empty($orig_listid)) {
 			JRequest::setvar('listid', $orig_listid);
 		}
 
-		if ($orig_dropdata != -1)
-		{
+		if ($orig_dropdata != -1) {
 			JRequest::setVar('drop_data', $orig_dropdata);
 		}
-		if ($orig_overwrite != -1)
-		{
+		if ($orig_overwrite != -1) {
 			JRequest::setVar('overwite', $orig_overwrite);
 		}
-		if ($xfiles > 0)
-		{
+
+		if ($xfiles > 0) {
 			$updates = $clsImportCSV->addedCount + $clsImportCSV->updatedCount;
 		}
-		else
-		{
+		else {
 			$updates = 0;
 		}
 	    return $updates;
 	}
+
+
 }
 ?>

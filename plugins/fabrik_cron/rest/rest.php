@@ -47,8 +47,7 @@ class plgFabrik_CronRest extends plgFabrik_Cron {
 		$xml = new SimpleXMLElement($output);
 		//drill down to the specified xpath location for our data
 		$xpath = $params->get('xpath');
-		if ($xpath !== '')
-		{
+		if ($xpath !== '') {
 			$xml = $xml->xpath($xpath);
 		}
 		$adminListModel->dbTableFromXML($params->get('key'), $params->get('create_list'), $xml);
@@ -61,8 +60,7 @@ class plgFabrik_CronRest extends plgFabrik_Cron {
 	{
 		$params = $this->getParams();
 		$table = $params->get('create_list');
-		if ($table == '')
-		{
+		if ($table == '') {
 			return;
 		}
 		$db = FabrikWorker::getDbo();

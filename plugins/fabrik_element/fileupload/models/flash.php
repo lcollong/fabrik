@@ -97,7 +97,7 @@ class flashRender{
 					$pathinfo['filename'] = explode('.',$pathinfo['basename']);
 					$pathinfo['filename'] = $pathinfo['filename'][0];
 				}
-				$thumb_path = COM_FABRIK_BASE.$thumb_dir. '/' .$pathinfo['filename'].'.png';
+				$thumb_path = COM_FABRIK_BASE.$thumb_dir.DS.$pathinfo['filename'].'.png';
 				if (JFile::exists($thumb_path)) {
 					$thumb_file = COM_FABRIK_LIVESITE . '/' . $thumb_dir . '/' . $pathinfo['filename'] . '.png';
 				}

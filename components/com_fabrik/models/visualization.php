@@ -55,7 +55,8 @@ class FabrikFEModelVisualization extends JModel
 	protected function loadPluginParams()
 	{
 		$this->getVisualization();
-		$pluginParams = new fabrikParams($this->_row->params);
+		//$pluginParams = new fabrikParams($this->_row->params);
+		$pluginParams = new JRegistry($this->_row->params);
 		return $pluginParams;
 	}
 
@@ -304,7 +305,9 @@ class FabrikFEModelVisualization extends JModel
 		if (is_null($this->params))
 		{
 			$v = $this->getVisualization();
-			$this->params = new fabrikParams($v->params);
+			//$this->params = new fabrikParams($v->params);
+			$this->params = new JRegistry($v->params);
+			$this->params->set('show-title', JRequest::getInt('show-title', $this->params->get('show-title', 1)));
 		}
 		return $this->params;
 	}
@@ -313,5 +316,6 @@ class FabrikFEModelVisualization extends JModel
 	{
 		return $this->getState('id');
 	}
+
 }
 ?>

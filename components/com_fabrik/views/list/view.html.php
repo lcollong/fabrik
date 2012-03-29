@@ -130,10 +130,10 @@ class FabrikViewList extends JView{
 		$this->_row = new stdClass();
 		$this->_row->id = '';
 		$this->_row->class = 'fabrik_row';
-		if (JFile::exists(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tmpl . '/default_row.php'))
-		{
+	/* 	if (JFile::exists(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tmpl . '/default_row.php')) {
 			require(COM_FABRIK_FRONTEND . '/views/list/tmpl/' . $tmpl . '/default_row.php');
-		}
+		} */
+		echo $this->loadTemplate('row');
 		$opts->rowtemplate = ob_get_contents();
 		ob_end_clean();
 
@@ -222,13 +222,20 @@ class FabrikViewList extends JView{
 	function display($tpl = null)
 	{
 		FabrikHelperHTML::framework();
-		if ($this->getLayout() == '_advancedsearch') {
+		if ($this->getLayout() == '_advancedsearch')
+		{
 			$this->advancedSearch($tpl);
 			return;
 		}
-
 		$profiler = JProfiler::getInstance('Application');
 		$app = JFactory::getApplication();
+
+		//force front end templates
+		$tmpl = $this->get('tmpl');
+		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
+		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
+		$this->addTemplatePath(JPATH_SITE . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
+
 		require_once(COM_FABRIK_FRONTEND . '/views/modifiers.php');
 		$user = JFactory::getUser();
 
@@ -245,18 +252,19 @@ class FabrikViewList extends JView{
 		$c = 0;
 		$form = $model->getFormModel();
 		$nav = $this->get('Pagination');
-		foreach ($data as $groupk => $group) {
+		foreach ($data as $groupk => $group)
+		{
 			$last_pk = '';
 			$last_i = 0;
 			$num_rows = 1;
-			foreach (array_keys($group) as $i) {
+			foreach (array_keys($group) as $i)
+			{
 				$o = new stdClass();
 				// $$$ rob moved merge wip code to FabrikModelTable::formatForJoins() - should contain fix for pagination
 				$o->data = $data[$groupk][$i];
 				$o->cursor = $num_rows + $nav->limitstart;
 				$o->total = $nav->total;
-				//$o->id = "list_".$item->id."_row_".@$o->data->__pk_val;
-				$o->id = 'list_'.$model->getRenderContext().'_row_'.@$o->data->__pk_val;
+				$o->id = 'list_' . $model->getRenderContext() . '_row_'. @ $o->data->__pk_val;
 				$o->class = "fabrik_row oddRow".$c;
 				$data[$groupk][$i] = $o;
 				$c = 1 - $c;
@@ -264,19 +272,25 @@ class FabrikViewList extends JView{
 			}
 		}
 		$groups = $form->getGroupsHiarachy();
-		foreach ($groups as $groupModel) {
+		foreach ($groups as $groupModel)
+		{
 			$elementModels = $groupModel->getPublishedElements();
-			foreach ($elementModels as $elementModel) {
+			foreach ($elementModels as $elementModel)
+			{
 				$elementModel->setContext($groupModel, $form, $model);
 				$col = $elementModel->getFullName(false, true, false);
 				$col .= '_raw';
 				$rowclass = $elementModel->getParams()->get('use_as_row_class');
-				if ($rowclass == 1) {
-					foreach ($data as $groupk => $group) {
-						for ($i=0; $i<count($group); $i++) {
+				if ($rowclass == 1)
+				{
+					foreach ($data as $groupk => $group)
+					{
+						for ($i = 0; $i < count($group); $i++)
+						{
 							$c = preg_replace('/[^A-Z|a-z|0-9]/', '-', $data[$groupk][$i]->data->$col);
 							// $$$ rob 24/02/2011 can't have numeric class names so prefix with element name
-							if (is_numeric($c)) {
+							if (is_numeric($c))
+							{
 								$c = $elementModel->getElement()->name . $c;
 							}
 							$data[$groupk][$i]->class .= " " . $c;
@@ -296,48 +310,54 @@ class FabrikViewList extends JView{
 		$this->emptyStyle = $this->nodata ? '' : 'display:none';
 		$params = $model->getParams();
 
-		if (!$model->canPublish()) {
+		if (!$model->canPublish())
+		{
 			echo JText::_('COM_FABRIK_LIST_NOT_PUBLISHED');
 			return false;
 		}
-		if (!$model->canView()) {
+		if (!$model->canView())
+		{
 			echo JText::_('JERROR_ALERTNOAUTHOR');
 			return false;
 		}
-
 		if (!class_exists('JSite'))
 		{
 			require_once(JPATH_ROOT . '/includes/application.php');
 		}
-		$menus = JSite::getMenu();
-		$menu	= $menus->getActive();
+		$app = JFactory::getApplication();
+		$menus = $app->getMenu();
+		$menu = $menus->getActive();
 
 		// because the application sets a default page title, we need to get it
 		// right from the menu item itself
 		//if there is a menu item available AND the form is not rendered in a content plugin or module
-		if (is_object($menu) && !$this->isMambot) {
-			$menu_params = new JParameter($menu->params);
-			$params->set('page_title', $menu_params->get('page_title', $menu->title));
-			$params->set('show_page_title', $menu_params->get('show_page_title', 0));
-		} else {
+		if (is_object($menu) && !$this->isMambot)
+		{
+			$params->set('page_title', $menu->params->get('page_title', $menu->title));
+			$params->set('show_page_title', $menu->params->get('show_page_title', 0));
+		}
+		else
+		{
 			$params->set('show_page_title', JRequest::getInt('show_page_title', 0));
 			$params->set('page_title', JRequest::getVar('title', ''));
 			$params->set('show-title', JRequest::getInt('show-title', $params->get('show-title')));
 		}
 
 		$title = $params->get('page_title');
-		if (empty($title)) {
+		if (empty($title))
+		{
 			$title = $app->getCfg('sitename');
 		}
-		if (!$this->isMambot) {
+		if (!$this->isMambot)
+		{
 			$document->setTitle($w->parseMessageForPlaceHolder($title, $_REQUEST));
 		}
-		
+
 		/** depreciated (keep incase ppl use them in old tmpls**/
-		$this->table 					= new stdClass();
-		$this->table->label 	= $w->parseMessageForPlaceHolder($item->label, $_REQUEST);
-		$this->table->intro 	= $w->parseMessageForPlaceHolder($item->introduction);
-		$this->table->id			= $item->id;
+		$this->table = new stdClass();
+		$this->table->label = $w->parseMessageForPlaceHolder($item->label, $_REQUEST);
+		$this->table->intro = $w->parseMessageForPlaceHolder($item->introduction);
+		$this->table->id = $item->id;
 		$this->table->renderid = $this->get('RenderContext');
 		$this->table->db_table_name = $item->db_table_name;
 		/** end **/
@@ -357,34 +377,40 @@ class FabrikViewList extends JView{
 		$this->nav = '<div class="fabrikNav">' . $this->nav . '</div>';
 		$this->fabrik_userid = $user->get('id');
 		$this->canDelete = $model->deletePossible() ? true : false;
-		$tmpl = $this->get('tmpl');
+
 		// 3.0 observed in list.js & html moved into fabrik_actions rollover
 		$this->showPDF = $params->get('pdf', 0);
-		if ($this->showPDF) {
+		if ($this->showPDF)
+		{
 			$this->pdfLink = FabrikHelperHTML::pdfIcon($model, $params);
 		}
 		$this->emptyLink = $model->canEmpty() ? '#' : '';
 		$this->csvImportLink = $this->showCSVImport ? JRoute::_("index.php?option=com_fabrik&view=import&filetype=csv&listid=" . $item->id) : '';
 		$this->showAdd = $model->canAdd();
-		if ($this->showAdd) {
-			if ($params->get('show-table-add', 1)) {
+		if ($this->showAdd)
+		{
+			if ($params->get('show-table-add', 1))
+			{
 				$this->assign('addRecordLink', $this->get('AddRecordLink'));
 			}
-			else {
+			else
+			{
 				$this->showAdd = false;
 			}
 		}
 		$this->assign('addLabel', $params->get('addlabel', JText::_('COM_FABRIK_ADD')));
 		$this->showRSS = $params->get('rss', 0) == 0 ? 0 : 1;
-		if ($this->showRSS) {
+		if ($this->showRSS)
+		{
 			$this->rssLink = $model->getRSSFeedLink();
-			if ($this->rssLink != '') {
+			if ($this->rssLink != '')
+			{
 				$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
 				$document->addHeadLink($this->rssLink, 'alternate', 'rel', $attribs);
 			}
 		}
 		list($this->headings, $groupHeadings, $this->headingClass, $this->cellClass) = $this->get('Headings');
-		$this->assignRef('groupByHeadings', $this->get('GroupByHeadings'));
+		$this->assign('groupByHeadings', $this->get('GroupByHeadings'));
 		$this->filter_action = $this->get('FilterAction');
 		JDEBUG ? $profiler->mark('fabrik getfilters start') : null;
 		$this->filters = $model->getFilters('listform_'. $this->renderContext);
@@ -396,7 +422,8 @@ class FabrikViewList extends JView{
 		$this->assign('showFilters', $this->get('showFilters'));
 		$this->assign('emptyDataMessage', $this->get('EmptyDataMsg'));
 		$this->assignRef('groupheadings', $groupHeadings);
-		$this->assignRef('calculations', $this->_getCalculations($this->headings, $params->get('actionMethod')));
+		$calculations = $this->_getCalculations($this->headings, $params->get('actionMethod'));
+		$this->assignRef('calculations', $calculations);
 		$this->assign('isGrouped', !($this->get('groupBy') == ''));
 		$this->assign('colCount', count($this->headings));
 		$this->assign('hasButtons', $this->get('hasButtons'));
@@ -412,10 +439,7 @@ class FabrikViewList extends JView{
 		// 3.0 buttons now rendered in fabrik_action <ul>
 		//$this->pluginButtons = $model->getPluginButtons();
 
-		//force front end templates
-		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
-		$this->addTemplatePath($this->_basePath . '/' . $this->_name . '/tmpl/' . $tmpl);
-		$this->addTemplatePath(JPATH_SITE . '/templates/' . $app->getTemplate() . '/html/com_fabrik/list/' . $tmpl);
+		$this->assign('pluginTopButtons', $this->get('PluginTopButtons'));
 
 		$text = $this->loadTemplate();
 		if ($params->get('process-jplugins'))
@@ -653,6 +677,11 @@ class FabrikViewList extends JView{
 		$this->hiddenFields[] = '<input type="hidden" name="fabrik_listplugin_options" value="" />';
 
 		$this->hiddenFields[] = '<input type="hidden" name="incfilters" value="1" />';
+
+		// $$$ hugh - testing social profile hash stuff
+		if (JRequest::getVar('fabrik_social_profile_hash', '') != '') {
+			$this->hiddenFields[] = '<input type="hidden" name="fabrik_social_profile_hash" value="'. JRequest::getVar('fabrik_social_profile_hash') .'" />';
+		}
 		$this->hiddenFields = implode("\n", $this->hiddenFields);
 	}
 
@@ -661,7 +690,8 @@ class FabrikViewList extends JView{
 		$id = $this->getModel()->getState('list.id');
 		$this->assign('tmpl', $this->get('tmpl'));
 		//advanced search script loaded in list view - avoids timing issues with ie loading the ajax content and script
-		$this->assignRef('rows', $this->get('advancedSearchRows'));
+		$rows = $this->get('advancedSearchRows');
+		$this->assignRef('rows', $rows);
 		$action = JRequest::getVar('HTTP_REFERER', 'index.php?option=com_fabrik', 'server');
 		$this->assign('action', $action);
 		$this->assign('listid', $id);

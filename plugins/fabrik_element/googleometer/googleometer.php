@@ -80,7 +80,7 @@ class plgFabrik_ElementGoogleometer extends plgFabrik_Element {
 	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		static $range;
 		static $fullName;

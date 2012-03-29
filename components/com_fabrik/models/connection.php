@@ -50,7 +50,7 @@ class FabrikFEModelConnection extends JModel {
 
 	/**
 	 * is the conenction table the default connection
-	 * @return bol
+	 * @return bool
 	 */
 
 	function isDefault()
@@ -433,7 +433,7 @@ class FabrikFEModelConnection extends JModel {
 
 	/**
 	 * tests if you can connect to the connection
-	 * @return bol true if connection made otherwise false
+	 * @return bool true if connection made otherwise false
 	 */
 
 	function testConnection()

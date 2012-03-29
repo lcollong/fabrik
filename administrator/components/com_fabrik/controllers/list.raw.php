@@ -40,21 +40,52 @@ class FabrikControllerList extends JControllerForm
 		$db = $oCnn->getDb();
 		$table = JRequest::getVar('table', '');
 		$fieldNames = array();
-		if ($table != '') {
+		if ($table != '')
+		{
 			$table = FabrikString::safeColName($table);
 			$name = JRequest::getVar('name', 'jform[params][table_key][]');
 			$sql = "DESCRIBE $table";
 			$db->setQuery($sql);
 			$aFields = $db->loadObjectList();
-
-			if (is_array($aFields)) {
-				foreach ($aFields as $oField) {
+			if (is_array($aFields))
+			{
+				foreach ($aFields as $oField)
+				{
 					$fieldNames[] = JHTML::_('select.option', $oField->Field);
 				}
 			}
 		}
 		$fieldDropDown = JHTML::_('select.genericlist', $fieldNames, $name, 'class="inputbox"  size="1" ', 'value', 'text', '');
 		echo $fieldDropDown;
+	}
+	
+	function delete()
+	{
+		// Check for request forgeries
+		JRequest::checkToken() or die('Invalid Token');
+		$app = JFactory::getApplication();
+		$model = JModel::getInstance('List', 'FabrikFEModel');
+		$listid = JRequest::getInt('listid');
+		$model->setId($listid);
+		$ids = JRequest::getVar('ids', array(), 'request', 'array');
+		$limitstart = JRequest::getVar('limitstart'. $listid);
+		$length = JRequest::getVar('limit' . $listid);
+		$oldtotal = $model->getTotalRecords();
+		$model->deleteRows($ids);
+		$total = $oldtotal - count($ids);
+		if ($total >= $limitstart)
+		{
+			$newlimitstart = $limitstart - $length;
+			if ($newlimitstart < 0)
+			{
+				$newlimitstart = 0;
+			}
+			$context = 'com_fabrik.list'.$model->getRenderContext().'.list.';
+			$app->setUserState($context.'limitstart'.$listid, $newlimitstart);
+		}
+		JRequest::setVar('view', 'list');
+		$this->view();
+		
 	}
 	
 	public function filter()
@@ -77,7 +108,8 @@ class FabrikControllerList extends JControllerForm
 	public function view()
 	{
 		$cid = JRequest::getVar('cid', array(0), 'method', 'array');
-		if(is_array($cid)){
+		if(is_array($cid))
+		{
 			$cid = $cid[0];
 		}
 		$cid = JRequest::getInt('listid', $cid);

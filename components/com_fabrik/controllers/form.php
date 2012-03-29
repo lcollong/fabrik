@@ -52,15 +52,9 @@ class FabrikControllerForm extends JController
 	 * Display the view
 	 */
 
-	function display()
+	function display($cachable = false, $urlparams = false)
 	{
 		$session = JFactory::getSession();
-		//menu links use fabriklayout parameters rather than layout
-		$flayout = JRequest::getVar('fabriklayout');
-		if ($flayout != '')
-		{
-			JRequest::setVar('layout', $flayout);
-		}
 		$document = JFactory::getDocument();
 
 		$viewName = JRequest::getVar('view', 'form', 'default', 'cmd');
@@ -140,8 +134,8 @@ class FabrikControllerForm extends JController
 		{
 			JRequest::checkToken() or die('Invalid Token');
 		}
-		if (!$model->validate()) {
-			
+		if (!$model->validate())
+		{
 			//if its in a module with ajax or in a package
 			if (JRequest::getCmd('fabrik_ajax'))
 			{
@@ -158,7 +152,7 @@ class FabrikControllerForm extends JController
 				// $$$ rob - http://fabrikar.com/forums/showthread.php?t=17962
 				// couldn't determine the exact set up that triggered this, but we need to reset the rowid to -1
 				// if reshowing the form, otherwise it may not be editable, but rather show as a detailed view
-				if (JRequest::getCmd('usekey') !== '')
+				if (JRequest::getCmd('usekey', '') !== '')
 				{
 					JRequest::setVar('rowid', -1);
 				}
@@ -179,7 +173,7 @@ class FabrikControllerForm extends JController
 		}
 
 		//check if any plugin has created a new validation error
-		if (!empty($model->_arErrors))
+		if (!empty($model->errors))
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
@@ -206,13 +200,21 @@ class FabrikControllerForm extends JController
 			if (!$this->baseRedirect && $this->isMambot)
 			{
 				$session = JFactory::getSession();
+				$context = $model->getRedirectContext();
+				$redirect_opts['redirect_how'] = $session->get($context . 'redirect_content_how', 'popup');
+				$redirect_opts['width'] = (int) $session->get($context . 'redirect_content_popup_width', '300');
+				$redirect_opts['height'] = (int) $session->get($context . 'redirect_content_popup_height', '300');
+				$redirect_opts['x_offset'] = (int) $session->get($context . 'redirect_content_popup_x_offset', '0');
+				$redirect_opts['y_offset'] = (int) $session->get($context . 'redirect_content_popup_y_offset', '0');
+				$redirect_opts['title'] = $session->get($context . 'redirect_content_popup_title', '');
+				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
+			}
+			else if ($this->isMambot)
+			{
+				// $$$ hugh - special case to allow custom code to specify that
+				// the form should not be cleared after a failed AJAX submit
+				$session = JFactory::getSession();
 				$context = 'com_fabrik.form.'.$model->get('id').'.redirect.';
-				$redirect_opts['redirect_how'] = $session->get($context.'redirect_content_how', 'popup');
-				$redirect_opts['width'] = (int)$session->get($context.'redirect_content_popup_width', '300');
-				$redirect_opts['height'] = (int)$session->get($context.'redirect_content_popup_height', '300');
-				$redirect_opts['x_offset'] = (int)$session->get($context.'redirect_content_popup_x_offset', '0');
-				$redirect_opts['y_offset'] = (int)$session->get($context.'redirect_content_popup_y_offset', '0');
-				$redirect_opts['title'] = $session->get($context.'redirect_content_popup_title', '');
 				$redirect_opts['reset_form'] = $session->get($context.'redirect_content_reset_form', '1') == '1';
 			}
 			//let form.js handle the redirect logic (will also send out a
@@ -252,7 +254,7 @@ class FabrikControllerForm extends JController
 		{
 			$msg = '';
 		}
-		$context = 'com_fabrik.form.' . $formdata['formid'] . '.redirect.';
+		$context = $model->getRedirectContext();
 		$smsg = $session->get($context.'msg', array($msg));
 		if (!is_array($smsg))
 		{
@@ -265,7 +267,9 @@ class FabrikControllerForm extends JController
 		// $$$ rob Was using array_shift to set $msg, not to really remove it from $smsg
 		// without the array_shift the custom message is never attached to the redirect page.
 		// use case 'redirct plugin with jump page pointing to a J page and thanks message selected.
-		$custommsg = JArrayHelper::getValue($smsg, array_shift(array_keys($smsg)));
+		$custommsg = array_keys($smsg);
+		$custommsg = array_shift($custommsg);
+		$custommsg = JArrayHelper::getValue($smsg, $custommsg);
 		if ($custommsg != '')
 		{
 			$msg = $custommsg;
@@ -287,7 +291,8 @@ class FabrikControllerForm extends JController
 			$msg = null;
 		}
 		$session->set($context . 'msg', $smsg);
-		$showmsg = array_shift($session->get($context .   'showsystemmsg', array(true)));
+		$showmsg = $session->get($context . 'showsystemmsg', array(true));
+		$showmsg = array_shift($showmsg);
 		$msg = $showmsg == 1 ? $msg : null;
 		return $msg;
 	}
@@ -328,7 +333,7 @@ class FabrikControllerForm extends JController
 					//return to the page that called the form
 					$url = urldecode(JRequest::getVar('fabrik_referrer', 'index.php', 'post'));
 				}
-				$Itemid	= (int)@$app->getMenu('site')->getActive()->id;
+				$Itemid	= (int) @$app->getMenu('site')->getActive()->id;
 				if ($url == '')
 				{
 					if ($Itemid !== 0)
@@ -356,7 +361,7 @@ class FabrikControllerForm extends JController
 		}
 		$session = JFactory::getSession();
 		$formdata = $session->get('com_fabrik.form.data');
-		$context = 'com_fabrik.form.' . $formdata['formid'] . '.redirect.';
+		$context = $model->getRedirectContext();
 		//if the redirect plug-in has set a url use that in preference to the default url
 		//$surl = $session->get($context.'url', array($url));
 		$surl = $session->get($context.'url', array());
@@ -390,9 +395,9 @@ class FabrikControllerForm extends JController
 		$model->getForm();
 		$model->rowId = JRequest::getVar('rowid', '');
 		$model->validate();
-		$data = array('modified' => $model->_modifiedValidationData);
+		$data = array('modified' => $model->modifiedValidationData);
 		//validating entire group when navigating form pages
-		$data['errors'] = $model->_arErrors;
+		$data['errors'] = $model->errors;
 		echo json_encode($data);
 	}
 

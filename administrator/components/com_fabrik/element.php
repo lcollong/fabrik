@@ -141,14 +141,18 @@ class JElement extends JObject
 	 * @param string $name
 	 * @return string element id
 	 */
+	
 	function getId($control_name, $name )
 	{
 		$name = str_replace('[]', '', $name);
 	
 		$c = $this->getRepeatCounter();
-		if ($c !== false) {
+		if ($c !== false)
+		{
 			$id = $control_name.$name . '-' . $c;
-		} else {
+		}
+		else
+		{
 			$id = $control_name.$name;
 		}
 		return $id;
@@ -160,14 +164,22 @@ class JElement extends JObject
 	 */
 	function getRepeatCounter()
 	{
-		if (isset($this->_parent->_counter_override ) && $this->_parent->_counter_override != -1 ){
+		if (isset($this->_parent->_counter_override) && $this->_parent->_counter_override != -1)
+		{
 			return $this->_parent->_counter_override;
-		} else {
+		}
+		else
+		{
 			if ($this->getRepeat()) {
-				if(isset($this->_array_counter )){
+				
+				if
+				(isset($this->_array_counter ))
+				{
 					//array counter might have been set when rendering viz params
 					return $this->_array_counter;
-				} else {
+				}
+				else
+				{
 					// element in repeat but no repeat counter override or array counter set so default to 0
 					return 0;
 				}
@@ -178,20 +190,20 @@ class JElement extends JObject
 	
 	/**
 	 * is the current element in a repeat group
-	 * @return bol
+	 * @return bool
 	 */
 	function getRepeat()
 	{
-		if (isset($this->_parent->group))
+		if (isset($this->_parent->_group))
 		{
 			//funky custom fabrik params (components/com_fabrik/helpers/params)
 			//  have had their _group option set
 			// in render() method
-			$group = $this->_parent->group;
+			$group = $this->_parent->_group;
 		}
 		else
 		{
-			$group = $this->_parent->get('group', '_default');
+			$group = $this->_parent->get('_group', '_default');
 		}
 		return $this->_parent->_xml[$group]->attributes('repeat');
 	}

@@ -146,13 +146,13 @@ class plgFabrik_ElementImage extends plgFabrik_Element
 	 * @return	string	formatted value
 	 */
 
-	function renderListData($data, &$thisRow)
+	public function renderListData($data, &$thisRow)
 	{
 		$data = FabrikWorker::JSONtoData($data, true);
 		$params = $this->getParams();
 		$pathset = false;
 		foreach ($data as $d)
-		 {
+		{
 			if (strstr($d, '/'))
 			{
 				$pathset = true;

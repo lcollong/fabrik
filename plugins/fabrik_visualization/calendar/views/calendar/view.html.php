@@ -24,7 +24,7 @@ class fabrikViewCalendar extends JView
 		$model->setListIds();
 		$this->assign('containerId', $this->get('ContainerId'));
 		$this->assignRef('filters', $this->get('Filters'));
-		$this->assign('showFilters', JRequest::getInt('showfilters', 1) === 1 ?  1 : 0);
+		$this->assign('showFilters', JRequest::getInt('showfilters', $params->get('show_filters')) === 1 ?  1 : 0);
 		$this->assign('showTitle', JRequest::getInt('show-title', 1));
 		$this->assign('filterFormURL', $this->get('FilterFormURL'));
 
@@ -52,8 +52,7 @@ class fabrikViewCalendar extends JView
 		unset($urlfilters['Itemid']);
 		unset($urlfilters['visualizationid']);
 		unset($urlfilters['format']);
-		if (empty($urlfilters))
-		{
+		if (empty($urlfilters)) {
 			$urlfilters = new stdClass();
 		}
 		$urls = new stdClass();
@@ -125,9 +124,9 @@ class fabrikViewCalendar extends JView
 		$viewName = $this->getName();
 
 		$pluginParams = $model->getPluginParams();
-		$this->assignRef('params', $pluginParams);
+		$this->assignRef('params', $model->getParams());
 		$tmpl = $pluginParams->get('calendar_layout', $tmpl);
-		$tmplpath = JPATH_ROOT. '/plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tmpl;
+		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/calendar/views/calendar/tmpl/' . $tmpl . '/template.css');
 		return parent::display();
@@ -140,24 +139,19 @@ class fabrikViewCalendar extends JView
 		$plugin = $pluginManager->getPlugIn('calendar', 'visualization');
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
-		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0) )));
-
+		$model->setId(JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0))));
 		$rows = $model->getEventLists();
 		$o = $model->getAddStandardEventFormInfo();
-
 		$options = array();
 		$options[] = JHTML::_('select.option', '', JText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_SELECT'));
-
 		if ($o != null)
 		{
 			$listid = $o->id;
 			$options[] = JHTML::_('select.option', $listid, JText::_('PLG_VISUALIZATION_CALENDAR_STANDARD_EVENT'));
 		}
-
 		$model->getEvents();
 		$config = JFactory::getConfig();
 		$prefix = $config->get('dbprefix');
-
 		$this->_eventTypeDd = JHTML::_('select.genericlist', array_merge($options, $rows), 'event_type', 'class="inputbox" size="1" ', 'value', 'text', '', 'fabrik_event_type');
 
 		//tried loading in iframe and as an ajax request directly - however
@@ -191,7 +185,7 @@ class fabrikViewCalendar extends JView
 	});
 	";
 		FabrikHelperHTML::addScriptDeclaration($script);
-		echo "<h2>".JText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_CHOOSE_AN_EVENT_TYPE') . ":</h2>";
+		echo '<h2>' . JText::_('PLG_VISUALIZATION_CALENDAR_PLEASE_CHOOSE_AN_EVENT_TYPE') . ':</h2>';
 		echo $this->_eventTypeDd;
 	}
 }

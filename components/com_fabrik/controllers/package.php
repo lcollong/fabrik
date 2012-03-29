@@ -19,9 +19,11 @@ class FabrikControllerPackage extends JController
 	var $cacheId = 0;
 
 	/**
-	 * Display the view
+	 * (non-PHPdoc)
+	 * @see JController::display()
 	 */
-	function display()
+	
+	public function display($cachable = false, $urlparams = false)
 	{
 		$document = JFactory::getDocument();
 		$viewName = JRequest::getVar('view', 'package', 'default', 'cmd');
@@ -38,12 +40,13 @@ class FabrikControllerPackage extends JController
 
 		$view->_formView = $this->getView('Form', $viewType);
 		$formModel = $this->getModel('Form', 'FabrikFEModel');
-		$formModel->setDbo(FabrikWorker::getDbo());
+		$db = FabrikWorker::getDbo();
+		$formModel->setDbo($db);
 		$view->_formView->setModel($formModel, true);
 
 		// Push a model into the view
 		$model = $this->getModel($viewName, 'FabrikFEModel');
-		$model->setDbo(FabrikWorker::getDbo());
+		$model->setDbo($db);
 
 		if (!JError::isError($model))
 		{

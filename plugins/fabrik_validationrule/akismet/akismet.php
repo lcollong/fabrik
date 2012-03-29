@@ -12,7 +12,6 @@
 defined('_JEXEC') or die();
 
 //require the abstract plugin class
-require_once(COM_FABRIK_FRONTEND . '/models/plugin.php');
 require_once(COM_FABRIK_FRONTEND . '/models/validation_rule.php');
 
 class plgFabrik_ValidationruleAkismet extends plgFabrik_Validationrule
@@ -26,27 +25,24 @@ class plgFabrik_ValidationruleAkismet extends plgFabrik_Validationrule
 	protected $icon = 'notempty';
 
 	/**
-	 * validate the elements data against the rule
-	 * @param string data to check
-	 * @param object element model
-	 * @param int plugin sequence ref
-	 * @return bol true if validation passes, false if fails
+	 * (non-PHPdoc)
+	 * @see plgFabrik_Validationrule::validate()
 	 */
 
-	function validate($data, &$elementModel, $c)
+	public function validate($data, &$elementModel, $pluginc, $repeatCounter)
 	{
 		$params = $this->getParams();
 		$user = JFactory::getUser();
 		if ($params->get('akismet-key') != '')
 		{
 			$username = $user->get('username') != '' ? $user->get('username') : $this->_randomSring();
-			$email = $user->get('email') != '' ? $user->get('email') : $this->_randomSring().'@'.$this->_randomSring().'com';
-			require_once(JPATH_COMPONENT. '/' .'plugins/validationrule/akismet/akismet.class.php');
+			$email = $user->get('email') != '' ? $user->get('email') : $this->_randomSring()  .'@' . $this->_randomSring() . 'com';
+			require_once(JPATH_COMPONENT . '/plugins/validationrule/akismet/akismet.class.php');
 			$akismet_comment = array (
-															'author' => $username,
-															'email' => $user->get('email'),
-															'website' => JURI::base(),
-															'body' => $data
+				'author' => $username,
+				'email' => $user->get('email'),
+				'website' => JURI::base(),
+				'body' => $data
 			);
 			$akismet = new Akismet(JURI::base(), $params->get('akismet-key'), $akismet_comment);
 			if ($akismet->errorsExist())

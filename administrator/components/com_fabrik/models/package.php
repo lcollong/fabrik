@@ -95,7 +95,7 @@ class FabrikModelPackage extends FabModelAdmin
 	/**
 	 * save the pacakge
 	 * @param array data
-	 * @return bol
+	 * @return bool
 	 */
 
 	public function save($data)
@@ -138,17 +138,17 @@ class FabrikModelPackage extends FabModelAdmin
 	public function export($ids = array())
 	{
 		jimport('joomla.filesystem.archive');
-		foreach ($ids as $id)
-		{
+		foreach ($ids as $id) {
 			$row = $this->getTable();
+
 			$row->load($id);
-			$this->outputPath = JPATH_ROOT . '/tmp/' . $this->getComponentName($row);
+			$this->outputPath = JPATH_ROOT . '/tmp/' . $this->getComponentName($row) . '/';
 			$json = $row->params;
 			$row->params = json_decode($row->params);
 			$row->blocks = $row->params->canvas->blocks;
-			$componentZipPath = $this->outputPath . '/packages/com_'.$this->getComponentName($row). '.zip';
-			$pkgName = 'pkg_'.$this->getComponentName($row). '.zip';
-			$packageZipPath = $this->outputPath . '/' . $pkgName;
+			$componentZipPath = $this->outputPath . 'packages/com_' . $this->getComponentName($row) . '.zip';
+			$pkgName = 'pkg_' . $this->getComponentName($row) . '.zip';
+			$packageZipPath = $this->outputPath . $pkgName;
 			if (JFile::exists($componentZipPath))
 			{
 				JFile::delete($componentZipPath);
@@ -156,16 +156,18 @@ class FabrikModelPackage extends FabModelAdmin
 			$filenames = array();
 			$row2 = clone($row);
 			$row2->params = $json;
-			$filenames[] = $this->makeXML($row);
+			
 			$filenames[] = $this->makeInstallSQL($row);
 			$filenames[] = $this->makeUnistallSQL($row);
-			$filenames[] = $this->makeMetaSQL($row2);
-
+			$filenames[] = $this->makeXML($row);
+			$filenames[] = $this->makeComponentManifestClass($row2);
+			
 			$this->copySkeleton($row, $filenames);
 			$archive = JArchive::getAdapter('zip');
 
 			$files = array();
-			$this->addFiles($filenames, $files, $this->outputPath . '/');
+			$this->addFiles($filenames, $files, $this->outputPath);
+			
 			$ok = $archive->create($componentZipPath, $files);
 			if (!$ok)
 			{
@@ -173,7 +175,7 @@ class FabrikModelPackage extends FabModelAdmin
 			}
 			//copy that to root
 
-			$ok = JFile::copy($componentZipPath, $this->outputPath . '/com_'.$this->getComponentName($row). '.zip');
+			$ok = JFile::copy($componentZipPath, $this->outputPath . 'com_'.$this->getComponentName($row). '.zip');
 
 			// now lets create the Joomla install package
 			$plugins = $this->findPlugins($row);
@@ -181,9 +183,10 @@ class FabrikModelPackage extends FabModelAdmin
 			$filenames = FArrayHelper::extract($plugins, 'fullfile');
 
 			$filenames[] = $componentZipPath;
-			$filenames[] = $this->makePackageXML($row, $plugins);
+			$filenames[] = $this->makePackageXML($row, $plugins); // have to add this LAST to filenames
+
 			$files = array();
-			$this->addFiles($filenames, $files, $this->outputPath . '/');
+			$this->addFiles($filenames, $files, $this->outputPath);
 
 			$ok = $archive->create($packageZipPath, $files);
 			if (!$ok)
@@ -238,36 +241,51 @@ class FabrikModelPackage extends FabModelAdmin
 	}
 
 	/**
-	 * create the component install.php file which will populate the components
+	 * create the component.manifest.class.php file which will populate the components
 	 * forms/lists/elements etc
-	 * @param	object	$row
+	 * @param	object	$row package
+	 * @return	string	path name to created file
 	 */
 
-	protected function makeMetaSQL($row)
+	protected function makeComponentManifestClass($row)
 	{
 		$return = array();
 		$return[] = "<?php ";
 		$row->id = null;
 		$row->external_ref = 1;
 		$rows = array($row);
-		$return[] = $this->rowsToInsert('#__fabrik_packages', $rows, $return);
-		$return[] = "\$package_id = \$db->insertid();";
+		$return[] = "class com_" . $row->component_name . "InstallerScript{";
+		$return[] = "";
+		$return[] = "\tfunction uninstall(\$parent)";
+		$return[] = "\t\t{";
+		$return[] = "\t\t\$m = \$parent->getParent()->manifest;";
+		$return[] = "\t\t\$db = JFactory::getDbo();";
+		$return[] = "\t\t\$query = \$db->getQuery(true);";
+		$return[] = "\t\t\$query->delete('#__fabrik_packages')->where('external_ref <> \"\" AND component_name = ' . \$db->quote(\$m->name) . ' AND version = ' . \$db->quote(\$m->version));";
+		$return[] = "\t\t\$db->setQuery(\$query);";
+		$return[] = "\t\t\$db->query();";
+		$return[] = "\t\t\$app = JFactory::getApplication('administrator');";
+		$return[] = "\t\t\$app->setUserState('com_fabrik.package', '');";
+		$return[] = "\t\t}";
+		$return[] = "";
+		$return[] = "\tfunction postflight(\$type, \$parent) {";
+		$return[] = "\t\t" . "\$db = JFactory::getDbo();";
+		$return[] = "\t\t" . $this->rowsToInsert('#__fabrik_packages', $rows, $return);
+		$return[] = "\t\t" . "\$package_id = \$db->insertid();";
 		$lookups = $this->getInstallItems($row);
 		$listModel = JModel::getInstance('list', 'FabrikFEModel');
 		$lists = $lookups->list;
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 
-		foreach ($lookups->visualization as $vid)
-		{
+		foreach ($lookups->visualization as $vid) {
 			$query->select('*')->from('#__{package}_visualizations')->where('id = ' . $vid);
 			$db->setQuery($query);
 			$viz = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_visualizations', $viz, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_visualizations', $viz, $return);
 		}
 
-		foreach ($lists as $listid)
-		{
+		foreach ($lists as $listid) {
 			$query->clear();
 			$query->select('*')->from('#__{package}_lists')->where('id = ' . $listid);
 			$db->setQuery($query);
@@ -278,64 +296,68 @@ class FabrikModelPackage extends FabModelAdmin
 			$query->clear();
 			$query->select('*')->from('#__{package}_forms')->where('id = ' . $list[0]->form_id);
 			$forms = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_forms', $forms, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_forms', $forms, $return);
 			//form groups
 			$query->clear();
 			$query->select('*')->from('#__{package}_formgroup')->where('form_id = ' . $list[0]->form_id);
 			$formgroups = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_formgroup', $formgroups, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_formgroup', $formgroups, $return);
 
 			$groupids = array();
-			foreach ($formgroups as $formgroup)
-			{
+			foreach ($formgroups as $formgroup) {
 				$groupids[] = $formgroup->group_id;
 			}
 			//groups
 			$query->clear();
-			$query->select('*')->from('#__{package}_groups')->where('id IN (' .implode(',', $groupids) .')');
+			$query->select('*')->from('#__{package}_groups')->where('id IN (' . implode(',', $groupids) . ')');
 			$groups = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_groups', $groups, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_groups', $groups, $return);
 
 			//elements
 			$query->clear();
-			$query->select('*')->from('#__{package}_elements')->where('group_id IN (' .implode(',', $groupids) .')');
+			$query->select('*')->from('#__{package}_elements')->where('group_id IN (' . implode(',', $groupids) . ')');
 			$elements = $db->loadObjectList();
 			$elementids = array();
 			foreach ($elements as $element) {
 				$elementids[] = $element->id;
 			}
-			$this->rowsToInsert('#__'.$row->component_name.'_elements', $elements, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_elements', $elements, $return);
 
 			//joins
 			$query->clear();
-			$query->select('*')->from('#__{package}_joins')->where('list_id IN (' .implode(',', $lists) .') OR element_id IN (' . implode(',', $elementids) . ')');
+			$query->select('*')->from('#__{package}_joins')->where('list_id IN (' . implode(',', $lists) . ') OR element_id IN (' . implode(',', $elementids) . ')');
 			$joins = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_joins', $joins, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_joins', $joins, $return);
 
 			//js actions
 			$query->clear();
 			$query->select('*')->from('#__{package}_jsactions')->where('element_id IN (' .implode(',', $elementids) .')');
 			$jsactions = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_jsactions', $jsactions, $return);
+			$this->rowsToInsert('#__' . $row->component_name . '_jsactions', $jsactions, $return);
 
 			//js actions
 			$query->clear();
 			$query->select('*')->from('#__{package}_validations')->where('element_id IN (' .implode(',', $elementids) .')');
 			$validations = $db->loadObjectList();
-			$this->rowsToInsert('#__'.$row->component_name.'_validations', $validations, $return);
+			$this->rowsToInsert('#__' . $row->component_name.'_validations', $validations, $return);
 
 		}
 		//ok write the code to update components/componentname/componentname.php
 		//have to do this in the installer as we don't know what package id the component will be installed as
 		$xmlname = str_replace('com_', '', $row->component_name);
-		$return[] = "\$path = JPATH_ROOT . '/components/com_"."$row->component_name/$xmlname.php';";
-		$return[] = "\$buffer = JFile::read(\$path);";
-		$return[] = "\$buffer = str_replace('{packageid}', \$package_id, \$buffer);";
-		$return[] = "JFile::write(\$path, \$buffer);";
+		$return[] = "\t\t\$path = JPATH_ROOT . '/components/com_"."$row->component_name/$xmlname.php';";
+		$return[] = "\t\t\$buffer = JFile::read(\$path);";
+		$return[] = "\t\t\$buffer = str_replace('{packageid}', \$package_id, \$buffer);";
+		$return[] = "\t\tJFile::write(\$path, \$buffer);";
+		$return[] = "\t}";
+		$return[] = "}";
 		$return[] = "?>";
 		$return = implode("\n", $return);
-		$path = $this->outputPath . '/installation/install.'.$xmlname.'.php';
-		JFile::write($path, $return);
+		$path = $this->outputPath . $this->manifestClassFileName($row);
+		if (!JFile::write($path, $return))
+		{
+			JError::raiseError(500, 'didnt write to ' . $path);
+		}
 		return $path;
 	}
 
@@ -343,9 +365,10 @@ class FabrikModelPackage extends FabModelAdmin
 	{
 		$db = FabrikWorker::getDbo(true);
 		foreach ($rows as $row) {
-			$fmtsql = 'INSERT INTO '.$db->quoteName($table).' (%s) VALUES (%s) ';
+			$fmtsql = 'INSERT INTO '.$db->quoteName($table).' (%s) VALUES (%s) ON DUPLICATE KEY UPDATE %s';
 			$fields = array();
 			$values = array();
+			$updates = array();
 			foreach (get_object_vars($row) as $k => $v) {
 				if (is_array($v) or is_object($v) or $v === NULL) {
 					continue;
@@ -362,12 +385,14 @@ class FabrikModelPackage extends FabModelAdmin
 				if ($k[0] == '_') { // internal field
 					continue;
 				}
+				$val = $db->isQuoted($k) ? $db->quote($v) : (int) $v;
 				$fields[] = $db->quoteName($k);
-				$values[] = $db->isQuoted($k) ? $db->Quote($v) : (int) $v;
+				$values[] = $val;
+				$updates[] = $db->quoteName($k) . ' = ' . $val;
 			}
-			$sql = sprintf($fmtsql, implode(",", $fields) ,  implode(",", $values)) . ';';
-			$return[] = "\$db->setQuery(\"$sql\");";
-			$return[] = "\$db->query();";
+			$sql = sprintf($fmtsql, implode(",", $fields) ,  implode(",", $values), implode(',', $updates)) . ';';
+			$return[] = "\t\t\$db->setQuery(\"$sql\");";
+			$return[] = "\t\t\$db->query();";
 		}
 	}
 
@@ -379,14 +404,25 @@ class FabrikModelPackage extends FabModelAdmin
 
 	protected function addFiles($filenames, &$files, $root = '')
 	{
-		foreach ($filenames as $fpath) {
+		$root = JPath::clean($root);
+		foreach ($filenames as $fpath)
+		{
+			$fpath = JPath::clean($fpath);
 			$zippath = str_replace($root, '', $fpath);
-			if (is_dir($fpath)) {
+			if (JFolder::exists($fpath))
+			{
 				$tmpFiles = JFolder::files($fpath, '.', true, true);
 				$this->addFiles($tmpFiles, $files, $root);
-			} else {
+			}
+			else
+			{
+				$data = JFile::read($fpath);
+				if ($data === false)
+				{
+					JError::raiseNotice(500, 'could not read ' . $fpath);
+				}
 				$files[] = array('name'=> $zippath,
-					'data'=>JFile::read($fpath));
+					'data'=> $data);
 			}
 		}
 		return $files;
@@ -394,7 +430,7 @@ class FabrikModelPackage extends FabModelAdmin
 
 	protected function getComponentName($row)
 	{
-		return $row->component_name.'_' . $row->version;
+		return $row->component_name . '_' . $row->version;
 	}
 
 	/**
@@ -470,13 +506,12 @@ class FabrikModelPackage extends FabModelAdmin
 			foreach ($listModels as $lmodel) {
 				$sql .= $lmodel->getCreateTableSQL(true);
 				//add the table ids to the $lookups->list
-				echo "do we add " . $lmodel->getId() . "<br>";
 				if (!in_array($lmodel->getId(), $lookups->list)) {
 					$lookups->list[] = $lmodel->getId();
 				}
 			}
 		}
-		$path = $this->outputPath . '/admin/installation/queries.sql';
+		$path = $this->outputPath . 'admin/sql/install.mysql.uft8.sql';
 		JFile::write($path, $sql);
 		return $path;
 	}
@@ -543,31 +578,39 @@ class FabrikModelPackage extends FabModelAdmin
 
 	protected function makeUnistallSQL($row)
 	{
+		$sql = array();
+		$db = JFactory::getDbo();
+		
+		// dont do this as the db table may be used by the main fabrik component
+		// perhaps later on we can add some php to the manifest class to inteligently remove orphaned db tables.
+		
+		/*
 		$listModel = JModel::getInstance('list', 'FabrikFEModel');
 		$lookups = $this->getInstallItems($row);
-		$db = JFactory::getDbo();
-		$sql = array();
 		$tids = $lookups->list;
 		JArrayHelper::toInteger($tids);
+		
 		foreach ($tids as $tid) {
 			$listModel->setId($tid);
 			$table = $listModel->getTable()->db_table_name;
 			$sql[] = "DELETE FROM ". $db->quoteName($table).";";
 			$sql[] = "DROP TABLE ". $db->quoteName($table).";";
-		}
+		} */
 
 		//drop the meta tables as well (currently we don't have a method for
 		//upgrading a package. So unistall should remove these meta tables
-		foreach ($this->tables as $table) {
+		foreach ($this->tables as $table)
+		{
 			//as we share the connection table we don't want to remove it on package unistall
-			if ($table == '#__fabrik_connections') {
+			if ($table == '#__fabrik_connections')
+			{
 				continue;
 			}
 			$table = str_replace('{package}', $row->component_name, $table);
-			$sql[] = "DROP TABLE ". $db->quoteName($table).";";
+			$sql[] = 'DROP TABLE IF EXISTS '. $db->quoteName($table) . ';';
 		}
 
-		$path = $this->outputPath . '/admin/installation/uninstall.sql';
+		$path = $this->outputPath . 'admin/sql/uninstall.mysql.uft8.sql';
 		JFile::write($path, implode("\n", $sql));
 		return $path;
 	}
@@ -583,13 +626,13 @@ class FabrikModelPackage extends FabModelAdmin
 		$skeltonFolder = JPATH_ADMINISTRATOR . '/components/com_fabrik/com_fabrik_skeleton/';
 		
 		$name = str_replace('com_', '', $row->component_name);
-		JFolder::create($this->outputPath . '/site');
-		JFolder::create($this->outputPath . '/site/views');
-		JFolder::create($this->outputPath . '/admin');
-		JFolder::create($this->outputPath . '/admin/installation');
+		JFolder::create($this->outputPath . 'site');
+		JFolder::create($this->outputPath . 'site/views');
+		JFolder::create($this->outputPath . 'admin');
+		JFolder::create($this->outputPath . 'admin/images');
 
 		$from = $skeltonFolder.'fabrik_skeleton.php';
-		$to = $this->outputPath . '/site/' . $name.'.php';
+		$to = $this->outputPath . 'site/' . $name . '.php';
 		if (JFile::exists($to)) {
 			JFile::delete($to);
 		}
@@ -597,8 +640,8 @@ class FabrikModelPackage extends FabModelAdmin
 		$filenames[] = $to;
 
 		//admin holding page
-		$from = $skeltonFolder.'admin.php';
-		$to = $this->outputPath . '/admin/' . $name.'.php';
+		$from = $skeltonFolder . 'admin.php';
+		$to = $this->outputPath . 'admin/' . $name . '.php';
 		if (JFile::exists($to)) {
 			JFile::delete($to);
 		}
@@ -606,35 +649,35 @@ class FabrikModelPackage extends FabModelAdmin
 		$filenames[] = $to;
 
 
-		$from = $skeltonFolder.'index.html';
-		$to = $this->outputPath . '/admin/installation/index.html';
+		/* $from = $skeltonFolder.'index.html';
+		$to = $this->outputPath . 'admin/installation/index.html';
+		JFile::copy($from, $to);
+		$filenames[] = $to; */
+
+		$from = $skeltonFolder . 'index.html';
+		$to = $this->outputPath . 'site/index.html';
 		JFile::copy($from, $to);
 		$filenames[] = $to;
 
-		$from = $skeltonFolder.'index.html';
-		$to = $this->outputPath . '/site/index.html';
+
+		$from = $skeltonFolder . 'index.html';
+		$to = $this->outputPath . 'admin/index.html';
 		JFile::copy($from, $to);
 		$filenames[] = $to;
 
-
-		$from = $skeltonFolder.'index.html';
-		$to = $this->outputPath . '/admin/index.html';
-		JFile::copy($from, $to);
-		$filenames[] = $to;
-
-		$from = $skeltonFolder.'images/';
-		$to = $this->outputPath . '/admin/images';
+		$from = $skeltonFolder . 'images/';
+		$to = $this->outputPath . 'admin/images';
 		JFolder::copy($from, $to, '', true);
 		$filenames[] = $to;
 
-		$from = $skeltonFolder.'views/';
-		$to = $this->outputPath . '/site/views';
+		$from = $skeltonFolder . 'views/';
+		$to = $this->outputPath . 'site/views';
 		JFolder::copy($from, $to, '', true);
 		$filenames[] = $to;
 
 		/*//testing this tmp file
 		$from = $skeltonFolder.'fabrik_skeleton.php';
-		$to = $this->outputPath . '/admin/' . $name.'.php';
+		$to = $this->outputPath . 'admin/' . $name.'.php';
 		JFile::copy($from, $to);
 		$filenames[] = $to;*/
 
@@ -650,14 +693,14 @@ class FabrikModelPackage extends FabModelAdmin
 	{
 		// @TODO add update url e.g:
 		//<update>http://fabrikar.com/update/packages/free</update>
-
+		$version = new JVersion;
 		$xmlname = 'pkg_'.str_replace('com_', '', $row->component_name);
 		$str = '<?xml version="1.0" encoding="UTF-8" ?>
-<install type="package" version="1.6">
+<install type="package" version="' . $version->RELEASE . '">
 	<name>'.$row->label.'</name>
 	<packagename>'.$xmlname.'</packagename>
 	<version>'.$row->version.'</version>
-	<url>http://www.joomla.org</url>
+	<url>http://www.fabrikar.com</url>
 	<packager>Rob Clayburn</packager>
 	<packagerurl>http://www.fabrikar.com</packagerurl>
 	<description>Created by Fabrik</description>
@@ -665,18 +708,29 @@ class FabrikModelPackage extends FabModelAdmin
 	<files folder="packages">
 		<file type="component" id="'.$row->component_name.'">com_'.$this->getComponentName($row).'.zip</file>
 ';
-		foreach ($plugins as $plugin)
-		{
+		foreach ($plugins as $plugin) {
 			$str .= '
 		<file type="plugin"	id="'.$plugin->id.'"	group="'.$plugin->group.'">'.$plugin->file.'</file>';
 		}
 		$str .='
 	</files>
 </install>';
-		JFile::write($this->outputPath . '/' . $xmlname . '.xml', $str);
-		return $this->outputPath . '/' . $xmlname . '.xml';;
+		JFile::write($this->outputPath . $xmlname . '.xml', $str);
+		return $this->outputPath . $xmlname . '.xml';;
 	}
 
+	/**
+	 * get the file name of the file containing the class that is run on install.
+	 * @param	object	$row package
+	 * @return	string	filename
+	 */
+	
+	protected function manifestClassFileName($row)
+	{
+		$xmlname = str_replace('com_', '', $row->component_name);
+		return $xmlname . '.manifest.class.php';
+	}
+	
 	/**
 	 * zip up the plugins used by the package
 	 * @param object $row
@@ -686,19 +740,18 @@ class FabrikModelPackage extends FabModelAdmin
 	protected function zipPlugins($row, &$plugins)
 	{
 		$archive = JArchive::getAdapter('zip');
-		JFolder::create($this->outputPath . '/packages');
-		foreach ($plugins as &$plugin)
-		{
-			$filenames = array(JPATH_ROOT . '/plugins/' . $plugin->group . '/' . $plugin->name);
+		JFolder::create($this->outputPath . 'packages');
+		foreach ($plugins as &$plugin) {
+
+			$filenames = array(JPATH_ROOT . '/plugins/' . $plugin->group.DS.$plugin->name);
 			$files = array();
-			$root = JPATH_ROOT . '/plugins/' . $plugin->group . '/' . $plugin->name . '/';
+			$root = JPATH_ROOT . '/plugins/' . $plugin->group.DS.$plugin->name.DS;
 			$this->addFiles($filenames, $files, $root);
 			$plugin->file = str_replace('{version}', $row->version, $plugin->file);
-			$pluginZipPath = $this->outputPath . '/packages/' . $plugin->file;
+			$pluginZipPath = $this->outputPath . 'packages/' . $plugin->file;
 			$ok = $archive->create($pluginZipPath, $files);
 			$plugin->fullfile = $pluginZipPath;
-			if (!$ok)
-			{
+			if (!$ok) {
 				JError::raiseError(500, 'Unable to create zip in ' . $pluginZipPath);
 			}
 		}
@@ -713,7 +766,7 @@ class FabrikModelPackage extends FabModelAdmin
 	protected function makeXML($row)
 	{
 		$date = JFactory::getDate();
-
+		$version = new JVersion;
 		$xmlname = str_replace('com_', '', $row->component_name);
 		$str = '<?xml version="1.0" encoding="utf-8"?>
 <extension
@@ -722,11 +775,11 @@ class FabrikModelPackage extends FabModelAdmin
 	xsi:schemaLocation="http://www.joomla.org extension.xsd "
 	method="upgrade"
 	client="site"
-	version="1.6.0"
+	version="' . $version->RELEASE . '"
 	type="component">
 
-	<name>'.$row->component_name.'</name>
-	<creationDate>'.$date->toSql().'</creationDate>
+	<name>' . $row->component_name . '</name>
+	<creationDate>' . $date->toSql() . '</creationDate>
 	<author>Fabrik</author>
 	<copyright>Pollen 8 Design Ltd</copyright>
 	<license>GNU/GPL</license>
@@ -736,17 +789,19 @@ class FabrikModelPackage extends FabModelAdmin
 	<description>Created with Fabrik: THE Joomla Application Creation Component</description>
 	<install>
 		<sql>
-			<file charset="utf8" driver="mysql">installation/queries.sql</file>
+			<file charset="utf8" driver="mysql">sql/install.mysql.uft8.sql</file>
+			<file charset="utf8" driver="mysqli">sql/install.mysql.uft8.sql</file>
 		</sql>
 	</install>
 
 	<uninstall>
 		<sql>
-			<file charset="utf8" driver="mysql">installation/uninstall.sql</file>
+			<file charset="utf8" driver="mysql">sql/uninstall.mysql.uft8.sql</file>
+			<file charset="utf8" driver="mysqli">sql/uninstall.mysql.uft8.sql</file>
 		</sql>
 	</uninstall>
 
-	<installfile>installation/install.'.$xmlname.'.php</installfile>
+	<scriptfile>' . $this->manifestClassFileName($row) . '</scriptfile>
 
 	<files folder="site">
 		<folder>views</folder>
@@ -758,16 +813,17 @@ class FabrikModelPackage extends FabModelAdmin
 		<menu img="../administrator/components/com_fabrik/images/logo.png">'.$row->label.'</menu>
 
 		<files folder="admin">
-			<folder>installation</folder>
 			<folder>images</folder>
+			<folder>sql</folder>
 			<file>index.html</file>
 			<file>'.$xmlname.'.php</file>
 		</files>
 	</administration>
 
 </extension>';
-		JFile::write($this->outputPath . '/' . $xmlname.'.xml', $str);
-		return $this->outputPath . '/' . $xmlname.'.xml';;
+		$path = $this->outputPath . $xmlname . '.xml'; 
+		JFile::write($path, $str);
+		return $path;
 	}
 	
 	public function getPackageListForm($data = array(), $loadData = true)

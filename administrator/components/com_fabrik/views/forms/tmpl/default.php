@@ -9,7 +9,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
+JHtml::addIncludePath(JPATH_COMPONENT.DS.'helpers/html');
 JHtml::_('behavior.tooltip');
 JHTML::_('script','system/multiselect.js',false,true);
 $user	= JFactory::getUser();
@@ -28,6 +28,13 @@ $listDirn	= $this->state->get('list.direction');
 		</div>
 		<div class="filter-select fltrt">
 
+			<?php if (!empty($this->packageOptions)) {?>
+			<select name="package" class="inputbox" onchange="this.form.submit()">
+				<option value="fabrik"><?php echo JText::_('COM_FABRIK_SELECT_PACKAGE');?></option>
+				<?php echo JHtml::_('select.options', $this->packageOptions, 'value', 'text', $this->state->get('com_fabrik.package'), true);?>
+			</select>
+			<?php }?>
+			
 			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
 				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions', array('archived'=>false)), 'value', 'text', $this->state->get('filter.published'), true);?>
@@ -67,7 +74,6 @@ $listDirn	= $this->state->get('list.direction');
 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out==$user->get('id') || $item->checked_out==0;
 			$canChange	= $user->authorise('core.edit.state',	'com_fabrik.form.1') && $canCheckin;
 			?>
-
 			<tr class="row<?php echo $i % 2; ?>">
 					<td><?php echo $item->id; ?></td>
 					<td><?php echo JHtml::_('grid.id', $i, $item->id); ?></td>
@@ -91,7 +97,7 @@ $listDirn	= $this->state->get('list.direction');
 						</a>
 					</td>
 					<td>
-						<a href="#edit" onclick="return listItemTask('cb<?php echo $i; ?>','forms.listview')">
+						<a href="index.php?option=com_fabrik&task=list.view&listid=<?php echo $item->list_id?>">
 						<?php echo JText::_('COM_FABRIK_VIEW_DATA')?>
 						</a>
 					</td>

@@ -54,17 +54,16 @@ class FabrikControllerPlugin extends JController
 
 	/**
 	 * custom user ajax class handling as per F1.0.x
-	 * @return	null
+	 * @return unknown_type
 	 */
 
 	function userAjax()
 	{
 		$db = FabrikWorker::getDbo();
-		require_once(COM_FABRIK_FRONTEND . '/user_ajax.php');
+		require_once(COM_FABRIK_FRONTEND . DS. "user_ajax.php");
 		$method = JRequest::getVar('method', '');
 		$userAjax = new userAjax($db);
-		if (method_exists($userAjax, $method))
-		{
+		if (method_exists($userAjax, $method)) {
 			$userAjax->$method();
 		}
 	}
@@ -72,7 +71,7 @@ class FabrikControllerPlugin extends JController
 	function doCron(&$pluginManager)
 	{
 		$db = FabrikWorker::getDbo();
-		$cid = JRequest::getVar('element_id', array(), 'method', 'array');
+		$cid	= JRequest::getVar('element_id', array(), 'method', 'array');
 		JArrayHelper::toInteger($cid);
 		if (empty($cid)) {
 			return;

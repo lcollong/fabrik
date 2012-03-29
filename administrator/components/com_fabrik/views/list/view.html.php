@@ -101,7 +101,7 @@ class FabrikViewList extends JView
 		foreach ($cid as $id)
 		{
 			$model->setId($id);
-			$table = $model->getTable();
+			$table =& $model->getTable();
 			$formModel = $model->getFormModel();
 			$row = new stdClass();
 			$row->id = $id;

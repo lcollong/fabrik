@@ -51,9 +51,9 @@ class JFormFieldPluginList extends JFormFieldList
 
 		$query->select($key.' AS value, element AS text');
 		$query->from('#__extensions AS p');
-		$query->where($db->quoteName('type').' = '.$db->Quote('plugin'));
+		$query->where($db->quoteName('type').' = '.$db->quote('plugin'));
 		$query->where($db->quoteName('enabled').' = 1 AND state != -1');
-		$query->where($db->quoteName('folder').' = '.$db->Quote($group));
+		$query->where($db->quoteName('folder').' = '.$db->quote($group));
 		$query->order('text');
 
 		// Get the options.

@@ -37,8 +37,7 @@ class plgFabrik_FormAutofill extends plgFabrik_Form {
 		$opts->map = $params->get('autofill_map');
 		$opts->cnn = $params->get('autofill_cnn');
 		$opts->table = $params->get('autofill_table');
-		if ($opts->table === '')
-		{
+		if ($opts->table === '') {
 			JError::raiseNotice(500, 'Autofill plugin - no list selected');
 		}
 		$opts->editOrig = $params->get('autofill_edit_orig', 0) == 0 ? false : true;
@@ -63,70 +62,53 @@ class plgFabrik_FormAutofill extends plgFabrik_Form {
 		$element = JRequest::getVar('observe');
 		$value = JRequest::getVar('v');
 		JRequest::setVar('resetfilters', 1);
-		if ($cnn === 0 || $cnn == -1)
-		{
+		if ($cnn === 0 || $cnn == -1) {
 			//no connection selected so query current forms' table data
 			$formid = JRequest::getInt('formid');
 			JRequest::setVar($element, $value, 'get');
 			$model = JModel::getInstance('form', 'FabrikFEModel');
 			$model->setId($formid);
 			$listModel = $model->getlistModel();
-		}
-		else
-		{
+		} else {
 			$listModel = JModel::getInstance('list', 'FabrikFEModel');
 			$listModel->setId(JRequest::getInt('table'));
 		}
-		if ($value !== '')
-		{
+		if ($value !== '') {
 			// dont get the row if its empty
 			$data = $listModel->getRow($value, true, true);
-			if (!is_null($data))
-			{
+			if (!is_null($data)) {
 				$data = array_shift($data);
 			}
 		}
-		if (empty($data))
-		{
+		if (empty($data)) {
 			echo  "{}";
-		}
-		else
-		{
+		} else {
 			$map = JRequest::getVar('map');
 			$map = json_decode($map);
-			if (!empty($map))
-			{
+			if (!empty($map)) {
 				$newdata = new stdClass();
-				foreach ($map as $from => $to)
-				{
-					$toraw = $to . '_raw';
-					$fromraw = $from . '_raw';
-					if (is_array($to))
-					{
-						foreach ($to as $to2)
-						{
+				foreach($map as $from => $to) {
+					$toraw = $to.'_raw';
+					$fromraw = $from.'_raw';
+					if (is_array($to)) {
+						foreach ($to as $to2) {
 							$to2_raw = $to2.'_raw';
 							$newdata->$to2 = $data->$from;
 							$newdata->$to2_raw = $data->$fromraw;
 						}
 					}
-					else
-					{
-						if (!isset($data->$from))
-						{
+					else {
+						if (!isset($data->$from)) {
 							JError::raiseError(500, 'autofill map json not correctly set?');
 						}
 						$newdata->$to = $data->$from;
-						if (!isset($data->$fromraw))
-						{
+						if (!isset($data->$fromraw)) {
 							JError::raiseError(500, 'autofill toraw map json not correctly set?');
 						}
 						$newdata->$toraw = $data->$fromraw;
 					}
 				}
-			}
-			else
-			{
+			} else {
 				$newdata = $data;
 			}
 			echo json_encode($newdata);

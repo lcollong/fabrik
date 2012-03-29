@@ -574,14 +574,13 @@ class JForm
 	public function getValue($name, $group = null, $default = null)
 	{
 		// If a group is set use it.
-		if ($group)
-		{
+		if ($group) {
 			$return = $this->data->get($group.'.'.$name, $default);
 		}
-		else
-		{
+		else {
 			$return = $this->data->get($name, $default);
 		}
+
 		return $return;
 	}
 

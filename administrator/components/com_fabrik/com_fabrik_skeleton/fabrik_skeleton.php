@@ -12,18 +12,20 @@ $db = JFactory::getDbo();
 //get the package id from #__fabrik_packages for this opton
 $query = $db->getQuery(true);
 $option = JRequest::getCmd('option');
-$query->select('id')->from('#__fabrik_packages')->where('component_name = '.$db->Quote($option).' AND external_ref <> ""')->order('version DESC');
+$shortName = substr($option, 4);
+$query->select('id')->from('#__fabrik_packages')->where('(component_name = ' . $db->quote($option) . ' OR component_name = ' . $db->quote($shortName) . ') AND external_ref <> ""')->order('version DESC');
 $db->setQuery($query, 0, 1);
 $id = $db->loadResult();
+if ($id == '')
+{
+	JError::raiseError(500, 'Could not load package');
+}
 JRequest::setVar('id', $id);
 
 // Include dependancies
 jimport('joomla.application.component.controller');
 jimport('joomla.application.component.model');
 jimport('joomla.filesystem.file');
-
-$defines = JFile::exists(JPATH_SITE . '/components/com_fabrik/user_defines.php') ? 'user_defines.php' : 'defines.php';
-require_once(JPATH_SITE . '/components/com_fabrik/' . $defines);
 
 //set the user state to load the package db tables
 $app = JFactory::getApplication();

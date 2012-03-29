@@ -82,8 +82,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 			}
 		}
 		$str = JHTML::_('select.genericlist', $opts, $name, $attribs, 'value', 'text', $selected, $id);
-		if (!$this->editable)
-		{
+		if (!$this->editable) {
 			return implode(', ', $aRoValues);
 		}
 		$str .= $this->getAddOptionFields($repeatCounter);
@@ -114,34 +113,6 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 		$opts = json_encode($opts);
 		JText::script('PLG_ELEMENT_DROPDOWN_ENTER_VALUE_LABEL');
 		return "new FbDropdown('$id', $opts)";
-	}
-
-	/**
-	 * (non-PHPdoc)
-	 * @see plgFabrik_ElementList::getTitlePart()
-	 */
-
-	function getTitlePart($data, $repeatCounter = 0, $opts = array())
-	{
-		$val = $this->getValue($data, $repeatCounter, $opts);
-		$element = $this->getElement();
-		$labels = explode('|', $element->sub_labels);
-		$values = explode('|',  $element->sub_values);
-		$str = '';
-		if (is_array($val))
-		{
-			foreach ($val as $tmpVal)
-			{
-				$key = array_search($tmpVal, $values);
-				$str.= ($key === false) ? $tmpVal : $labels[$key];
-				$str.= ' ';
-			}
-		}
-		else
-		{
-			$str = $val;
-		}
-		return $str;
 	}
 
 	/**
@@ -268,7 +239,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 			}
 			if (!preg_match('#^\'.*\'$#', $value))
 			{
-				$value = $db->Quote($value);
+				$value = $db->quote($value);
 			}
 		}
 		$this->encryptFieldName($key);
@@ -276,10 +247,16 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 		if ($params->get('multiple'))
 		{
 			$originalValue = trim($value, "'");
-			return " ($key $condition $value OR $key LIKE \"$originalValue',%\"".
-				" OR $key LIKE \"%:'$originalValue',%\"".
-				" OR $key LIKE \"%:'$originalValue'\"".
-				" )";
+			
+			$where1 = ('["' . $originalValue . '",%');
+			$where2 = ('%,"' . $originalValue . '",%');
+			$where3 = ('%,"' . $originalValue . '"]');
+			
+
+			return ' (' . $key . ' ' . $condition . ' ' . $value .' OR ' . $key . ' LIKE \'' . $where1 . 
+							'\' OR ' . $key . ' LIKE \'' . $where2 .
+							'\' OR ' . $key . ' LIKE \'' . $where3 .
+							'\' )';
 		}
 		else
 		{
