@@ -1338,10 +1338,20 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			{
 				return parent::dataConsideredEmpty($data, $repeatCounter);
 			}
-			$olddaata = $this->getFormModel()->origData[$repeatCounter];
-			$name = $this->getFullName(false, true, false);
-			return JArrayHelper::getValue(JArrayHelper::fromObject($olddaata), $name) === '' ? true : false;
+			$olddaata = JArrayHelper::getValue($this->getFormModel()->_origData, $repeatCounter);
+			if (!is_null($olddaata))
+			{
+				$name = $this->getFullName(false, true, false);
+				$r = JArrayHelper::getValue(JArrayHelper::fromObject($olddaata), $name, '') === '' ? true : false;
+				if (!$r)
+				{
+					//if an original value is found then data not empty - if not found continue to check the $_FILES array to see if one 
+					// has been uploaded
+					return false;
+				}
+			}
 		}
+		
 		$groupModel = $this->getGroup();
 		if ($groupModel->isJoin())
 		{
@@ -1351,7 +1361,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			if (!array_key_exists('name', $joindata)) {
 				return true;
 			}
-			$file = (array)$joindata['name'][$joinid][$name];
+			$file = (array) $joindata['name'][$joinid][$name];
 			return JArrayHelper::getValue($file, $repeatCounter, '') == '' ? true : false;
 		}
 		else
