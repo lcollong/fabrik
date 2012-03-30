@@ -782,7 +782,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 								if (in_array($obj->value, $defaults))
 								{
 									$index = array_search($obj->value, $defaults);
-									$o->value = $joinids[$index];
+									$o->value = JArrayHelper::getValue($joinids, $index);
 								}
 								else
 								{
@@ -1720,6 +1720,7 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 			if ($obj->value == $v)
 			{
 				$defaultLabel = $obj->text;
+				break;
 			}
 		}
 		return is_null($defaultLabel) ? $v : $defaultLabel;
