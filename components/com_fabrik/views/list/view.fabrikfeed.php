@@ -65,6 +65,7 @@ class FabrikViewList extends JView{
 				if ($element->id == $dateEl)
 				{
 					$dateEl = $elementModel->getFullName(false, true, false);
+					$rawdateEl = $dateEl . '_raw';
 				}
 				$elParams = $elementModel->getParams();
 
@@ -130,7 +131,7 @@ class FabrikViewList extends JView{
 		$rows = $model->getData();
 
 		$document->title = $w->parseMessageForPlaceHolder($table->label, $_REQUEST);
-		$document->description = $w->parseMessageForPlaceHolder($table->introduction);
+		$document->description = htmlspecialchars(trim(strip_tags($table->introduction)));
 		$document->link = JRoute::_('index.php?option=com_fabrik&view=list&listid=' . $table->id . '&Itemid=' . $Itemid);
 
 		/* check for a custom css file and include it if it exists*/
@@ -153,7 +154,9 @@ class FabrikViewList extends JView{
 
 				//get the content
 				$str2 = '';
-				$str = '<table style="margin-top:10px;padding-top:10px;">';
+				$str = '';
+				$tstart = '<table style="margin-top:10px;padding-top:10px;">';
+				
 				//used for content not in dl
 				//ok for feed gator you cant have the same item title so we'll take the first value from the table (asume its the pk and use that to append to the item title)'
 				$title = '';
@@ -194,7 +197,7 @@ class FabrikViewList extends JView{
 						//set a default title
 						$title = $row->$dbcolname['colName'];
 					}
-					$rsscontent = $row->$dbcolname['colName'];
+					$rsscontent = strip_tags($row->$dbcolname['colName']);
 
 					$found = false;
 					foreach ($rsstags as $rsstag =>$namespace)
@@ -233,7 +236,14 @@ class FabrikViewList extends JView{
 				{
 					$title = $row->$titleEl;
 				}
-				$str = $str2 . $str . "</table>";
+				if ($dbcolname['label'] != '')
+				{
+					$str = $tstart . $str . "</table>";
+				}
+				else
+				{
+					$str = $str2;
+				}
 
 				// url link to article
 				$link = JRoute::_('index.php?option=com_fabrik&view='.$view.'&listid='.$table->id.'&formid='.$form->id.'&rowid='. $row->slug);
@@ -244,7 +254,7 @@ class FabrikViewList extends JView{
 
 				if ($dateEl != '')
 				{
-					$date = $row->$dateEl ? date('r', strtotime(@$row->$dateEl) ) : '';
+					$date = $row->$dateEl ? date('r', strtotime(@$row->$rawdateEl)) : '';
 				}
 				else
 				{
@@ -266,7 +276,7 @@ class FabrikViewList extends JView{
 				}
 
 				// loads item info into rss array
-				$document->addItem( $item);
+				$res = $document->addItem($item);
 			}
 		}
 	}
