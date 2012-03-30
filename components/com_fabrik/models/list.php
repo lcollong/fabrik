@@ -1414,7 +1414,13 @@ class FabrikFEModelList extends JModelForm {
 			$array = JArrayHelper::fromObject($row);
 			foreach ($array as $k => &$v)
 			{
-				$v = json_decode($v, true);
+				// $$$ hugh - not everything is JSON, some stuff is just plain strings.
+				// So we need to see if JSON encoding failed, and only use result if it didn't.
+				// $v = json_decode($v, true);
+				$v2 = json_decode($v, true);
+				if ($v2 !== null) {
+					$v = $v2;
+				}
 				if (is_array($v))
 				{
 					$v = JArrayHelper::getValue($v, $repeatCounter);
@@ -3110,7 +3116,7 @@ class FabrikFEModelList extends JModelForm {
 		{
 			if ($origColName == '')
 			{
-				$fabrikDb->setQuery("ALTER TABLE $tableName ADD COLUMN ".FabrikString::safeColName($element->name)." $objtype AFTER $lastfield");
+				$fabrikDb->setQuery('ALTER TABLE ' . $tableName . ' ADD COLUMN ' . FabrikString::safeColName($element->name) . ' ' . $objtype . ' AFTER ' . $lastfield);
 				if (!$fabrikDb->query())
 				{
 					return JError::raiseError(500, 'alter structure: ' . $fabrikDb->getErrorMsg());
@@ -6230,10 +6236,10 @@ class FabrikFEModelList extends JModelForm {
 		$joinModels = $this->getInternalRepeatJoins();
 		foreach ($joinModels as $joinModel)
 		{
-			$db->setQuery("TRUNCATE ".$db->quoteName($joinModel->getJoin()->table_join));
+			$db->setQuery('TRUNCATE ' . $db->quoteName($joinModel->getJoin()->table_join));
 			$db->query();
 		}
-		$db->setQuery("TRUNCATE ".$db->quoteName($item->db_table_name));
+		$db->setQuery('TRUNCATE ' . $db->quoteName($item->db_table_name));
 		$db->query();
 		// 3.0 clear filters (resets limitstart so that subsequently added records are shown)
 		$this->getFilterModel()->clearFilters();
@@ -6272,14 +6278,14 @@ class FabrikFEModelList extends JModelForm {
 	}
 
 	/**
-	 * @param int connection id to use
-	 * @param string table to load fields for
-	 * @param string show "please select" top option
-	 * @param bool append field name values with table name
-	 * @param string name of drop down
-	 * @param string selected option
-	 * @param string class name
-	 * @return string html to be added to DOM
+	 * @param	int		connection id to use
+	 * @param	string	table to load fields for
+	 * @param	string	show "please select" top option
+	 * @param	bool	append field name values with table name
+	 * @param	string	name of drop down
+	 * @param	string	selected option
+	 * @param	string	class name
+	 * @return	string	html to be added to DOM
 	 */
 
 	function getFieldsDropDown($cnnId, $tbl, $incSelect, $incTableName = false, $selectListName = 'order_by', $selected = null, $className = "inputbox")
@@ -6311,7 +6317,7 @@ class FabrikFEModelList extends JModelForm {
 
 	/**
 	 * create the RSS href link to go in the table template
-	 * @return string RSS link
+	 * @return	string	RSS link
 	 */
 
 	function getRSSFeedLink()
@@ -6336,9 +6342,9 @@ class FabrikFEModelList extends JModelForm {
 	 * {placeholder} with row data
 	 * (added by hugh, does the same thing as parseMessageForPlaceHolder in parent
 	 * class, but for rows instead of forms)
-	 * @param string text to parse
-	 * @param array of row data
-	 * @param bool add slashes to the replaced data (default = false) set to true in fabrikcalc element
+	 * @param	string	text to parse
+	 * @param	array	of row data
+	 * @param	bool	add slashes to the replaced data (default = false) set to true in fabrikcalc element
 	 */
 
 	function parseMessageForRowHolder($msg, &$row, $addslashes = false)
@@ -6364,8 +6370,8 @@ class FabrikFEModelList extends JModelForm {
 	/**
 	 * called from parseMessageForRowHolder to iterate through string to replace
 	 * {placeholder} with row data
-	 * @param array matches found in parseMessageForRowHolder
-	 * @return string posted data that corresponds with placeholder
+	 * @param	array	matches found in parseMessageForRowHolder
+	 * @return	string	posted data that corresponds with placeholder
 	 */
 
 	private function replaceWithRowData($matches)
@@ -6402,9 +6408,9 @@ class FabrikFEModelList extends JModelForm {
 	/**
 	 * 3.0 this is just way too confuins - view details link now always returns a view details link and not an edit link ?!!!
 	 * get the link to view the records details
-	 * @param object $row active table row
-	 * @param string view 3.0 depreciated
-	 * @return url of view details link
+	 * @param	object	$row active table row
+	 * @param	string	view 3.0 depreciated
+	 * @return	string	url of view details link
 	 */
 
 	function viewDetailsLink(&$row, $view = null)
@@ -6454,8 +6460,8 @@ class FabrikFEModelList extends JModelForm {
 
 	/**
 	 * create a custom edit/view details link
-	 * @param string $link
-	 * @param object $row
+	 * @param	string	$link
+	 * @param	object	$row
 	 */
 
 	protected function makeCustomLink($link, $row)
@@ -6847,8 +6853,8 @@ class FabrikFEModelList extends JModelForm {
 
 	/**
 	 * get a single column of data from the table, test for element filters
-	 * @param string column to get
-	 * @return array values for the column - empty array if no results found
+	 * @param	string	column to get
+	 * @return	array	values for the column - empty array if no results found
 	 */
 
 	function getColumnData($col)
@@ -6889,7 +6895,7 @@ class FabrikFEModelList extends JModelForm {
 
 	/**
 	 * determine how the model does filtering and navigation
-	 * @return string (ajax/post default post)
+	 * @return	bool	is ajax
 	 */
 
 	function isAjax()
@@ -6904,29 +6910,29 @@ class FabrikFEModelList extends JModelForm {
 			}
 			else
 			{
-				$this->ajax = $params->get('list_ajax', JRequest::getBool('ajax', false));
+				$this->ajax = (bool) $params->get('list_ajax', JRequest::getBool('ajax', false));
 			}
 		}
-		return (bool)$this->ajax;
+		return (bool) $this->ajax;
 	}
 
 	/**
 	 * model edit/add links can be set separately to the ajax option
-	 * @return boolean
+	 * @return	bool
 	 */
 
 	protected function isAjaxLinks()
 	{
 		$params = $this->getParams();
 		$ajax = $this->isAjax();
-		return (bool)$params->get('list_ajax_links', $ajax);
+		return (bool) $params->get('list_ajax_links', $ajax);
 	}
 
 	/**
 	 * get an array of the table's elements that match a certain plugin type
 	 *
-	 * @param string $plugin
-	 * @return array matched element models
+	 * @param	string	$plugin
+	 * @return	array	matched element models
 	 */
 
 	function getElementsOfType($plugin)
@@ -7069,7 +7075,10 @@ class FabrikFEModelList extends JModelForm {
 		$plugin = $pluginManager->getPlugIn($className, 'element');
 		$plugin->setId($elementid);
 		$el = $plugin->getElement();
-		return $plugin->getFilter(JRequest::getInt('counter', 0), false);
+		$container = 'listform_' . $this->getRenderContext();
+		$script = $plugin->filterJS(false, $container);
+		FabrikHelperHTML::addScriptDeclaration($script);
+		echo $plugin->getFilter(JRequest::getInt('counter', 0), false);
 	}
 
 	/**
@@ -7163,14 +7172,7 @@ class FabrikFEModelList extends JModelForm {
 		}
 		$qs = implode('&', $qs_args);
 		$qs = $w->parseMessageForPlaceHolder($qs, JRequest::get('request'));
-		if (!empty($addurl_url))
-		{
-			return JRoute::_($addurl_url . '?' . $qs);
-		}
-		else
-		{
-			return JRoute::_("index.php?" . $qs);
-		}
+		return !empty($addurl_url) ? JRoute::_($addurl_url . '?' . $qs) : JRoute::_('index.php?' . $qs);
 	}
 
 	function getElementJs()
@@ -7231,7 +7233,7 @@ class FabrikFEModelList extends JModelForm {
 		}
 		$queryvars = $router->getVars();
 		$form = $this->getFormModel();
-		$page = "index.php?";
+		$page = 'index.php?';
 		foreach ($queryvars as $k => $v)
 		{
 			$rawK = FabrikString::rtrimword($k, '_raw');
@@ -7272,23 +7274,23 @@ class FabrikFEModelList extends JModelForm {
 				}
 			}
 		}
-		$action = $page . implode("&amp;", $qs);
+		$action = $page . implode('&amp;', $qs);
 		//limitstart gets added in the pageination model
 		//$action = preg_replace("/limitstart{$this->getId()}=(.*)?(&|)/", "", $action);
 		// $$$ hugh - oops, this pattern was removing to end of line, not just the limitstart, trying out fix
-		$action = preg_replace("/limitstart{$this->getId()}=(\d+)?(&amp;|)/", "", $action);
+		$action = preg_replace("/limitstart{$this->getId()}=(\d+)?(&amp;|)/", '', $action);
 
 		$action = FabrikString::removeQSVar($action, 'fabrik_incsessionfilters');
-		$action = FabrikString::rtrimword($action, "&");
+		$action = FabrikString::rtrimword($action, '&');
 		$this->tableAction 	= JRoute::_($action);
 		return $this->tableAction;
 	}
 
 	/** allow plugins to add arbitrary WHERE clauses.  Gets checked in buildQueryWhere().
 	 *  always gets added with AND to the end of any other where clauses
-	 * @param string plugin name
-	 * @param string where clause (WITHOUT prepended where/and etc)
-	 * @return bool
+	 * @param	string	plugin name
+	 * @param	string	where clause (WITHOUT prepended where/and etc)
+	 * @return	bool
 	 */
 
 	function setPluginQueryWhere($pluginName, $whereClause)
@@ -7376,7 +7378,7 @@ class FabrikFEModelList extends JModelForm {
 		$tableParams = $this->getParams();
 		$table = $this->getTable();
 		$pluginManager = FabrikWorker::getPluginManager();
-		$method = 'renderListData_'.$this->outPutFormat;
+		$method = 'renderListData_' . $this->outPutFormat;
 		$this->_aLinkElements = array();
 
 		// $$$ hugh - temp foreach fix
@@ -7674,7 +7676,7 @@ class FabrikFEModelList extends JModelForm {
 	{
 		$db = $this->getDb();
 		$table = $this->getTable();
-		$query = "UPDATE $table->db_table_name SET $key = COALESCE($key,0)  + $dir WHERE $table->db_primary_key = ".$db->quote($rowId);
+		$query = "UPDATE $table->db_table_name SET $key = COALESCE($key, 0)  + $dir WHERE $table->db_primary_key = ".$db->quote($rowId);
 		$db->setQuery($query);
 		return $db->query();
 	}
@@ -7777,7 +7779,6 @@ class FabrikFEModelList extends JModelForm {
 				{
 					$query = $db->getQuery(true);
 					$ids = implode(',', $ids);
-					//$db->setQuery("UPDATE $db_table_name SET $update WHERE");
 					$query->update($db_table_name)->set($update)->where($dbk . ' IN (' .$ids. ')');
 					$db->setQuery($query);
 					$db->query();
@@ -7790,7 +7791,6 @@ class FabrikFEModelList extends JModelForm {
 			$query = $db->getQuery(true);
 			$query->update($db_table_name)->set($update)->where($dbk . ' IN (' .$ids. ')');
 			$db->setQuery($query);
-			//$db->setQuery("UPDATE $db_table_name SET $update WHERE $dbk IN ($ids)");
 			$db->query();
 		}
 	}
