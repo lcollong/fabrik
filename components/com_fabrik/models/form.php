@@ -4070,23 +4070,13 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 	 * once the user has returned from those sites.
 	 * @return	string	the session key to store redirect information (note: ends in '.')
 	 */
+	
 	public function getRedirectContext()
 	{
 		return 'com_fabrik.form.' . $this->getId() . '.redirect.';
 
 	}
 
-	/**
-	 * helper method to get the session redirect key. Redirect plugin stores this
-	 * other form plugins such as twitter or paypal may need to query the session to perform the final redirect
-	 * once the user has returned from those sites.
-	 * @return	string	the session key to store redirect information (note: ends in '.')
-	 */
-	public function getRedirectContext()
-	{
-		return 'com_fabrik.form.' . $this->getId() . '.redirect.';
-
-	}
 }
 
 ?>
