@@ -1588,12 +1588,12 @@ class FabrikFEModelList extends JModelForm {
 		$this->selectedOrderFields = array();
 		if ($this->outPutFormat == 'fabrikfeed' || $this->outPutFormat == 'feed')
 		{
-			$dateColId = (int)$params->get('feed_date', 0);
-			$query = $db->getQuery(true);
-			$query->select('name')->from('#__{package}_elements')->where('id = ' . $dateColId);
-			$db->setQuery($query);
-			$dateCol = $db->quoteName($table->db_table_name).'.'.$db->quoteName($db->loadResult());
-			$query->clear();
+			$dateColId = (int) $params->get('feed_date', 0);
+			$q = $db->getQuery(true);
+			$q->select('name')->from('#__{package}_elements')->where('id = ' . $dateColId);
+			$db->setQuery($q);
+			$dateCol = $db->quoteName($table->db_table_name . '.' . $db->loadResult());
+			$q->clear();
 			if ($dateColId !== 0)
 			{
 				$this->order_dir = 'DESC';
@@ -6730,7 +6730,7 @@ class FabrikFEModelList extends JModelForm {
 			{
 				$this->formatData($rows);
 			}
-			$this->rows[$sig] = count($rows) > 0 ? $rows[0] : new stdClass();
+			$this->rows[$sig] = JArrayHelper::getValue($rows, 0, new stdClass());
 		}
 		return $this->rows[$sig];
 	}
