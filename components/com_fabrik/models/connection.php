@@ -197,7 +197,7 @@ class FabrikFEModelConnection extends JModel {
 				//$$$Rob - not sure why this is happening on badmintonrochelais.com (mySQL 4.0.24) but it seems like
 				//you can only use one connection on the site? As JDatabase::getInstance() forces a new connection if its options
 				//signature is not found, then fabrik's default connection won't be created, hence defaulting to that one
-				if ($cn->default == 1)
+				if ($cn->default == 1 && JRequest::getCmd('task') !== 'test')
 				{
 					self::$dbs[$cn->id] = FabrikWorker::getDbo();
 
@@ -221,9 +221,13 @@ class FabrikFEModelConnection extends JModel {
 						{
 							$session->clear('fabrik.connection.'.$cn->id);
 							$this->connection = null;
+							$level =  E_NOTICE;
 						}
-						JError::raiseError(E_ERROR, 'Could not connection to database cid = ' . $cn->id);
-						exit;
+						else
+						{
+							$level =  E_ERROR;
+						}
+						return JError::raise($level, 500, 'Could not connection to database cid = ' . $cn->id);
 					}
 				}
 			}
