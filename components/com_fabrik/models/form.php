@@ -285,31 +285,18 @@ class FabrikFEModelForm extends FabModelForm
 		{
 			if (JFile::exists(JPATH_THEMES .'/' . $app->getTemplate() . '/html/com_fabrik/form/' . $tmpl . '/template_css.php'))
 			{
-				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'templates/' . $app->getTemplate() . '/html/com_fabrik/form/' . $tmpl . '/template_css.php?c=' . $this->getId() . '&amp;view=' . $v);
+				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'templates/' . $app->getTemplate() . '/html/com_fabrik/form/' . $tmpl . '/template_css.php?c=' . $this->getId() . '&view=' . $v);
 			}
 			else
 			{
-				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'components/com_fabrik/views/form/tmpl/' . $tmpl . '/template_css.php?c=' . $this->getId() . '&amp;view=' . $v);
+				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE . 'components/com_fabrik/views/form/tmpl/' . $tmpl . '/template_css.php?c=' . $this->getId() . '&view=' . $v);
 			}
 			// $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
 			// custom.css - for backward compat with existing 2.x custom.css
 			// custom_css.php - what we'll recommend people use for custom css moving foward.
-			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/'.$tmpl.'/custom.css'))
+			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/' . $tmpl . '/custom.css'))
 			{
-				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom.css");
-			}
-			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/'.$tmpl.'/custom_css.php'))
-			{
-				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom_css.php?c=".$this->getId().'&amp;view='.$v);
-			}
-			// $$$ hugh - as per Skype convos with Rob, decided to re-instate the custom.css convention.  So I'm adding two files:
-			// custom.css - for backward compat with existing 2.x custom.css
-			// custom_css.php - what we'll recommend people use for custom css moving foward.
-			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/'.$tmpl.'/custom.css')) {
-				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom.css");
-			}
-			if (JFile::exists(COM_FABRIK_BASE.'/components/com_fabrik/views/form/tmpl/'.$tmpl.'/custom_css.php')) {
-				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/".$tmpl."/custom_css.php?c=".$this->getId().'&amp;view='.$v);
+				FabrikHelperHTML::stylesheet(COM_FABRIK_LIVESITE."components/com_fabrik/views/form/tmpl/" . $tmpl . "/custom_css.php?c=" . $this->getId() . '&view=' . $v);
 			}
 		}
 
@@ -1620,7 +1607,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 				// ...removing the $c group counter
 				if ($joinRowId == '')
 				{
-					$joinRowId = $listModel->_lastInsertId;
+					$joinRowId = $listModel->lastInsertId;
 					$this->_formData['join'][$oJoin->id][$oJoinPk] = $joinRowId;
 					$this->formDataWithTableName['join'][$oJoin->id][$oJoinPk] = $joinRowId;
 					$this->_fullFormData['join'][$oJoin->id][$oJoinPk] = $joinRowId;
@@ -2149,6 +2136,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 			}
 		}
 		//insert join data into request array
+		$post['join'] = $joindata;
 		JRequest::setVar('join', $joindata, 'post');
 		if (!empty($this->errors))
 		{

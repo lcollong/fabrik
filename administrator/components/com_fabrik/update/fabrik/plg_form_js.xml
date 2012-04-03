@@ -32,4 +32,18 @@
 		<maintainerurl>http://pollen-8.co.uk</maintainerurl>
 		<targetplatform name="joomla" version="2.5"/>
 	</update>
+<update>
+		<name>Fabrik form: js</name>
+		<description>Fabrik form: js</description>
+		<element>plg_form_js</element>
+		<type>plugin</type>
+		<folder>fabrik_form</folder>
+		<version>3.0.5</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_form_js_3.0.5.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http://pollen-8.co.uk</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
 </updates>

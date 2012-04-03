@@ -32,4 +32,18 @@
 		<maintainerurl>http://pollen-8.co.uk</maintainerurl>
 		<targetplatform name="joomla" version="2.5"/>
 	</update>
+<update>
+		<name>Fabrik validationrule: php</name>
+		<description>Fabrik validationrule: php</description>
+		<element>plg_validationrule_php</element>
+		<type>plugin</type>
+		<folder>fabrik_validationrule</folder>
+		<version>3.0.5</version>
+		<downloads>
+			<downloadurl format="zip" type="full">http://fabrikar.com/media/downloads/plg_fabrik_validationrule_php_3.0.5.zip</downloadurl>
+		</downloads>
+		<maintainer>Rob Clayburn</maintainer>
+		<maintainerurl>http://pollen-8.co.uk</maintainerurl>
+		<targetplatform name="joomla" version="2.5"/>
+	</update>
 </updates>

@@ -125,6 +125,16 @@ class plgFabrik_Element extends FabrikPlugin
 		// Set new element ID
 		$this->id = $id;
 	}
+	
+	/**
+	 * get the element id
+	 * @return	int	element id
+	 */
+	
+	public function getId()
+	{
+		return $this->_id;
+	}
 
 	/**
 	 * get the element table object
@@ -325,6 +335,7 @@ class plgFabrik_Element extends FabrikPlugin
 			if ($img !== '')
 			{
 				$this->iconsSet = true;
+				$img = '<a class="fabrikTip" href="#" title="' . $data. '">' . $img . '</a>';
 				return $img;
 			}
 		}
@@ -1047,7 +1058,7 @@ class plgFabrik_Element extends FabrikPlugin
 	 * get the element tip html
 	 * @param	array	$data to use in parse holders - defaults to form's data
 	 */
-	
+
 	protected function getTip($data = null)
 	{
 		if (is_null($data))
@@ -1919,7 +1930,9 @@ class plgFabrik_Element extends FabrikPlugin
 					}
 					$jsAct->js_e_value = $w->parseMessageForPlaceHolder($jsAct->js_e_value, JRequest::get('post'));
 					$js = "if (this.get('value') $jsAct->js_e_condition '$jsAct->js_e_value') {";
-					$js .= $jsControllerKey . ".doElementFX('$jsAct->js_e_trigger', '$jsAct->js_e_event')";
+					// $$$ need to use ciorrected triggerid here as well
+					//$js .= $jsControllerKey . ".doElementFX('$jsAct->js_e_trigger', '$jsAct->js_e_event')";
+					$js .= $jsControllerKey . ".doElementFX('fabrik_trigger_" . $triggerid . "', '$jsAct->js_e_event')";
 					$js .= "}";
 					$js = addslashes($js);
 					$js = str_replace(array("\n", "\r"), "", $js);
