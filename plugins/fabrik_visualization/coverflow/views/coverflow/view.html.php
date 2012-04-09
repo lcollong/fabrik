@@ -21,14 +21,14 @@ class fabrikViewCoverflow extends JView
 		{
 			$model->render();
 		}
-		$this->assign('params', $model->getParams());
+		$params = $model->getParams();
+		$this->assign('params', $params);
 		$this->assign('containerId', $this->get('ContainerId'));
 		$this->assignRef('row', $row);
 		$this->assign('showFilters', JRequest::getInt('showfilters', $this->params->get('show_filters')) === 1 ?  1 : 0);
 		$this->assign('filters', $this->get('Filters'));
 		$this->assign('filterFormURL', $this->get('FilterFormURL'));
 		$pluginParams = $model->getPluginParams();
-
 		$tmplpath = JPATH_ROOT . '/plugins/fabrik_visualization/coverflow/views/coverflow/tmpl/' . $tmpl;
 		$this->_setPath('template', $tmplpath);
 		FabrikHelperHTML::script('media/com_fabrik/js/list.js');

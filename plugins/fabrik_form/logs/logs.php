@@ -51,7 +51,7 @@ class plgFabrik_FormLogs extends plgFabrik_Form {
 
 	public function onAfterProcess($params, &$formModel)
 	{
-		$type = empty($formModel->_origRowId) ? 'form.submit.add' : 'form.submit.edit';
+		$type = empty($formModel->origRowId) ? 'form.submit.add' : 'form.submit.edit';
 		return $this->log($params, $formModel, $type);
 	}
 

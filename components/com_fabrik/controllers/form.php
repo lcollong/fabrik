@@ -129,6 +129,14 @@ class FabrikControllerForm extends JController
 		$model->getForm();
 		$model->rowId = JRequest::getVar('rowid', '');
 
+		// $$$ hugh - need this in plugin manager to be able to treat a "Copy" form submission
+		// as 'new' for purposes of running plugins.  Rob's comment in model process() seems to
+		// indicate that origRowId was for this purposes, but it doesn't work, 'cos always has a value.
+		if (JRequest::getVar('Copy', '') != '')
+		{
+			$model->copyingRow(true);
+		}
+
 		// Check for request forgeries
 		if ($model->spoofCheck())
 		{

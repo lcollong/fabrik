@@ -281,7 +281,7 @@ class FabrikPlugin extends JPlugin
 	{
 		return FabTable::getInstance('Extension', 'JTable');
 	}
-	
+
 	/**
 	 * determine if we use the plugin or not
 	 * both location and event criteria have to be match
@@ -315,19 +315,31 @@ class FabrikPlugin extends JPlugin
 		}
 		if ($ok)
 		{
-			$k = array_key_exists('_origRowId', $model) ? '_origRowId' : 'rowId';
+			// $$$ hugh @FIXME - added copyingRow() stuff to form model, need to do it
+			// for list model as well.
+			$k = array_key_exists('origRowId', $model) ? 'origRowId' : 'rowId';
 			switch ($event)
 			{
 				case 'new':
 					if ($model->$k != 0)
 					{
-						$ok = false;
+						if (isset($model->_copyingRow)) {
+							$ok = $model->copyingRow();
+						}
+						else {
+							$ok = false;
+						}
 					}
 					break;
 				case 'edit':
 					if ($model->$k == 0)
 					{
-						$ok = false;
+						if (isset($model->_copyingRow)) {
+							$ok = !$model->copyingRow();
+						}
+						else {
+							$ok = false;
+						}
 					}
 					break;
 			}

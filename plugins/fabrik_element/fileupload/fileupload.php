@@ -311,9 +311,18 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 	{
 		$data = FabrikWorker::JSONtoData($data, true);
 		$params = $this->getParams();
-		for ($i = 0; $i <count($data); $i++)
+		// $$$ hugh - have to run thru rendering even if data is empty,
+		// in case default image is being used.
+		if (empty($data))
 		{
-			$data[$i] = $this->_renderListData($data[$i], $thisRow, $i);
+			$data[0] = $this->_renderListData('', $oAllRowsData, 0);
+		}
+		else
+		{
+			for ($i = 0; $i < count($data); $i ++)
+			{
+				$data[$i] = $this->_renderListData($data[$i], $oAllRowsData, $i);
+			}
 		}
 		$data = json_encode($data);
 		return parent::renderListData($data, $thisRow);
@@ -1345,13 +1354,13 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 				$r = JArrayHelper::getValue(JArrayHelper::fromObject($olddaata), $name, '') === '' ? true : false;
 				if (!$r)
 				{
-					//if an original value is found then data not empty - if not found continue to check the $_FILES array to see if one 
+					//if an original value is found then data not empty - if not found continue to check the $_FILES array to see if one
 					// has been uploaded
 					return false;
 				}
 			}
 		}
-		
+
 		$groupModel = $this->getGroup();
 		if ($groupModel->isJoin())
 		{
@@ -1680,12 +1689,14 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		{
 			if ($render->output == '' && $params->get('default_image') != '')
 			{
-				$render->output = '<img src="'.$params->get('default_image').'" alt="image" />';
+				$render->output = '<img src="' . $params->get('default_image') . '" alt="image" />';
 			}
-			$str = '<div class="fabrikSubElementContainer">' . $str . '</div>';
+			$str = '<div class="fabrikSubElementContainer">';
+			$str .= $render->output;
+			$str .= '</div>';
 			return $str;
 		}
-		$str .= '<input class="fabrikinput" name="'.$name.'" type="file" id="'.$id.'" />'."\n";
+		$str .= '<input class="fabrikinput" name="' . $name . '" type="file" id="' . $id . '" />'."\n";
 		if ($params->get('upload_allow_folderselect') == '1')
 		{
 			$rDir = JPATH_SITE . '/' . $params->get('ul_directory');
@@ -1699,7 +1710,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			{
 				$ulname = $name.'[ul_end_dir]';
 			}
-			$str .= '<input name="'.$ulname.'" type="hidden" class="folderpath"/>';
+			$str .= '<input name="' . $ulname . '" type="hidden" class="folderpath"/>';
 		}
 
 		if ($params->get('ajax_upload'))

@@ -270,14 +270,14 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		$paypal_currency_code = $w->parseMessageForPlaceHolder($paypal_currency_code, $data);
 		$opts['currency_code'] = $paypal_currency_code;
 
-		$paypal_test_site = $params->get('paypal_test_site', '');
+		$paypal_test_site = rtrim($paypal_test_site, '/');
 		if ($paypal_testmode == 1 && !empty($paypal_test_site))
 		{
-			$ppurl = $paypal_test_site . '/index.php?option=com_fabrik&c=plugin&task=plugin.pluginAjax&formid='.$formModel->get('id').'&g=form&plugin=paypal&method=ipn';
+			$ppurl = $paypal_test_site . '/index.php?option=com_fabrik&c=plugin&task=plugin.pluginAjax&formid=' . $formModel->get('id') . '&g=form&plugin=paypal&method=ipn';
 		}
 		else
 		{
-			$ppurl = COM_FABRIK_LIVESITE.'/index.php?option=com_fabrik&c=plugin&task=plugin.pluginAjax&formid='.$formModel->get('id').'&g=form&plugin=paypal&method=ipn';
+			$ppurl = COM_FABRIK_LIVESITE . '/index.php?option=com_fabrik&c=plugin&task=plugin.pluginAjax&formid=' . $formModel->get('id') . '&g=form&plugin=paypal&method=ipn';
 		}
 		$paypal_test_site_qs = $params->get('paypal_test_site_qs', '');
 		if ($paypal_testmode == 1 && !empty($paypal_test_site_qs))
@@ -329,11 +329,11 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 			// using default thanks() method so don't forget to add renderOrder
 			if ($paypal_testmode == '1' && !empty($paypal_test_site))
 			{
-				$opts['return'] = $paypal_test_site .'/index.php?option=com_fabrik&task=plugin.pluginAjax&formid='.$formModel->get('id').'&g=form&plugin=paypal&method=thanks&rowid=' . $data['rowid']. '&renderOrder=' . $this->renderOrder;
+				$opts['return'] = $paypal_test_site . '/index.php?option=com_fabrik&task=plugin.pluginAjax&formid=' . $formModel->get('id') . '&g=form&plugin=paypal&method=thanks&rowid=' . $data['rowid']. '&renderOrder=' . $this->renderOrder;
 			}
 			else
 			{
-				$opts['return'] = COM_FABRIK_LIVESITE.'/index.php?option=com_fabrik&task=plugin.pluginAjax&formid='.$formModel->get('id').'&g=form&plugin=paypal&method=thanks&rowid=' . $data['rowid']. '&renderOrder=' . $this->renderOrder;
+				$opts['return'] = COM_FABRIK_LIVESITE . '/index.php?option=com_fabrik&task=plugin.pluginAjax&formid=' . $formModel->get('id') . '&g=form&plugin=paypal&method=thanks&rowid=' . $data['rowid']. '&renderOrder=' . $this->renderOrder;
 			}
 		}
 		$opts['return'] = urlencode($opts['return']);
@@ -349,7 +349,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		$qs = array();
 		foreach ($opts as $k => $v)
 		{
-			$qs[] = "$k=$v";
+			$qs[] = $k . '=' . $v;
 		}
 		$url .= implode('&', $qs);
 
@@ -478,7 +478,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 		foreach ($_POST as $key => $value)
 		{
 			$value = urlencode(stripslashes($value));
-			$req .= "&$key=$value";
+			$req .= '&' . $key . '=' . $value;
 		}
 
 		// post back to PayPal system to validate
@@ -612,7 +612,8 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 								if (method_exists($ipn, $txn_type_function))
 								{
 									$status = $ipn->$txn_type_function($listModel, $request, $set_list, $err_msg);
-									if ($status != 'ok') {
+									if ($status != 'ok')
+									{
 										break;
 									}
 								}
@@ -709,7 +710,7 @@ class plgFabrik_FormPaypal extends plgFabrik_Form {
 	{
 		$php_file = (array) $params->get('paypal_run_php_file');
 		$php_file = JFilterInput::getInstance()->clean($php_file[$renderOrder], 'CMD');
-		$php_file = empty($php_file) ? '' : 'plugins/fabrik_form/paypal/scripts'.DS.$php_file;
+		$php_file = empty($php_file) ? '' : 'plugins/fabrik_form/paypal/scripts/' . $php_file;
 		if (!empty($php_file) && file_exists($php_file))
 		{
 			$request = $_REQUEST;

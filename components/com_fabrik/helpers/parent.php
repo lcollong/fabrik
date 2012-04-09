@@ -30,9 +30,22 @@ class FabrikWorker {
 	/** @var string audio file extensions */
 	protected $audio_extensions_eregi = 'mp3';
 
-	static protected $audio_mime_types = array(
-		'mp3' => 'audio/x-mpeg'
+	static protected $_audio_mime_types = array(
+		'mp3' => 'audio/x-mpeg',
+		'm4a' => 'audio/x-m4a'
 	);
+
+	static protected $_video_mime_types = array(
+		'mp4' => 'video/mp4',
+		'm4v' => 'video/x-m4v',
+		'mov' => 'video/quicktime'
+	);
+
+	static protected $_doc_mime_types = array(
+		'pdf' => 'application/pdf',
+		'epub' => 'document/x-epub'
+	);
+
 
 	/**
 	 * returns true if $file has an image extension type
@@ -68,6 +81,31 @@ class FabrikWorker {
 		}
 		return false;
 	}
+
+	function getVideoMimeType($file)
+	{
+		$path_parts = pathinfo($file);
+		if (array_key_exists($path_parts['extension'], self::$_video_mime_types)) {
+			return self::$_video_mime_types[$path_parts['extension']];
+		}
+		return false;
+	}
+
+	function getPodcastMimeType($file)
+	{
+		$path_parts = pathinfo($file);
+		if (array_key_exists($path_parts['extension'], self::$_video_mime_types)) {
+			return self::$_video_mime_types[$path_parts['extension']];
+		}
+		else if (array_key_exists($path_parts['extension'], self::$_audio_mime_types)) {
+			return self::$_audio_mime_types[$path_parts['extension']];
+		}
+		else if (array_key_exists($path_parts['extension'], self::$_doc_mime_types)) {
+			return self::$_doc_mime_types[$path_parts['extension']];
+		}
+		return false;
+	}
+
 
 	/**
 	 * format a string to datetime
@@ -306,8 +344,7 @@ class FabrikWorker {
 		return $date;
 	}
 
-	
-	public function monthToInt($date, $abrv = false)
+	public static function monthToInt($date, $abrv = false)
 	{
 		if ($abrv)
 		{
@@ -381,11 +418,11 @@ class FabrikWorker {
 		// was set to post for a good reason, but I can't see why now.
 		// $$$ hugh - for reasons I don't understand, merging request just doesn't seem to work
 		// in some situations, so I'm adding a replaceRequest call here as a bandaid.
-		
+
 		// @TODO $$$ rob can you remember what those situations where? Because doing this is messing up form plugins (e.g redirect) when they do replace on getEmailData()
-		// as having the line below commented in causes the request to be used before searchData. 
+		// as having the line below commented in causes the request to be used before searchData.
 		// FabrikWorker::replaceRequest($msg);
-		
+
 		$post = JRequest::get('request');
 		$this->_searchData = is_null($searchData) ?  $post : array_merge($post, $searchData);
 		$this->_searchData['JSession::getFormToken'] = JSession::getFormToken();
@@ -1101,14 +1138,14 @@ class FabrikWorker {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * @since 3.0.4
 	 * is the email really an email (more strict than JMailHelper::isEmailAddress())
 	 * @param string $email
 	 * @return bool
 	 */
-	
+
 	public function isEmail($email)
 	{
 		$conf = JFactory::getConfig();

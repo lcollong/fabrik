@@ -19,7 +19,7 @@ class plgFabrik_FormRest extends plgFabrik_Form {
 	public function onAfterProcess($params, &$formModel)
 	{
 		$w = new FabrikWorker();
-		$config_userpass = $params->get('username').':'.$params->get('password');
+		$config_userpass = $params->get('username') . ':' . $params->get('password');
 		$endpoint = $params->get('endpoint');
 
 		$headers = array(
@@ -34,7 +34,7 @@ class plgFabrik_FormRest extends plgFabrik_Form {
 		$ticket = new SimpleXMLElement("<ticket></ticket>");
 
 		$ignore = array('trkr_tickets___id');
-		if ($formModel->_origRowId == 0) {
+		if ($formModel->origRowId == 0) {
 			$ingore[] = 'id';
 		}
 		/*foreach($formModel->_formData as $key => $val){

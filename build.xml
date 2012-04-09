@@ -407,6 +407,7 @@
 				<exclude name="**/*.zip" />
 				<exclude name="**/views/form/tmpl/**" />
 				<exclude name="**/views/list/tmpl/**" />
+				<exclude name="**/js/*.js" />
 			</fileset>
 		</copy>
 		
@@ -437,7 +438,9 @@
 		
 		<mkdir dir="${cfg.destdir}/site/views/list/tmpl/default" />
 		<copy todir="${cfg.destdir}/site/views/list/tmpl/default">
-			<fileset dir="${basedir}/components/com_fabrik/views/list/tmpl/default" />
+			<fileset dir="${basedir}/components/com_fabrik/views/list/tmpl/default">
+				<exclude name="**/custom_css.php" />
+			</fileset>
 		</copy>
 		
 		<mkdir dir="${cfg.destdir}/site/views/list/tmpl/div" />
@@ -463,7 +466,9 @@
 		</copy>
 		<mkdir dir="${cfg.destdir}/site/views/form/tmpl/default" />
 		<copy todir="${cfg.destdir}/site/views/form/tmpl/default">
-			<fileset dir="${basedir}/components/com_fabrik/views/form/tmpl/default" />
+			<fileset dir="${basedir}/components/com_fabrik/views/form/tmpl/default">
+				<exclude name="**/custom_css.php" />
+			</fileset>
 		</copy>
 		<mkdir dir="${cfg.destdir}/site/views/form/tmpl/default_rtl" />
 		<copy todir="${cfg.destdir}/site/views/form/tmpl/default_rtl">
@@ -560,7 +565,10 @@
 
 		<mkdir dir="${cfg.destdir}/plugins/fabrik_visualization" />
 		<copy todir="${cfg.destdir}/plugins/fabrik_visualization/">
-			<fileset dir="${basedir}/plugins/fabrik_visualization/"></fileset>
+			<fileset dir="${basedir}/plugins/fabrik_visualization/">
+					<exclude name="**/FusionCharts/**" />
+					<exclude name="**/FusionChartsFree/**" />
+			</fileset>
 		</copy>
 		
 		<antcall target="refresh.updatexml" />
@@ -616,6 +624,8 @@
 					<xmltask todir="${basedir}">
 						<fileset dir="${basedir}">
 							<include name="**/plugins/fabrik**/**/*.xml"/>
+							<exclude name="**/FusionCharts/**" />
+							<exclude name="**/FusionChartsFree/**" />
 						</fileset>
 						<replace path="/extension/version/text()" withText="${version}"/> 
 						<replace path="/extension/creationDate/text()" withText="${createdate}" />
