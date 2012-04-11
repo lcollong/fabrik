@@ -1481,6 +1481,10 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 							$n = $elementModel->getFullName(false, true, false);
 							$v = (is_array($data[$n]) && array_key_exists($c, $data[$n])) ? $data[$n][$c] : '';
 							$repData[$element->name] = $v;
+							$n_raw = $n . '_raw';
+							$v_raw = (is_array($data[$n_raw]) && array_key_exists($c, $data[$n_raw])) ? $data[$n_raw][$c] : '';
+							$repData[$element->name . '_raw'] = $v_raw;
+
 							//store any params set in the individual plug-in (see fabrikfileupload::processUpload()->crop()
 							if ($elementModel->isJoin())
 							{
@@ -1490,6 +1494,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 
 						// $$$ rob didn't work for 2nd joined data set
 						//$repData[$oJoin->table_join_key] = $insertId;
+						unset($repData[$oJoin->table_join_key . '_raw']);
 						$repData[$oJoin->table_join_key] = JArrayHelper::getValue($joinKeys, $oJoin->join_from_table . '.' . $oJoin->table_key, $insertId);
 						// $$$ rob test for issue with importing joined csv data
 						if (is_array($repData[$oJoin->table_join_key]))
@@ -1980,7 +1985,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		//contains any data modified by the validations
 		$this->modifiedValidationData = array();
 		$w = new FabrikWorker();
-		$joindata = array();
+		//$joindata = array();
 		$ok = true;
 
 		// $$$ rob 01/07/2011 fileupload needs to examine records previous data for validations on edting records
@@ -2011,6 +2016,8 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 		$groups = $this->getGroupsHiarachy();
 		$repeatTotals = JRequest::getVar('fabrik_repeat_group', array(0), 'request', 'array');
 		$ajaxPost = JRequest::getBool('fabrik_ajax');
+
+		$joindata = isset($post['join']) ? $post['join'] : array();
 
 		foreach ($groups as $groupModel)
 		{

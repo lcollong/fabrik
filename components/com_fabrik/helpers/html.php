@@ -1170,6 +1170,7 @@ EOD;
 		}
 		$grid = array();
 
+		$optionsPerRow = empty($optionsPerRow) ? 4 : $optionsPerRow;
 		$w = floor(100 / $optionsPerRow);
 		$widthConstraint = '';
 		$grid[] = '<ul>';

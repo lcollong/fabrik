@@ -75,7 +75,7 @@ class plgFabrik_elementIp extends plgFabrik_Element
 	function onStoreRow(&$data)
 	{
 		$element = $this->getElement();
-		if ($data['rowid'] == 0 && !in_array($element->name, $data))
+		if (JArrayHelper::getValue($data, 'rowid', 0) == 0 && !in_array($element->name, $data))
 		{
 			$data[$element->name] = $_SERVER['REMOTE_ADDR'];
 		}
