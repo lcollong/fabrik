@@ -311,11 +311,11 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 			$vals = is_array($d) ? $d : FabrikWorker::JSONtoData($d, true);
 			foreach ($vals as $val)
 			{
-				$l = $useIcon ? $this->_replaceWithIcons($val) : $val;
+				$l = $useIcon ? $this->_replaceWithIcons($val, 'list', $listModel->getTmpl()) : $val;
 				if (!$this->iconsSet == true)
 				{
 					$l = $this->getLabelForValue($val);
-					$l = $this->_replaceWithIcons($l);
+					$l = $this->_replaceWithIcons($l, 'list', $listModel->getTmpl());
 				}
 				$l = $this->rollover($l, $thisRow, 'list');
 				$l = $listModel->_addLink($l, $this, $thisRow, $i);
@@ -326,7 +326,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 			}
 			if (!empty($lis))
 			{
-				$uls[] = ($multiple && $this->renderWithHTML) ? '<ul class="fabrikRepeatData">'.implode(' ', $lis).'</ul>' : implode(' ', $lis);
+				$uls[] = ($multiple && $this->renderWithHTML) ? '<ul class="fabrikRepeatData">' . implode(' ', $lis) . '</ul>' : implode(' ', $lis);
 			}
 		}
 		//$$$rob if only one repeat group data then dont bother encasing it in a <ul>

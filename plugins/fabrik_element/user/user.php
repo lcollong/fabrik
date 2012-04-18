@@ -619,18 +619,19 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 	{
 		if (!$this->inJDb())
 		{
-			return "$key $condition $value";
+			return $key . ' ' . $condition . ' ' . $value;
 		}
 		$db = FabrikWorker::getDbo();
 		$element = $this->getElement();
 		// $$$ hugh - we need to use the join alias, not hard code #__users
 		$join = $this->getJoin();
-		$joinTableName  =  $join->table_join_alias;
+		$joinTableName = $join->table_join_alias;
 		if (empty($joinTableName))
 		{
 			$joinTableName = '#__users';
 		}
-		if ($type == 'querystring')
+		$db = JFactory::getDbo();
+		if ($type == 'querystring' || $type = 'jpluginfilters')
 		{
 			$key = FabrikString::safeColNameToArrayKey($key);
 			// $$$ rob no matter whether you use elementname_raw or elementname in the querystring filter
@@ -640,17 +641,16 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 			{
 				$key = $db->quoteName($joinTableName . '.id');
 				$this->encryptFieldName($key);
-				return "$key $condition $value";
+				return $key . ' ' . $condition . ' ' . $value;
 			}
 		}
 		if ($type == 'advanced')
 		{
 			$key = $db->quoteName($joinTableName . '.id');
 			$this->encryptFieldName($key);
-			return "$key $condition $value";
+			return $key . ' ' . $condition . ' ' . $value;
 		}
 		$params = $this->getParams();
-
 		if ($type != 'prefilter')
 		{
 			switch ($element->filter_type)
@@ -670,16 +670,16 @@ class plgFabrik_ElementUser extends plgFabrik_ElementDatabasejoin
 		{
 			if ($this->_rawFilter)
 			{
-				$k = $db->quoteName($joinTableName . '.' . 'id');
+				$k = $db->quoteName($joinTableName . '.id');
 			}
 			else
 			{
-				$tabletype = $this->getValColumn();
+				$tabletype = $this->_getValColumn();
 				$k = $db->quoteName($joinTableName . '.' . $tabletype);
 			}
 		}
 		$this->encryptFieldName($k);
-		$str = "$k $condition $value";
+		$str = $k . ' ' . $condition . ' ' . $value;
 		return $str;
 	}
 

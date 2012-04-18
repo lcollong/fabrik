@@ -431,51 +431,22 @@ class plgContentFabrik extends JPlugin
 					$controller->$task();
 					$result = ob_get_contents();
 					ob_end_clean();
-
 				}
 				$model->setOrderByAndDir();
 				$formModel = $model->getFormModel();
-				// $$$ hugh - need to handle this in _setRequest()
-				//apply filters set in mambot
-				/*
-				foreach ($unused as $k => $v)
-{
-
-					//allow for element_test___id[match]=1 to set the match type
-					if (strstr($k, "[match]"))
-					{
-						$k2 = str_replace("[match]", "", $k);
-						if (array_key_exists($k2, $_REQUEST))
-						{
-							$v2 = JRequest::getVar($k2);
-							$v2 = array('value' => $v2, 'match' => $v);
-						}
-						JRequest::setVar($k2, $v2);
-					}
-					else
-					{
-						JRequest::setVar($k, $v);
-					}
-				}
-				*/
-
 				break;
+				
 			case 'visualization':
 				JRequest::setVar('showfilters', $showfilters);
 				JRequest::setVar('clearfilters', $clearfilters);
 				JRequest::setVar('resetfilters', $resetfilters);
-				/*
-				foreach ($unused as $k => $v)
-				{
-					JRequest::setVar($k, $v, 'get');
-				}
-				*/
 				$this->_setRequest($unused);
 				break;
 		}
 		//hack for gallery viz as it may not use the default view
 		$controller->isMambot = true;
-		if (!$displayed) {
+		if (!$displayed)
+		{
 			ob_start();
 			if (method_exists($model, 'reset'))
 			{
@@ -528,7 +499,17 @@ class plgContentFabrik extends JPlugin
 	{
 		foreach ($this->origRequestVars as $k => $v)
 		{
-			JRequest::setVar($k, $v);
+			if (!is_null($v))
+			{
+				JRequest::setVar($k, $v);
+			}
+			else
+			{
+				// $$$ rob 13/04/2012 clear rather than setting to '' as subsequent list plugins with fewer filters
+				// will contain the previous plugins filter, even if not included in the current plugin declaration
+				unset($_GET[$k]);
+				unset($_REQUEST[$k]);
+			}
 		}
 	}
 

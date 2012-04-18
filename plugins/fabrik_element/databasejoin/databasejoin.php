@@ -1373,20 +1373,20 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		{
 			$groupBy = 'value';
 		}
-		$to = $db->quoteName($params->get('join_db_name'));
-		$key = $to . '.' . $db->quoteName($params->get('join_key_column'));
-
-		$label = $to . '.' . $db->quoteName($params->get('join_val_column'));
-		$query->select('parent_id, '.$shortName.' AS value, '.$label.' AS text')
+		$to = $params->get('join_db_name');
+		$key = $db->quoteName($to . '.' . $params->get('join_key_column'));
+		$label = $db->quoteName($to . '.' . $params->get('join_val_column'));
+		$v = $jointable . '.' . $shortName;
+		$query->select('parent_id, ' . $v . ' AS value, ' . $label . ' AS text')
 		->from($jointable)
-		->join('LEFT', $to.' ON '.$key.' = '.$jointable.'.'.$shortName);
+		->join('LEFT', $to . ' ON ' . $key . ' = ' . $jointable . '.' . $shortName);
 		if (!is_null($condition) && !is_null($value))
 		{
 			if (is_null($where))
 			{
 				$where = $label;
 			}
-			$query->where($where.' '.$condition.' '.$value);
+			$query->where($where . ' ' . $condition . ' ' . $value);
 		}
 		$db->setQuery($query);
 		$rows = $db->loadObjectList($groupBy);

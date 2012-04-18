@@ -562,9 +562,9 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 		{
 			$attribs = JArrayHelper::toString($attribs);
 		}
-		$paths = FabrikHelperHTML::addPath(COM_FABRIK_BASE.'media/system/images/', 'image', 'form', false);
-		$img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => $id.'_cal_img'));
-		return '<input type="text" name="' . $name . '" id="' . $id . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" ' . $attribs . ' />' . $img;
+		$paths = FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'media/system/images/', 'image', 'form', false);
+		$img = FabrikHelperHTML::image('calendar.png', 'form', @$this->tmpl, array('alt' => 'calendar', 'class' => 'calendarbutton', 'id' => $id . '_cal_img'));
+		return '<input type="text" name="' . $name . '" id="' . $id . '" value="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" ' . $attribs . ' />' . $img;
 	}
 
 	/**
@@ -1144,16 +1144,16 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 					$default[0] = JFactory::getDate($default[0])->toFormat($format);
 					$default[1] = JFactory::getDate($default[1])->toFormat($format);
 				}
-
+				// add wrapper div for list filter toggeling
+				$return[] = '<div class="fabrik_filter_container">';
 				$return[] = JText::_('COM_FABRIK_DATE_RANGE_BETWEEN') .
-				$this->calendar($default[0], $v.'[0]', $this->getHTMLId() . "_filter_range_0_" . JRequest::getVar('task'), $format, $calOpts);
+				$this->calendar($default[0], $v . '[0]', $this->getHTMLId() . '_filter_range_0_' . JRequest::getVar('task'), $format, $calOpts);
 				$return[] = '<br />' . JText::_('COM_FABRIK_DATE_RANGE_AND') .
-				$this->calendar($default[1], $v.'[1]', $this->getHTMLId() . "_filter_range_1_" . JRequest::getVar('task'), $format, $calOpts);
-
+				$this->calendar($default[1], $v . '[1]', $this->getHTMLId(). '_filter_range_1_' . JRequest::getVar('task'), $format, $calOpts);
+				$return[] = '</div>';
 				break;
 
 			case "dropdown":
-
 				// cant do the format in the MySQL query as its not the same formatting
 				// e.g. M in mysql is month and J's date code its minute
 				jimport('joomla.utilities.date');
@@ -1178,8 +1178,7 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 				}
 
 				array_unshift($ddData, JHTML::_('select.option', '', $this->filterSelectLabel()));
-
-				$return[] = JHTML::_('select.genericlist', $ddData, $v, 'class="inputbox fabrik_filter" size="1" maxlength="19"', 'value', 'text', $default, $htmlid."_filter_range_0");
+				$return[] = JHTML::_('select.genericlist', $ddData, $v, 'class="inputbox fabrik_filter" size="1" maxlength="19"', 'value', 'text', $default, $htmlid . '_filter_range_0');
 				break;
 			default:
 			case "field":
@@ -1192,7 +1191,10 @@ class plgFabrik_ElementDate extends plgFabrik_Element
 				{
 					$default = JFactory::getDate($default)->toFormat($format);
 				}
+				// add wrapper div for list filter toggeling
+				$return[] = '<div class="fabrik_filter_container">';
 				$return[] = $this->calendar($default, $v, $htmlid . '_filter_range_0_' . JRequest::getVar('task'), $format, $calOpts);
+				$return[] = '</div>';
 				break;
 
 			case 'hidden':

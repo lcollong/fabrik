@@ -310,10 +310,12 @@ class plgFabrik_Element extends FabrikPlugin
 	 * replace labels shown in table view with icons (if found)
 	 * @since 3.0 - icon_folder is a bool - search through template folders for icons
 	 * @param	string	data
+	 * @param	string	view list/details
+	 * @param	string	tmpl
 	 * @return	string	data
 	 */
 
-	function _replaceWithIcons($data)
+	function _replaceWithIcons($data, $view = 'list', $tmpl = null)
 	{
 		if ($data == '')
 		{
@@ -326,16 +328,23 @@ class plgFabrik_Element extends FabrikPlugin
 			$this->iconsSet = false;
 			return $data;
 		}
-		$iconfile = $params->get('icon_file'); //Jaanus added this and following if/else; sometimes we need permanent image (e.g logo of the website where the link always points, like Wikipedia's W)
-		$cleanData = $iconfile == '' ? FabrikString::clean($data) : $iconfile;
-		foreach ($this->imageExtensions as $ex)
+		$iconfile = $params->get('icon_file', ''); //Jaanus added this and following if/else; sometimes we need permanent image (e.g logo of the website where the link always points, like Wikipedia's W)
+		$cleanData = $iconfile === '' ? FabrikString::clean($data) : $iconfile;
+		foreach ($this->_imageExtensions as $ex)
 		{
 			$f = JPath::clean($cleanData . '.' . $ex);
-			$img = FabrikHelperHTML::image($cleanData . '.' . $ex);
+			$img = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl);
 			if ($img !== '')
 			{
 				$this->iconsSet = true;
-				$img = '<a class="fabrikTip" href="#" title="' . $data. '">' . $img . '</a>';
+				$opts = new stdClass();
+				$opts->notice = true;
+				$opts = json_encode($opts);
+				$data = '<span>' . $data . '</span>';
+				if ($params->get('icon_hovertext', true))
+				{
+					$img = '<a class="fabrikTip" href="#" opts=\'' . $opts . '\' title="' . $data. '">' . $img . '</a>';
+				}
 				return $img;
 			}
 		}
@@ -2973,8 +2982,8 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		{
 			// need to do first query to get distinct records as if we are doing left joins the sum is too large
 			$custom_query = sprintf($custom_query, 'value');
-			return "SELECT $custom_query AS value, label
-				FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FROM ".FabrikString::safeColName($item->db_table_name)." $joinSQL $whereSQL) AS t";
+			//return "SELECT $custom_query AS value, label FROM (SELECT DISTINCT *, $item->db_primary_key, $name AS value, $label AS label FROM ".FabrikString::safeColName($item->db_table_name)." $joinSQL $whereSQL) AS t";
+			return "SELECT $custom_query AS value, label FROM (SELECT DISTINCT ".FabrikString::safeColName($item->db_table_name).".*, $name AS value, $label AS label FROM ".FabrikString::safeColName($item->db_table_name)." $joinSQL $whereSQL) AS t";
 		}
 	}
 
@@ -3794,6 +3803,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 
 	public function renderListData($data, &$thisRow)
 	{
+		
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
 		$data = FabrikWorker::JSONtoData($data, true);
@@ -3804,12 +3814,11 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 			if ($params->get('icon_folder') == '1')
 			{
 				// $$$ rob was returning here but that stoped us being able to use links and icons together
-				$d = $this->_replaceWithIcons($d);
+				$d = $this->_replaceWithIcons($d, 'list', $listModel->getTmpl());
 			}
 			$d = $this->rollover($d, $thisRow, 'list');
 			$d = $listModel->_addLink($d, $this, $thisRow, $i);
 		}
-
 		if (is_array($data) && count($data) > 1)
 		{
 			if (!array_key_exists(0, $data))

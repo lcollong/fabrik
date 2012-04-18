@@ -185,8 +185,7 @@ class FabrikString extends JString{
 	public static function iclean($str, $fromEnc = "UTF-8", $toEnc = "ASCII//IGNORE//TRANSLIT")
 	{
 		//replace umlauts
-
-		$out = "";
+		$out = '';
 		for ($i = 0; $i < strlen($str); $i++)
 		{
 			$ch = ord($str{$i});
@@ -199,7 +198,9 @@ class FabrikString extends JString{
 				case 132: $out .= "Ae"; break;
 				case 156: $out .= "Ue"; break;
 				case 150: $out .= "Oe"; break;
-				default : $out .= chr($ch) ;
+				//fix for cleaning value of 1
+				case 0: $out = '1';break;
+				default : $out .= chr($ch);
 			}
 		}
 		$str = $out;
