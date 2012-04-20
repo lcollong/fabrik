@@ -27,28 +27,34 @@ class plgFabrik_ElementGooglemap extends plgFabrik_Element {
 
 	public function renderListData($data, &$thisRow)
 	{
-		$str = '';
+		$listModel = $this->getListModel();
 		$params = $this->getParams();
 		$w = $params->get('fb_gm_table_mapwidth');
 		$h = $params->get('fb_gm_table_mapheight');
 		$z = $params->get('fb_gm_table_zoomlevel');
 		$data = FabrikWorker::JSONtoData($data, true);
-		foreach ($data as $d)
+		foreach ($data as $i => &$d)
 		{
 			if ($params->get('fb_gm_staticmap_tableview'))
 			{
-				$str .= $this->_staticMap($d, $w, $h);
+				$d = $this->_staticMap($d, $w, $h);
 			}
-			else if ($params->get('fb_gm_staticmap_tableview_type_coords', 'num') == 'dms')
+			if ($params->get('icon_folder') == '1')
 			{
-				$str .= $this->_dmsformat($d);
+				// $$$ rob was returning here but that stoped us being able to use links and icons together
+				$d = $this->_replaceWithIcons($d, 'list', $listModel->getTmpl());
 			}
 			else
 			{
-				$str .= $this->_microformat($d);
+				if (!$params->get('fb_gm_staticmap_tableview'))
+				{
+					$d = $params->get('fb_gm_staticmap_tableview_type_coords', 'num') == 'dms' ? $this->_dmsformat($d) : $this->_microformat($d);
+				}
 			}
+			$d = $this->rollover($d, $oAllRowsData, 'list');
+			$d = $listModel->_addLink($d, $this, $oAllRowsData, $i);
 		}
-		return $str;
+		return $this->renderListDataFinal($data);
 	}
 
 	function renderListData_feed($data, $thisRow)

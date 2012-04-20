@@ -53,8 +53,14 @@ echo "
 	background:#F6F9FA;
 }
 
+#{$view}_$c fieldset ul{
+	list-style:none;
+	margin:0;
+}
+
 #{$view}_$c fieldset > ul,
-#details_$c fieldset > ul{
+#details_$c fieldset > ul,
+#{$view}_$c .fabrikSubGroupElements > ul{
 	list-style:none;
 	padding:40px 10px 20px 10px;
 	margin:0;

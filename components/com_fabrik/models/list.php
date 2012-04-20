@@ -1423,15 +1423,19 @@ class FabrikFEModelList extends JModelForm {
 				// $$$ hugh - not everything is JSON, some stuff is just plain strings.
 				// So we need to see if JSON encoding failed, and only use result if it didn't.
 				// $v = json_decode($v, true);
+			if (is_array($v))
+			{
+				$v = JArrayHelper::getValue($v, $repeatCounter);
+			}
+			else
+			{
 				$v2 = json_decode($v, true);
-				if ($v2 !== null) {
+				if ($v2 !== null)
+				{
 					$v = $v2;
 				}
-				if (is_array($v))
-				{
-					$v = JArrayHelper::getValue($v, $repeatCounter);
-				}
-			}
+			}		
+		}
 			$array['rowid'] = $this->getSlug($row);
 			$array['listid'] = $table->id;
 			$link = JRoute::_($this->parseMessageForRowHolder($customLink, $array));
@@ -4338,7 +4342,7 @@ class FabrikFEModelList extends JModelForm {
 			$requestKey = $this->getFilterModel()->getSearchAllRequestKey();
 			$v = $this->getFilterModel()->getSearchAllValue();
 			$o = new stdClass();
-			$o->filter = '<input type="search" size="20" value="' . $v . '" class="fabrik_filter" name="' . $requestKey . '" />';
+			$o->filter = '<input type="search" size="20" placeholder="' . JText::_('COM_FABRIK_SEARCH') . '" value="' . $v . '" class="fabrik_filter" name="' . $requestKey . '" />';
 			if ($params->get('search-mode-advanced') == 1)
 			{
 				$opts = array();

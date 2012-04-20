@@ -1657,12 +1657,19 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		$formid = $formModel->getId();
 
 		$use_download_script = $params->get('fu_use_download_script', '0');
-		if (!$this->_editable && ($use_download_script == FU_DOWNLOAD_SCRIPT_DETAIL || $use_download_script == FU_DOWNLOAD_SCRIPT_BOTH))
-		{
-			return $this->downloadLink($value);
-		}
 		// $$$ rob - explode as it may be grouped data (if element is a repeating upload)
 		$values = is_array($value) ? $value : FabrikWorker::JSONtoData($value, true);
+		
+		if (!$this->_editable && ($use_download_script == FU_DOWNLOAD_SCRIPT_DETAIL || $use_download_script == FU_DOWNLOAD_SCRIPT_BOTH))
+		{
+			$links = array();
+			foreach ($value as $v)
+			{
+				$links[] = $this->downloadLink($v, $data);
+			}
+			return implode("\n", $links);
+		}
+		
 		$render = new stdClass();
 		$render->output = '';
 		if (($params->get('fu_show_image') !== '0' && !$params->get('ajax_upload')) || !$this->editable)
@@ -1740,14 +1747,21 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		return $value;
 	}
 
-	protected function downloadLink($value)
+	/**
+	 * make download link
+	 * @param	string	$value
+	 * @param	array  row $data
+	 * @return string download link
+	 */
+	
+	protected function downloadLink($value, $data)
 	{
 		$params = $this->getParams();
 		$storage = $this->getStorage();
 		$formModel = $this->getFormModel();
-		if (empty($value) || !$storage->exists(COM_FABRIK_BASE.$value))
+		if (empty($value) || !$storage->exists(COM_FABRIK_BASE . $value))
 		{
-			return "";
+			return '';
 		}
 		$aclEl = $this->getFormModel()->getElement($params->get('fu_download_acl', ''), true);
 		$aclEl = $aclEl->getFullName();
@@ -1757,7 +1771,7 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 			if (!$canDownload)
 			{
 				$img = $params->get('fu_download_noaccess_image');
-				return $img == '' ? '' : "<img src=\"images/stories/$img\" alt=\"".JText::_('DOWNLOAD NO PERMISSION')."\" />";
+				return $img == '' ? '' : '<img src="' . COM_FABRIK_LIVESITE . 'images/stories/' . $img . '" alt="' . JText::_('DOWNLOAD NO PERMISSION') . '" />';
 			}
 		}
 
@@ -1772,7 +1786,6 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 		{
 			$title_name = str_replace('.', '___', $params->get('fu_title_element'));
 		}
-		//$title_name .= '_raw'; //Jaanus: see 406
 		if (is_array($formModel->_data))
 		{
 			if (array_key_exists($title_name, $formModel->_data))
@@ -1785,9 +1798,9 @@ class plgFabrik_ElementFileupload extends plgFabrik_Element
 				}
 			}
 		}
-		if ($params->get('fu_download_access_image', '') !== '')
+		if ($params->get('fu_download_access_image') !== '')
 		{
-			$title = '<img src="images/stories/' . $params->get('fu_download_access_image') . '" alt="' . $title . '" />';
+			$title = '<img src="' . COM_FABRIK_LIVESITE . 'images/stories/' . $params->get('fu_download_access_image') . '" alt="' . $title . '" />';
 		}
 		$link = COM_FABRIK_LIVESITE . 'index.php?option=com_fabrik&task=plugin.pluginAjax&plugin=fileupload&method=ajax_download&element_id=' . $elementid . '&formid=' . $formid . '&rowid=' . $rowid . '&repeatcount=' . $repeatCounter;
 		$url = '<a href="' . $link . '">' . $title . '</a>';

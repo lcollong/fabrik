@@ -339,7 +339,9 @@ class plgFabrik_Element extends FabrikPlugin
 				$this->iconsSet = true;
 				$opts = new stdClass();
 				$opts->notice = true;
+				$opts->position = 'top';
 				$opts = json_encode($opts);
+				$data = htmlspecialchars($data, ENT_QUOTES);
 				$data = '<span>' . $data . '</span>';
 				if ($params->get('icon_hovertext', true))
 				{
@@ -980,17 +982,22 @@ class plgFabrik_Element extends FabrikPlugin
 			}
 			if ($this->editable)
 			{
-				$validations = $this->getValidations();
+				$validations = array_unique($this->getValidations());
 				if (count($validations) > 0)
 				{
-					$validationHovers = array('<span><ul style="list-style:none">');
+					$validationHovers = array('<span><ul class="validation-notices" style="list-style:none">');
 					foreach ($validations as $validation)
 					{
 						$validationHovers[] = '<li>' . $validation->getHoverText($this, $repeatCounter, $tmpl) . '</li>';
 					}
 					$validationHovers[] = '</ul></span>';
-					$title = htmlspecialchars(implode("", $validationHovers), ENT_QUOTES);
-					$l .= FabrikHelperHTML::image('notempty.png', 'form', $tmpl, array('class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => $title));
+					$validationHovers = implode('', $validationHovers);
+					$title = htmlspecialchars($validationHovers, ENT_QUOTES);
+					$opts = new stdClass();
+					$opts->position = 'top';
+					$opts->notice = true;
+					$opts = json_encode($opts);
+					$l .= FabrikHelperHTML::image('notempty.png', 'form', $tmpl, array('class' => 'fabrikTip', 'opts' => $opts, 'title' => $title));
 				}
 			}
 			$model = $this->getFormModel();
@@ -1054,6 +1061,8 @@ class plgFabrik_Element extends FabrikPlugin
 			{
 				return $txt;
 			}
+			// $$$ rob this might be needed - cant find a test case atm though
+			//$rollOver = htmlspecialchars($rollOver, ENT_QUOTES);
 			$rollOver = '<span>' . $rollOver . '</span>';
 			return '<span class="fabrikTip" opts="' . $opts . '" title="' . $rollOver . '">' . $txt . '</span>';
 		}
@@ -3803,14 +3812,11 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 
 	public function renderListData($data, &$thisRow)
 	{
-		
 		$params = $this->getParams();
 		$listModel = $this->getListModel();
 		$data = FabrikWorker::JSONtoData($data, true);
 		foreach ($data as $i => &$d)
 		{
-			// $$$ hugh - in f3 icon_folder is a radio choice, 0 or 1, not a folder path
-			//if ($params->get('icon_folder') != -1 && $params->get('icon_folder') != '') {
 			if ($params->get('icon_folder') == '1')
 			{
 				// $$$ rob was returning here but that stoped us being able to use links and icons together
@@ -3819,6 +3825,18 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 			$d = $this->rollover($d, $thisRow, 'list');
 			$d = $listModel->_addLink($d, $this, $thisRow, $i);
 		}
+		return $this->renderListDataFinal($data);
+	}
+	
+	/**
+	 * final prepare data function called from renderListData(), converts data to string and if needed 
+	 * encases in <ul> (for repeating data)
+	 * @param	array	list cell data
+	 * @return	string	cell data
+	 */
+	
+	protected function renderListDataFinal($data)
+	{
 		if (is_array($data) && count($data) > 1)
 		{
 			if (!array_key_exists(0, $data))
