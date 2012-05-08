@@ -29,11 +29,11 @@ echo "$form->error</div>";?>
 		<?php if (trim($group->title) !== '') {?>
 			<legend><span><?php echo $group->title;?></span></legend>
 		<?php }?>
-		
+
 		<?php if ($group->intro !== '') {?>
 		<div class="groupintro"><?php echo $group->intro ?></div>
 		<?php }?>
-		
+
 		<?php if ($group->canRepeat) {
 			foreach ($group->subgroups as $subgroup) {
 			?>
@@ -46,12 +46,16 @@ echo "$form->error</div>";?>
 					</div>
 					<?php if ($group->editable) { ?>
 						<div class="fabrikGroupRepeater">
+							<?php if ($group->canAddRepeat) {?>
 							<a class="addGroup" href="#">
 								<?php echo FabrikHelperHTML::image('add.png', 'form', $this->tmpl, array('class' => 'fabrikTip', 'title' => JText::_('COM_FABRIK_ADD_GROUP')));?>
 							</a>
+							<?php }?>
+							<?php if ($group->canDeleteRepeat) {?>
 							<a class="deleteGroup" href="#">
 								<?php echo FabrikHelperHTML::image('del.png', 'form', $this->tmpl, array('class' => 'fabrikTip', 'title' => JText::_('COM_FABRIK_DELETE_GROUP')));?>
 							</a>
+							<?php }?>
 						</div>
 					<?php } ?>
 				</div>
@@ -67,11 +71,13 @@ echo "$form->error</div>";?>
 	echo $this->hiddenFields;
 	?>
 	<?php echo $this->pluginbottom; ?>
+	<?php if ($this->hasActions) {?>
 	<div class="fabrikActions"><?php echo $form->resetButton;?> <?php echo $form->submitButton;?>
 	<?php echo $form->nextButton?> <?php echo $form->prevButton?>
 	 <?php echo $form->applyButton;?>
 	<?php echo $form->copyButton  . " " . $form->gobackButton . ' ' . $form->deleteButton . ' ' . $this->message ?>
 	</div>
+	<?php } ?>
 
 <?php
 echo $form->endTag;

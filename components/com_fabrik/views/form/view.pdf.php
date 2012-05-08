@@ -68,34 +68,30 @@ class fabrikViewForm extends JView
 
     $form->label = $this->get('label');
     //$document->_engine->SetTitle( $form->label);
-		$form->intro = $this->get('Intro');
-		$form->action = $this->get('Action');
-
-    $form->js 		= "";
-
-		$form->formid = "form_".$model->getId();
-		$form->name 	= "form_".$model->getId();
+	$form->intro = $this->get('Intro');
+	$form->action = $this->get('Action');
+	$form->js = '';
+	$form->formid = 'form_' . $model->getId();
+	$form->name = 'form_' . $model->getId();
 
     $form->encType = $model->getFormEncType();;
 
-    if (count($model->errors) > 0) {
-      $form->error = $form->error;
-    } else {
-      $form->error = '';
-    }
+    $form->error = $model->hasErrors() ? $form->error : '';
+    
     $this->showEmail = $params->get('email', 0);
 
     $this->assignRef('groups', $this->get('GroupView'));
 
     $this->assignRef('params', $params);
 
-    $form->startTag = '<div class="fabrikForm fabrikDetails" id="detail_'.$model->getId().'">';
+    $form->startTag = '<div class="fabrikForm fabrikDetails" id="detail_' . $model->getId() . '">';
     $form->endTag  = '</div>';
     //force front end templates
-    $this->_basePath = COM_FABRIK_FRONTEND . DS . 'views';
+    $this->_basePath = COM_FABRIK_FRONTEND . '/views';
 
     $t = $params->get('pdf_template');
-    if ($t == '') {
+    if ($t == '')
+    {
     	$t = ($model->editable)?  $form->form_template : $form->view_only_template;
     }
     $form->form_template = JRequest::getVar('layout', $t);

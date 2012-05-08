@@ -97,6 +97,12 @@ var FbForm = new Class({
 		this.form.getElements('.fabrikGroup').each(function (group) {
 			var id = group.id.replace('group', '');
 			var c = group.getElements('.fabrikSubGroup').length;
+			//if no joined repeating data then c should be 0 and not 1
+			if (c === 1) {
+				if (group.getElement('.fabrikSubGroupElements').getStyle('display') === 'none') {
+					c = 0;
+				}
+			}
 			this.repeatGroupMarkers.set(id, c);
 		}.bind(this));
 
@@ -200,7 +206,7 @@ var FbForm = new Class({
 			// is injected into c
 			// apply fx to div rather than li - damn im good
 			if ((c).get('tag') === 'li') {
-				fxdiv = new Element('div').adopt(c.getChildren());
+				fxdiv = new Element('div', {'style': 'width:100%'}).adopt(c.getChildren());
 				c.empty();
 				fxdiv.inject(c);
 			} else {
@@ -383,6 +389,7 @@ var FbForm = new Class({
 		var url = Fabrik.liveSite + 'index.php?option=com_fabrik&format=raw&page=' + this.currentPage;
 		Fabrik.loader.start('form_' + this.id, 'saving page');
 		var data = this.getFormData();
+		data.fabrik_ajax = 1;
 		new Request({
 			url: url,
 			method: this.options.ajaxmethod,

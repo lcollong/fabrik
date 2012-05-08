@@ -38,7 +38,6 @@ class FabrikControllerForm extends JController
 		$document = JFactory::getDocument();
 		$model = JModel::getInstance('Form', 'FabrikFEModel');
 		$viewType = $document->getType();
-		//$this->setPath('view', COM_FABRIK_FRONTEND . '/views');
 		$viewLayout	= JRequest::getCmd('layout', 'default');
 		$view = $this->getView('form', $viewType, '');
 		$view->setModel($model, true);
@@ -56,7 +55,6 @@ class FabrikControllerForm extends JController
 	{
 		$session = JFactory::getSession();
 		$document = JFactory::getDocument();
-
 		$viewName = JRequest::getVar('view', 'form', 'default', 'cmd');
 		$modelName = $viewName;
 		if ($viewName == 'emailform')
@@ -100,7 +98,7 @@ class FabrikControllerForm extends JController
 			ob_end_clean();
 			$token = JSession::getFormToken();
 			$search = '#<input type="hidden" name="[0-9a-f]{32}" value="1" />#';
-			$replacement = '<input type="hidden" name="'.$token.'" value="1" />';
+			$replacement = '<input type="hidden" name="' . $token . '" value="1" />';
 			echo preg_replace($search, $replacement, $contents);
 		}
 	}
@@ -172,7 +170,6 @@ class FabrikControllerForm extends JController
 		//reset errors as validate() now returns ok validations as empty arrays
 		$model->clearErrors();
 		$model->process();
-
 		if (JRequest::getInt('elid') !== 0)
 		{
 			//inline edit show the edited element - ignores validations for now
@@ -181,13 +178,13 @@ class FabrikControllerForm extends JController
 		}
 
 		//check if any plugin has created a new validation error
-		if (!empty($model->errors))
+		if ($model->hasErrors())
 		{
 			FabrikWorker::getPluginManager()->runPlugins('onError', $model);
 			$view->display();
 			return;
 		}
-
+		
 		$listModel = $model->getListModel();
 		$listModel->set('_table', null);
 
@@ -202,7 +199,7 @@ class FabrikControllerForm extends JController
 			$redirect_opts = array(
 				'msg' => $msg,
 				'url' => $url,
-				'baseRedirect'=>$this->baseRedirect,
+				'baseRedirect' => $this->baseRedirect,
 				'rowid' => JRequest::getVar('rowid')
 			);
 			if (!$this->baseRedirect && $this->isMambot)
@@ -231,12 +228,13 @@ class FabrikControllerForm extends JController
 				$redirect_opts['title'] = $session->get($context . 'redirect_content_popup_title', '');
 				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
 			}
-			else if ($this->isMambot) {
+			else if ($this->isMambot)
+			{
 				// $$$ hugh - special case to allow custom code to specify that
 				// the form should not be cleared after a failed AJAX submit
 				$session = JFactory::getSession();
-				$context = 'com_fabrik.form.'.$model->get('id').'.redirect.';
-				$redirect_opts['reset_form'] = $session->get($context.'redirect_content_reset_form', '1') == '1';
+				$context = 'com_fabrik.form.' . $model->get('id') . '.redirect.';
+				$redirect_opts['reset_form'] = $session->get($context . 'redirect_content_reset_form', '1') == '1';
 			}
 			//let form.js handle the redirect logic (will also send out a
 			echo json_encode($redirect_opts);
@@ -276,7 +274,7 @@ class FabrikControllerForm extends JController
 			$msg = '';
 		}
 		$context = $model->getRedirectContext();
-		$smsg = $session->get($context.'msg', array($msg));
+		$smsg = $session->get($context . 'msg', array($msg));
 		if (!is_array($smsg))
 		{
 			$smsg = array($smsg);
@@ -343,7 +341,9 @@ class FabrikControllerForm extends JController
 			if (array_key_exists('apply', $model->_formData))
 			{
 				$url = 'index.php?option=com_fabrik&view=form&formid=' . JRequest::getInt('formid') . '&rowid=' . JRequest::getInt('rowid') . '&listid=' . JRequest::getInt('listid');
-			} else {
+			}
+			else
+			{
 				if ($this->isMambot)
 				{
 					//return to the same page
@@ -359,7 +359,7 @@ class FabrikControllerForm extends JController
 				{
 					if ($Itemid !== 0)
 					{
-						$url = 'index.php?option=com_fabrik&Itemid=' . $Itemid;
+						$url = 'index.php?' . http_build_query($app->getMenu('site')->getActive()->query) . '&Itemid=' . $Itemid;
 					}
 					else
 					{
@@ -385,7 +385,7 @@ class FabrikControllerForm extends JController
 		$context = $model->getRedirectContext();
 		//if the redirect plug-in has set a url use that in preference to the default url
 		//$surl = $session->get($context.'url', array($url));
-		$surl = $session->get($context.'url', array());
+		$surl = $session->get($context . 'url', array());
 		if (!empty($surl))
 		{
 			$this->baseRedirect = false;

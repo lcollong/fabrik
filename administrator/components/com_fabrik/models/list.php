@@ -470,7 +470,7 @@ class FabrikModelList extends FabModelAdmin
 	{
 		return '';
 	}
-	
+
 	/**
 	 * load up a front end form model - used in saving the table
 	 * @return object front end form model
@@ -599,7 +599,7 @@ class FabrikModelList extends FabModelAdmin
 				$this->setError(JText::_('COM_FABRIK_DATABASE_TABLE_ALREADY_EXISTS'));
 				return false;
 			}
-			
+
 			if (!$this->canCreateDbTable())
 			{
 				$this->setError(Jtext::_('COM_FABRIK_INSUFFICIENT_RIGHTS_TO_CREATE_TABLE'));
@@ -615,7 +615,7 @@ class FabrikModelList extends FabModelAdmin
 			JRequest::setVar('_createGroup', 1, 'post');
 
 			$groupId = $this->createLinkedGroup($groupData, false);
-			
+
 			if ($newtable == '')
 			{
 				//new fabrik list but existing db table
@@ -930,9 +930,9 @@ class FabrikModelList extends FabModelAdmin
 		$groupId = $this->createLinkedGroup($aData, true, $isRepeat);
 
 		$origTable = JArrayHelper::getValue(JRequest::getVar('jform'), 'db_table_name');
-		$_POST['jform']['db_table_name'] = $joinTable;
-		$this->createLinkedElements($groupId);
-		$_POST['jform']['db_table_name'] = $origTable;
+		//$_POST['jform']['db_table_name'] = $joinTable;
+		//$this->createLinkedElements($groupId);
+		//$_POST['jform']['db_table_name'] = $origTable;
 		$join = $this->getTable('Join');
 		$join->id = null;
 		$join->list_id = $this->getState('list.id');
@@ -946,6 +946,9 @@ class FabrikModelList extends FabModelAdmin
 		{
 			return JError::raiseWarning(500, $join->getError());
 		}
+		$_POST['jform']['db_table_name'] = $joinTable;
+		$this->createLinkedElements($groupId);
+		$_POST['jform']['db_table_name'] = $origTable;
 	}
 
 	/**
@@ -1156,6 +1159,7 @@ class FabrikModelList extends FabModelAdmin
 		$this->getFormModel();
 		if ($formid == 0)
 		{
+			echo 'createLinkedForm';exit;
 			// $$$ rob required otherwise the JTable is loaed with db_table_name as a property
 			//which then generates an error - not sure why its loaded like that though?
 			// 18/08/2011 - could be due to the Form table class having it in its bind method - (have now overridden form table store() to remove thoes two params)
@@ -1954,7 +1958,7 @@ class FabrikModelList extends FabModelAdmin
 		if (!empty($keys))
 		{
 			$sql .= ', PRIMARY KEY ('.implode(',', array_map($func, $keys)).'))';
-		} 
+		}
 		else
 		{
 			$sql .= ')';
@@ -2069,7 +2073,7 @@ class FabrikModelList extends FabModelAdmin
 				$arGroups[] = $g->group_id;
 			}
 		}
-		
+
 		$arAddedObj = array();
 		foreach ($arGroups as $group_id)
 		{

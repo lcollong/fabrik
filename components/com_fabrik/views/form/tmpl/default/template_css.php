@@ -124,11 +124,6 @@ echo "
 /*This controls the styling of the tips box that is associated with any of your elements*/
 .floating-tip {
 	background-color: #fff;
-	font-weight: bold;
-	font-size: 11px;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
 }
 
 /*This controls the styling of your linked tables - needs clarification*/
@@ -222,6 +217,7 @@ section for dropdowns radio buttons etc**/
 #{$view}_$c .fabrikSubGroup{
 	clear:both;
 	margin-top:40px;
+	position: relative;
 }
 
 #{$view}_$c .fabrikSubGroupElements{
@@ -229,6 +225,11 @@ section for dropdowns radio buttons etc**/
 	/* float:left; */
 }
 
+#{$view}_$c .fabrikGroupRepeater{
+	position: absolute;
+	right: 10px;
+	top: 0;
+}
 #{$view}_$c .geo{
 	visibility:hidden;
 }
@@ -342,8 +343,9 @@ section for dropdowns radio buttons etc**/
 }
 
 #{$view}_$c .fabrikNotice{
-	color: #009FBF;
-	background: #DFFDFF url(images/alert.png) no-repeat center left !important;
+	background: url('images/alert.png') no-repeat scroll 10px center #DFFDFF !important;
+    color: #009FBF;
+    padding: 10px 10px 10px 35px;
 }
 
 #{$view}_$c .fabrikError,
@@ -366,11 +368,11 @@ section for dropdowns radio buttons etc**/
 	padding-bottom: 15px;
 }
 
-#{$view}_$c .fabrikGroupRepeater {
+/* #{$view}_$c .fabrikGroupRepeater {
 	padding-top: 50px;
 	float: left;
 	width: 19%;
-}
+} */
 
 /** used by password element */
 #{$view}_$c .fabrikSubLabel {

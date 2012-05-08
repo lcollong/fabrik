@@ -344,7 +344,7 @@ class FabimageGD extends Fabimage
 				/* Create a new temporary image*/
 				$tmp_img = imagecreatetruecolor($new_width, $new_height);
 				/* handle image transparency for resized image */
-				if (function_exists(imagealphablending))
+				if (function_exists('imagealphablending'))
 				{
 					imagealphablending($tmp_img, false);
 					imagesavealpha($tmp_img, true);

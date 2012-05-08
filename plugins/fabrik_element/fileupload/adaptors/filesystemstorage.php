@@ -242,7 +242,11 @@ class filesystemstorage extends storageAdaptor{
 
 	function finalFilePathParse(&$filepath)
 	{
-		$filepath = str_replace(JPATH_SITE, '', $filepath);
+		// $$$ hugh - ooop!  Double Plus Ungood if JPATH_SITE is just /,
+		// which happens on some shared hosts which are chrooted (jailed)
+		// 'cos then we just strip out all the /'s in gthe path!
+		//$filepath = str_replace(JPATH_SITE, '', $filepath);
+		$filepath = preg_replace('#^'.preg_quote(JPATH_SITE, '#').'#', '', $filepath);
 	}
 
 	/**

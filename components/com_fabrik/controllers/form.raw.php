@@ -47,12 +47,12 @@ class FabrikControllerForm extends JController
     $model = $this->getModel($modelName, 'FabrikFEModel');
     //if errors made when submitting from a J plugin they are stored in the session
     //lets get them back and insert them into the form model
-  	if (empty($model->errors))
+  	if (!$model->hasErrors())
   	{
-			$context = 'com_fabrik.form.' . JRequest::getInt('formid');
-			$model->errors = $session->get($context . '.errors', array());
-			$session->clear($context . '.errors');
-		}
+		$context = 'com_fabrik.form.' . JRequest::getInt('formid');
+		$model->_arErrors = $session->get($context . '.errors', array());
+		$session->clear($context . '.errors');
+	}
     if (!JError::isError($model) && is_object($model))
     {
       $view->setModel($model, true);

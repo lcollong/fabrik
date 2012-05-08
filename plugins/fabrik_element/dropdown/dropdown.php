@@ -139,7 +139,7 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 				{
 					$w = new FabrikWorker();
 					$default = $w->parseMessageForPlaceHolder($default, $data);
-					$v = $params->get('eval') == true ? eval($default) : $default;
+					$v = $params->get('eval', '0') == '1' ? eval($default) : $default;
 				}
 				if (is_string($v)) {
 					
@@ -247,13 +247,13 @@ class plgFabrik_ElementDropdown extends plgFabrik_ElementList
 		if ($params->get('multiple'))
 		{
 			$originalValue = trim($value, "'");
-			
+
 			$where1 = ('["' . $originalValue . '",%');
 			$where2 = ('%,"' . $originalValue . '",%');
 			$where3 = ('%,"' . $originalValue . '"]');
-			
 
-			return ' (' . $key . ' ' . $condition . ' ' . $value .' OR ' . $key . ' LIKE \'' . $where1 . 
+
+			return ' (' . $key . ' ' . $condition . ' ' . $value .' OR ' . $key . ' LIKE \'' . $where1 .
 							'\' OR ' . $key . ' LIKE \'' . $where2 .
 							'\' OR ' . $key . ' LIKE \'' . $where3 .
 							'\' )';

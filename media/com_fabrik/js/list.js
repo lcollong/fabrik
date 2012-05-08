@@ -1110,7 +1110,7 @@ var FbList = new Class({
 	stripe: function () {
 		var trs = this.list.getElements('.fabrik_row');
 		for (i = 0; i < trs.length; i++) {
-			if (i !== 0) { // ignore heading
+			if (!trs[i].hasClass('fabrik___header')) { // ignore heading
 				var row = 'oddRow' + (i % 2);
 				trs[i].addClass(row);
 			}
@@ -1219,10 +1219,13 @@ var FbList = new Class({
 		if (this.options.admin) {
 			Fabrik.addEvent('fabrik.block.added', function (block) {
 				if (block.options.listRef === this.options.listRef) {
-					block.form.getElement('.fabrikNav').getElements('a').addEvent('click', function (e) {
-						e.stop();
-						block.fabrikNav(e.target.get('href'));
-					});  
+					var nav = block.form.getElement('.fabrikNav');
+					if (typeOf(nav) !== 'null') {
+						nav.getElements('a').addEvent('click', function (e) {
+							e.stop();
+							block.fabrikNav(e.target.get('href'));
+						});
+					}
 				}
 			}.bind(this));
 		}
@@ -1384,13 +1387,17 @@ var FbListActions = new Class({
 			if (ul.getElement('ul')) {
 				var el = ul.getElement('ul');
 				var c = new Element('div').adopt(el.clone());
-				var trigger = el.getParent();
-				var tip = new FloatingTips(trigger, {
+				var trigger = el.getPrevious();
+				if (trigger.getElement('.fabrikTip')) {
+					trigger = trigger.getElement('.fabrikTip');
+				}
+				var tipOpts = Object.merge(Object.clone(Fabrik.tips.options), {
 					showOn: 'click',
+					hideOn: 'click',
 					position: 'bottom',
-					html: true,
 					content: c
 				});
+				var tip = new FloatingTips(trigger, tipOpts);
 				el.dispose();
 			}
 		});
@@ -1434,28 +1441,26 @@ var FbListActions = new Class({
 						}
 					};
 
-					var showFn = function (e) {
-						if (e.target.checked) {
-							this.show(e.target);
-						}
-					};
-
 					var c = function (el, o) {
 						this.activeRow = ul.getParent('.fabrik_row');
 						return ul.getParent();
 					}.bind(this.list);
 
-					var tip = new FloatingTips(i, {
-						position: this.options.floatPos,
-						html: true,
-						showOn: 'click',
-						hideOn: 'click',
-						content: c,
-						hideFn: hideFn,
-						showFn: showFn
-					});
-					// ul.dispose();
-
+					var opts =  {
+							position: this.options.floatPos,
+							showOn: 'click',
+							hideOn: 'click',
+							content: c,
+							hideFn: function (e) {
+								return !e.target.checked;
+							},
+							showFn: function (e) {
+								return e.target.checked;
+							}
+						};
+					
+					var tipOpts = Object.merge(Object.clone(Fabrik.tips.options), opts);
+					var tip = new FloatingTips(i, tipOpts);
 				}
 			}
 		}.bind(this));
@@ -1466,27 +1471,20 @@ var FbListActions = new Class({
 			return el.getParent('.fabrik___heading').getElement('ul.fabrik_action');
 		};
 
-		var hideFn = function (e, elem) {
-			if (!e.target.checked) {
-				this.hide(e, elem);
-			}
-		};
-
-		var showFn = function (e) {
-			if (e.target.checked) {
-				this.show(e.target);
-			}
-		};
-
-		var tip = new FloatingTips(chxall, {
+		var tipChxAllOpts = Object.merge(Object.clone(Fabrik.tips.options), {
 			position: this.options.floatPos,
 			html: true,
 			showOn: 'click',
 			hideOn: 'click',
 			content: c,
-			hideFn: hideFn,
-			showFn: showFn
+			hideFn: function (e) {
+				return !e.target.checked;
+			},
+			showFn: function (e) {
+				return e.target.checked;
+			}
 		});
+		var tip = new FloatingTips(chxall, tipChxAllOpts);
 
 		// hide markup that contained the actions
 		if (this.list.form.getElements('.fabrik_actions')) {

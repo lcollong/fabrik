@@ -206,6 +206,34 @@ class FabrikWorker {
 
 	/**
 	 *
+	 * check for, and convert, any 'special' formats for strtotime, like 'yesterday', etc
+	 * @param	string	$date
+	 * @return	string	date
+	 */
+	function specialStrToMySQL($date, $gmt = true)
+	{
+		/**
+		 * lets check if we have some special text as per :
+		 * http://php.net/strtotime - this means we can use "+2 week" as a url filter
+		 * do this before we urldecode the date otherwise the + is replaced with ' ';
+		 */
+
+		$matches = array();
+		$matches2 = array();
+		$matches3 = array();
+
+		preg_match("/[now|ago|midnight|yesterday|today]/i", $date, $matches); //eg now
+		preg_match("/[+|-][0-9]* (week\b|year\b|day\b|month\b)/i", $date, $matches2); //eg +2 Week
+		preg_match("/[next|last]* (\monday\b|tuesday\b|wednesday\b|thursday\b|friday\b|saturday\b|sunday\b)/i", $date, $matches3); //eg next wednesday
+		$matches = array_merge($matches, $matches2, $matches3);
+		if (!empty($matches)) {
+			$d = JFactory::getDate($date);
+			$date = $d->toSql(!$gmt);
+		}
+		return $date;
+	}
+
+	/**
 	 * @param	string	date representation
 	 * @param	string	format that the date should be in
 	 * @return	array	date bits keyed on date representations e.g.  m/d/Y
@@ -222,7 +250,8 @@ class FabrikWorker {
 
 		$matches = array();
 		$matches2 = array();
-		preg_match("/now/i", $date, $matches); //eg now
+		$matches3 = array();
+		preg_match("/[now|ago|midnight|yesterday|today]/i", $date, $matches); //eg now
 		preg_match("/[+|-][0-9]* (week\b|year\b|day\b|month\b)/i", $date, $matches2); //eg +2 Week
 		preg_match("/[next|last]* (\monday\b|tuesday\b|wednesday\b|thursday\b|friday\b|saturday\b|sunday\b)/i", $date, $matches3); //eg next wednesday
 		$matches = array_merge($matches, $matches, $matches2);
@@ -1214,6 +1243,50 @@ class FabrikWorker {
 			$val = JRequest::getVar($name, $val);
 		}
 		return $val;
+	}
+	
+	/**
+	* access control function for determining if the user can perform
+	* a designated function on a specific row
+	* @param object $row data
+	* @param string $col access control setting to compare against
+	* @return mixed - if ACL setting defined here return blo, otherwise return -1 to contiune with default acl setting
+	*/
+
+	public static function canUserDo($params, $row, $col)
+	{
+		if (!is_null($row))
+		{
+			$user = JFactory::getUser();
+			$usercol =$params->get($col, '');
+			if ($usercol !=  '')
+			{
+				$usercol = FabrikString::safeColNameToArrayKey($usercol);
+				if (!array_key_exists($usercol, $row))
+				{
+					return false;
+				}
+				else
+				{
+					if (array_key_exists($usercol . '_raw', $row))
+					{
+						$usercol .= '_raw';
+					}
+					$myid = $user->get('id');
+					//-1 for menu items that link to their own records
+					$usercol_val = is_array($row) ? $row[$usercol] : $row->$usercol;
+					if (empty($usercol_val) && empty($myid))
+					{
+						return false;
+					}
+					if (intVal($usercol_val) === intVal($myid) || JRequest::getVar('rowid') == -1)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return -1;
 	}
 }
 

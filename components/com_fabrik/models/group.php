@@ -195,7 +195,7 @@ class FabrikFEModelGroup extends FabModel{
 	 * @param	$elements	array	form views processed/formatted list of elements that the form template uses
 	 * @return	null
 	 */
-	
+
 	function randomiseElements(&$elements)
 	{
 		if ($this->getParams()->get('random', false) == true)
@@ -207,6 +207,46 @@ class FabrikFEModelGroup extends FabModel{
 				$new[$key] = $elements[$key];
 			}
 			$elements = $new;
+		}
+	}
+
+
+	/**
+	 * set the element column css allows for group colum settings to be applied
+	 * @since 	Fabrik 3.0.5.2
+	 * @param	object	prerender element properties
+	 * @param	int		current key when looping over elements.
+	 */
+
+	public function setColumnCss(&$element, $elCount)
+	{
+		$params = $this->getParams();
+		$element->column = '';
+		$colcount = (int) $params->get('group_columns');
+		if ($colcount > 1)
+		{
+			$widths = $params->get('group_column_widths');
+			$w = floor((100 - ($colcount * 6)) / $colcount) . '%';
+			if ($widths != '')
+			{
+				$widths = explode(',', $widths);
+				$w = JArrayHelper::getValue($widths, $elCount % $colcount, $w);
+			}
+			$element->column = ' style="float:left;width:' . $w . ';';
+			if (($elCount % $colcount == 0) || $element->hidden)
+			{
+				$element->startRow = true;
+				$element->column .= "clear:both;";
+			}
+			if (($elCount % $colcount === $colcount - 1) || $element->hidden)
+			{
+				$element->endRow = true;
+			}
+			$element->column .= '" ';
+		}
+		else
+		{
+			$element->column .= ' style="clear:both;width:100%;"';
 		}
 	}
 
@@ -315,14 +355,58 @@ class FabrikFEModelGroup extends FabModel{
 	}
 	/*
 	 * is the group a repeat group
-	 *
-	 * @return bool
-	 */
+	*
+	* @return	bool
+	*/
 
 	public function canRepeat()
 	{
 		$params = $this->getParams();
 		return $params->get('repeat_group_button');
+	}
+	
+	/**
+	 * can the user add a repeat group
+	 * @since 3.0.1
+	 * @return	bool
+	 */
+	
+	public function canAddRepeat()
+	{
+		$params = $this->getParams();
+		$ok = $this->canRepeat();
+		if ($ok)
+		{
+			$user = JFactory::getUser();
+			$groups = $user->authorisedLevels();
+			$ok = in_array($params->get('repeat_add_access', 1), $groups);
+		}
+		return $ok;
+		
+	}
+	
+	/**
+	* can the user delete a repeat group
+	* @since 3.0.1
+	* @return	bool
+	*/
+	
+	public function canDeleteRepeat()
+	{
+		$ok = false;
+		if ($this->canRepeat())
+		{
+			$params = $this->getParams();
+			$row = $this->getFormModel()->getData();
+			$ok = FabrikWorker::canUserDo($params, $row, 'repeat_delete_access_user');
+			if ($ok === -1)
+			{
+				$user = JFactory::getUser();
+				$groups = $user->authorisedLevels();
+				$ok = in_array($params->get('repeat_delete_access', 1), $groups);
+			}
+		}
+		return $ok;
 	}
 
 	/**
@@ -406,7 +490,6 @@ class FabrikFEModelGroup extends FabModel{
 		$group = new stdClass();
 		$groupTable	= $this->getGroup();
 		$params	= $this->getParams();
-
 		if (!isset($this->editable))
 		{
 			$this->editable = $formModel->editable;
@@ -447,7 +530,7 @@ class FabrikFEModelGroup extends FabModel{
 
 		if (JString::stristr($groupTable->label , "{Add/Edit}"))
 		{
-			$replace = ((int)$formModel->rowId === 0) ? JText::_('COM_FABRIK_ADD') : JText::_('COM_FABRIK_EDIT');
+			$replace = ((int) $formModel->rowId === 0) ? JText::_('COM_FABRIK_ADD') : JText::_('COM_FABRIK_EDIT');
 			$groupTable->label  = str_replace("{Add/Edit}", $replace, $groupTable->label);
 		}
 		$group->title = $w->parseMessageForPlaceHolder($groupTable->label, $formModel->_data, false);
@@ -455,6 +538,8 @@ class FabrikFEModelGroup extends FabModel{
 		$group->displaystate = ($group->canRepeat == 1 && $formModel->editable) ? 1 : 0;
 		$group->maxRepeat = (int)$params->get('repeat_max');
 		$group->showMaxRepeats = $params->get('show_repeat_max', '0') == '1';
+		$group->canAddRepeat = $this->canAddRepeat();
+		$group->canDeleteRepeat = $this->canDeleteRepeat();
 		return $group;
 	}
 

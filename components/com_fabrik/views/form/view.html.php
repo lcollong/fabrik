@@ -84,10 +84,8 @@ class fabrikViewForm extends JView
 		{
 			$form->error = JText::_('COM_FABRIK_FAILED_VALIDATION');
 		}
-		//if errors made when submitting from a J plugin they are stored in the session
-		$errors = $this->get('Errors');
 		$form->origerror = $form->error;
-		$form->error = count($errors) > 0 ? $form->error : '';
+		$form->error = $model->hasErrors() ? $form->error : '';
 
 		$this->_addButtons();
 		JDEBUG ? $profiler->mark('form view before validation classes loaded') : null;
@@ -332,8 +330,14 @@ class fabrikViewForm extends JView
 				$element = $elementModel->getElement();
 				if (!in_array($element->plugin, $aLoadedElementPlugins))
 				{
-					$aLoadedElementPlugins[] = $element->plugin;
-					$elementModel->formJavascriptClass($srcs);
+					// $$$ hugh - certain elements, like fileupload, need to load different JS files
+					// on a per-element basis, so as a test fix, I modified the fileupload's formJavaScriptClass to return false,
+					// and test for that here, so as to not add it to aLoadedElementPlugins[].  The existing 'static' tests in
+					// formJavascriptClass() should still prevent scripts being added twice.
+					if ($elementModel->formJavascriptClass($srcs) !== false)
+					{
+						$aLoadedElementPlugins[] = $element->plugin;
+					}
 				}
 				$eventMax = ($groupModel->repeatTotal == 0) ? 1 : $groupModel->repeatTotal;
 				for ($c = 0; $c < $eventMax; $c ++)
@@ -359,7 +363,6 @@ class fabrikViewForm extends JView
 		$key = FabrikString::safeColNameToArrayKey($table->db_primary_key);
 
 		$this->get('FormCss');
-		$this->get('CustomJsAction');
 
 		$startJs = "head.ready(function() {\n";
 		$startJs= '';
@@ -552,7 +555,8 @@ class fabrikViewForm extends JView
 
 		if (FabrikHelperHTML::inAjaxLoadedPage())
 		{
-			$script[] = "new FloatingTips('#".$bkey." .fabrikTip', {html: true});";
+			$tipOpts = FabrikHelperHTML::tipOpts();
+			$script[] = "new FloatingTips('#".$bkey." .fabrikTip', " . json_encode($tipOpts) . ");";
 		}
 
 		$pluginManager = FabrikWorker::getPluginManager();
@@ -561,10 +565,9 @@ class fabrikViewForm extends JView
 		{
 			return false;
 		}
-		
 		$str = implode("\n", $script);
+		$model->getCustomJsAction($srcs);
 		FabrikHelperHTML::script($srcs, $str);
-
 		$pluginManager->runPlugins('onAfterJSLoad', $model);
 	}
 
@@ -661,9 +664,12 @@ class fabrikViewForm extends JView
 			$form->prevButton = '';
 		}
 
-		if (empty($form->nextButton) && empty($form->prevButton) && empty($form->submitButton)
+		// $$$ hugh - hide actions section is we're printing, or if not actions selected
+		if (JRequest::getVar('print', '0') == '1' ||
+			(empty($form->nextButton) && empty($form->prevButton) && empty($form->submitButton)
 			&& empty($form->gobackButton) && empty($form->deleteButton) && empty($form->applyButton)
-			&& empty($form->copyButton) && empty($form->resetButton)) {
+			&& empty($form->copyButton) && empty($form->resetButton))
+			) {
 			$this->hasActions = false;
 		}
 		else {

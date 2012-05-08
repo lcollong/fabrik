@@ -22,7 +22,7 @@ class plgFabrik_ValidationruleUserExists extends plgFabrik_Validationrule
 
 	/** @var bool if true uses icon of same name as validation, otherwise uses png icon specified by $icon */
 	protected $icon = 'notempty';
-	
+
 	/**
 	 * (non-PHPdoc)
 	 * @see plgFabrik_Validationrule::validate()
@@ -35,23 +35,73 @@ class plgFabrik_ValidationruleUserExists extends plgFabrik_Validationrule
 		//as ornot is a radio button it gets json encoded/decoded as an object
 		$ornot = (object) $params->get('userexists_or_not');
 		$ornot = isset($ornot->$pluginc) ? $ornot->$pluginc : 'fail_if_exists';
+		$user = JFactory::getUser();
 		jimport('joomla.user.helper');
-		$id = 0;
-		if (!$id = JUserHelper::getUserId($data))
+		$result = JUserHelper::getUserId($data);
+		if ($user->get('guest'))
 		{
-			if ($ornot == 'fail_if_exists')
+			if (!$result)
 			{
-				return true;
+				if ($ornot == 'fail_if_exists')
+				{
+					return true;
+				}
 			}
+			else
+			{
+				if ($ornot == 'fail_if_not_exists')
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 		else
 		{
-			if ($ornot == 'fail_if_not_exists')
+			if (!$result)
 			{
-				return true;
+				if ($ornot == 'fail_if_exists')
+				{
+					return true;
+				}
 			}
+			else
+			{
+				$user_field = (array) $params->get('userexists_user_field', array());
+				$user_field = $user_field[$c];
+				$user_id = 0;
+				if ((int) $user_field !== 0)
+				{
+					$user_elementModel = FabrikWorker::getPluginManager()->getElementPlugin($user_field);
+					$user_fullName = $user_elementModel->getFullName(false, true, false);
+					$user_field = $user_elementModel->getFullName(false, false, false);
+				}
+				if (!empty($user_field))
+				{
+					// $$$ the array thing needs fixing, for now just grab 0
+					$formdata = $elementModel->getForm()->_formData;
+					$user_id = JArrayHelper::getValue($formdata, $user_fullName . '_raw', JArrayHelper::getValue($formdata, $user_fullName, ''));
+					if (is_array($user_id))
+					{
+						$user_id = JArrayHelper::getValue($user_id, 0, '');
+					}
+				}
+				if ($user_id != 0) {
+					if ($result == $user_id) {
+						return ($ornot == 'fail_if_exists') ? true : false;
+					}
+					return false;
+				}
+				else {
+					if ($result == $user->get('id')) // The connected user is editing his own data
+					{
+						return ($ornot == 'fail_if_exists') ? true : false;
+					}
+					return false;
+				}
+			}
+			return false;
 		}
-		return false;
 	}
 
 }

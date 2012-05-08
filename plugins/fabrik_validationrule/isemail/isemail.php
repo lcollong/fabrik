@@ -45,6 +45,12 @@ class plgFabrik_ValidationruleIsEmail extends plgFabrik_Validationrule
 		{
 			return true;
 		}
+
+		// $$$ hugh - let's try using new helper func instead of rolling our own.
+		return FabrikWorker::isEmail($email);
+
+		// $$$ keeping this code just in case, but shouldn't be reached.
+
 		/* First, we check that there's one symbol, and that the lengths are right*/
 		if (!preg_match("/[^@]{1,64}@[^@]{1,255}/", $data)) {
 			/* Email invalid because wrong number of characters in one section, or wrong number of symbols.*/

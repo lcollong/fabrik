@@ -52,8 +52,8 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 			$data = $formModel->_data;
 		}
 		$value = $this->getValue($data, $repeatCounter);
-		$fd = $params->get('birthday_format', 'd.m.Y');
-		if (!$this->editable)
+		$fd = $params->get('details_date_format', 'd.m.Y');
+		if (!$this->_editable)
 		{
 			if (!in_array($value, $aNullDates))
 			{
@@ -66,6 +66,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 				$lastyear = date('Y') - 1;
 				// $$$ rob - all this below is nice but ... you still need to set a default
 				$detailvalue= '';
+				$year = ltrim($year, '0');
 				if (FabrikWorker::isDate($value))
 				{
 					$date = JFactory::getDate($value);
@@ -168,8 +169,11 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 			}
 			$years = array(JHTML::_('select.option', '', $params->get('birthday_yearlabel', JText::_('YEAR'))));
 			$date = date('Y');
-			$firstYear = (int)$params->get('birthday_numyears', 110);
-			for ($i = $date; $i > $date - $firstYear; $i--)
+			//$firstYear = (int)$params->get('birthday_firstyear', 100); //Jaanus: now we can choose one exact year A.C to begin the dropdown
+			$yearopt = $params->get('birthday_yearopt');
+			$yearstart = (int)$params->get('birthday_yearstart');
+			$yeardiff = $yearopt == 'number' ? $yearstart : $date - $yearstart;
+			for ($i = $date; $i >= $date - $yeardiff; $i--)
 			{
 				$years[] = JHTML::_('select.option', $i);
 			}
@@ -392,9 +396,9 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		$groupModel = $this->getGroup();
 		$data = $groupModel->canRepeat() ? json_decode($data) : array($data);
 		$data = (array)$data;
-		//$ft = $params->get('table_day_format', 'd.m.Y');
-		$ft = $params->get('birthday_format', '%Y-%m-%d');
-		$fta = $params->get('table_age_format', 'no');
+		$ft = $params->get('list_date_format', 'd.m.Y');
+		//$ft = $params->get('birthday_format', 'd.m.Y'); //$ft = $params->get('birthday_format', '%Y-%m-%d');
+		$fta = $params->get('list_age_format', 'no');
 		$format = array();
 		
 		foreach ($data as $d)
@@ -402,8 +406,9 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 			if (!in_array($d, $aNullDates))
 			{
 				// $$$ rob default to a format date
-				$date = JFactory::getDate($d);
-				$datedisp = $date->toFormat($ft);
+				//$date = JFactory::getDate($d);
+				//$datedisp = $date->toFormat($ft);
+				// Jaanus: sorry, but in this manner the element doesn't work with dates earlier than 1901
 				
 				list($year, $month, $day) = explode('-', $d);
 				$daydisp = str_replace($daysys, $daysimple, $day);
@@ -411,6 +416,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 				$nextyear = date('Y') + 1;
 				$lastyear = date('Y') - 1;
 				$thisyear = date('Y');
+				$year = ltrim($year, '0');
 				$dmy = $day . '.' . $month . '.' . $year;
 				$mdy = $month . '/' . $day . '/' . $year;
 				$dmonthyear = $daydisp . '. ' . $monthdisp . ' ' . $year;

@@ -84,20 +84,11 @@ class Com_FabrikInstallerScript
 	protected function moveFiles(&$installer, $upgrade = false)
 	{
 		jimport('joomla.filesystem.file');
-<<<<<<< HEAD
-
-		$componentFrontend  = 'components/com_fabrik';
-
-		$dest = 'libraries/joomla/document/fabrikfeed';
-		if (!JFolder::exists($dest)) {
-			JFolder::create($dest);
-=======
 		$componentFrontend = 'components/com_fabrik';
 		$dest = 'libraries/joomla/document/fabrikfeed';
 		if (!JFolder::exists(JPATH_ROOT . '/' . $dest))
 		{
 			JFolder::create(JPATH_ROOT . '/' . $dest);
->>>>>>> master
 		}
 		// $$$ hugh - have to use false as last arg (use_streams) on JFolder::copy(), otherwise
 		// it bypasses FTP layer, and will fail if web server does not have write access to J! folders
@@ -107,15 +98,8 @@ class Com_FabrikInstallerScript
 			echo "<p style=\"color:red\">failed to moved " . $componentFrontend . '/fabrikfeed to ' . $dest . '</p>';
 			return false;
 		}
-<<<<<<< HEAD
-
-		$dest = 'libraries/joomla/database/database';
-
-		$driverInstallLoc = $componentFrontend.DS.'dbdriver'.DS;
-=======
 		$dest = 'libraries/joomla/database/database';
 		$driverInstallLoc = $componentFrontend . '/dbdriver/';
->>>>>>> master
 		$moveRes = JFolder::copy($driverInstallLoc, $dest, JPATH_SITE, true, false);
 		if ($moveRes !== true)
 		{
@@ -136,15 +120,10 @@ class Com_FabrikInstallerScript
 		jimport('joomla.filesystem.file');
 
 		$dest = JPATH_SITE . '/libraries/joomla/document/fabrikfeed';
-<<<<<<< HEAD
-		if (JFolder::exists($dest)) {
-			if (!JFolder::delete($dest)) {
-=======
 		if (JFolder::exists($dest))
 		{
 			if (!JFolder::delete($dest))
 			{
->>>>>>> master
 				return false;
 			}
 		}

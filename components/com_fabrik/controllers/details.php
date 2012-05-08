@@ -60,6 +60,8 @@ class FabrikControllerDetails extends JController
 		{
 			$context = 'com_fabrik.form.' . JRequest::getInt('formid');
 			$model->errors = $session->get($context.'.errors', array());
+			$context = 'com_fabrik.form.' . JRequest::getInt('formid');
+			$model->_arErrors = $session->get($context . '.errors', array());
 			$session->clear($context . '.errors');
 		}
 		if (!JError::isError($model) && is_object($model))
@@ -129,7 +131,7 @@ class FabrikControllerDetails extends JController
 				{
 					//store errors in session
 					$context = 'com_fabrik.form.' . $model->get('id') . '.';
-					$session->set($context.'errors', $model->errors);
+					$session->set($context . 'errors', $model->errors);
 					//JRequest::setVar('fabrik_referrer', JArrayHelper::getValue($_SERVER, 'HTTP_REFERER', '' ), 'post');
 					// $$$ hugh - testing way of preserving form values after validation fails with form plugin
 					// might as well use the 'savepage' mechanism, as it's already there!
@@ -207,7 +209,7 @@ class FabrikControllerDetails extends JController
 		$formdata = $session->get('com_fabrik.form.data');
 		$context = 'com_fabrik.form.' . $formdata['fabrik'] . '.redirect.';
 		//if the redirect plug-in has set a url use that in preference to the default url
-		$surl = $session->get($context.'url', array($url));
+		$surl = $session->get($context . 'url', array($url));
 		if (!is_array($surl))
 		{
 			$surl = array($surl);
@@ -216,7 +218,7 @@ class FabrikControllerDetails extends JController
 		{
 			$surl[] = $url;
 		}
-		$smsg = $session->get($context.'msg', array($msg));
+		$smsg = $session->get($context . 'msg', array($msg));
 		if (!is_array($smsg))
 		{
 			$smsg = array($smsg);
@@ -240,7 +242,8 @@ class FabrikControllerDetails extends JController
 				break;
 			}
 		}
-		if ($found) {
+		if ($found)
+		{
 			$msg = null;
 		}
 		$session->set($context . 'url', $surl);
@@ -266,7 +269,7 @@ class FabrikControllerDetails extends JController
 		{
 			if (array_key_exists('apply', $model->_formData))
 			{
-				$url = "index.php?option=com_fabrik&c=form&task=form&formid=" . JRequest::getInt('formid') . "&listid=" . JRequest::getInt('listid') . "&rowid=" . JRequest::getInt('rowid');
+				$url = 'index.php?option=com_fabrik&c=form&task=form&formid=' . JRequest::getInt('formid') . '&listid=' . JRequest::getInt('listid') . '&rowid=' . JRequest::getInt('rowid');
 			}
 			else
 			{

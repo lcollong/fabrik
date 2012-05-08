@@ -15,6 +15,9 @@ class plgFabrik_ElementDisplay extends plgFabrik_Element
 
 	protected $fieldDesc = 'TEXT';
 
+	/** @var bol override default value as we don't want to record this in database*/
+	var $_recordInDatabase = false;
+
 	function setIsRecordedInDatabase()
 	{
 		$this->recordInDatabase = false;
@@ -37,7 +40,7 @@ class plgFabrik_ElementDisplay extends plgFabrik_Element
 		}
 		return parent::getLabel($repeatCounter, $tmpl);
 	}
-	
+
 	/**
 	 * shows the data formatted for the table view
 	 * @param	string	data

@@ -153,7 +153,7 @@ class FabrikControllerForm extends JControllerForm
 	 * generic function to redirect
 	 */
 
-	protected function makeRedirect($msg = null, &$model )
+	protected function makeRedirect($msg = null, &$model)
 	{
 		if (is_null($msg))
 		{
