@@ -53,7 +53,7 @@ class plgFabrik_ElementBirthday extends plgFabrik_Element
 		}
 		$value = $this->getValue($data, $repeatCounter);
 		$fd = $params->get('details_date_format', 'd.m.Y');
-		if (!$this->_editable)
+		if (!$this->editable)
 		{
 			if (!in_array($value, $aNullDates))
 			{

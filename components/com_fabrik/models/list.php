@@ -4627,20 +4627,6 @@ class FabrikFEModelList extends JModelForm {
 				$counter ++;
 			}
 		}
-		else
-		{
-			$join = FabrikHelperHTML::conditonList($this->getRenderContext(), $join);
-		}
-
-		$lineElname = FabrikString::safeColName($elementModel->getFullName(false, true, false));
-		$orig = JRequest::getVar($lineElname);
-		JRequest::setVar($lineElname, array('value' => $value));
-		$filter = $elementModel->getFilter($counter, false);
-		JRequest::setVar($lineElname, $orig);
-		$key = JHTML::_('select.genericlist', $fieldNames, $prefix.'key][]', 'class="inputbox key" size="1" ','value', 'text', $key);
-		$jsSel = JHTML::_('select.genericlist', $statements,  $prefix.'condition][]', 'class="inputbox" size="1" ','value', 'text', $jsSel);
-		$rows[] = array('join' => $join, 'element' => $key, 'condition' => $jsSel, 'filter' => $filter, 'type' => $type, 'grouped' => $grouped);
-		$counter ++;
 		if ($counter == 0)
 		{
 			$join = JText::_('COM_FABRIK_WHERE') . '<input type="hidden" name="' . $prefix . 'join][]" value="WHERE" />';

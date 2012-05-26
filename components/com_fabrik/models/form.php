@@ -3910,7 +3910,7 @@ INNER JOIN #__{package}_groups as g ON g.id = fg.group_id
 				{
 					// $$$ - hugh - testing new 'hide if no usable elements' option (4)
 					//Jaanus: if not form view with "details only" option and not details view with "form only" option
-					if (!($showGroup == 2 && $this->_editable)
+					if (!($showGroup == 2 && $this->editable)
 						&& !($showGroup == 3 && JRequest::getVar('view', 'form') == 'details')
 						&& !($showGroup == 4 && !$groupModel->canView())
 						)

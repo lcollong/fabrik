@@ -113,7 +113,7 @@ class fabrikViewForm extends JView
 		$this->_loadTmplBottom($form);
 		JDEBUG ? $profiler->mark('form view: after tmpl bottom loaded') : null;
 
-		if ($model->_editable)
+		if ($model->editable)
 		{
 			$form->startTag = '<form action="' . $form->action . '" class="fabrikForm" method="post" name="' . $form->name . '" id="' . $form->formid . '" enctype="' . $model->getFormEncType() . '">';
 			$form->endTag = '</form>';
@@ -377,7 +377,7 @@ class fabrikViewForm extends JView
 		$opts->start_page = $start_page;
 		$opts->inlineMessage = (bool) $this->isMambot;
 		//$$$rob dont int this as keys may be string
-		$opts->rowid = (string) $model->_rowId;
+		$opts->rowid = (string) $model->rowId;
 		//3.0 needed for ajax requests
 		$opts->listid = (int) $this->get('ListModel')->getId();
 

@@ -712,9 +712,9 @@ class plgFabrik_ElementDatabasejoin extends plgFabrik_ElementList
 		// $$$ rob 24/05/2011 - add options per row
 		$options_per_row = intval($params->get('dbjoin_options_per_row', 0));
 		$html = array();
-		// $$$ hugh - still need to check $this->_editable, as content plugin sets it to false,
+		// $$$ hugh - still need to check $this->editable, as content plugin sets it to false,
 		// as no point rendering editable view for {fabrik view=element ...} in an article.
-		if (!$formModel->isEditable() || !$this->_editable)
+		if (!$formModel->isEditable() || !$this->editable)
 		{
 			// $$$ rob 19/03/2012 uncommented line below - needed for checkbox rendering
 			$defaultLabel = $this->renderListData($default, JArrayHelper::toObject($data));

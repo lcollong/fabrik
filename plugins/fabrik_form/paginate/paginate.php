@@ -97,22 +97,22 @@ class plgFabrik_FormPaginate extends plgFabrik_Form {
 
 	protected function show($params, $formModel)
 	{
-# Nobody except form model constuctor sets _editable property yet -
+# Nobody except form model constuctor sets editable property yet -
 # it sets in view.html.php only and after render() - too late I think
 # so no pagination output for frontend details veiw for example.
 # Let's set it here before use it
 		$formModel->checkAccessFromListSettings();
-
-$where = $params->get('paginate_where');
-		switch($where) {
+		$where = $params->get('paginate_where');
+		switch($where)
+		{
 			case 'both':
 				return true;
 				break;
 			case 'form':
-				return (int)$formModel->editable == 1;
+				return (int) $formModel->editable == 1;
 				break;
 			case 'details':
-				return (int)$formModel->editable == 0;
+				return (int )$formModel->editable == 0;
 				break;
 		}
 	}
@@ -120,16 +120,18 @@ $where = $params->get('paginate_where');
 	/**
 	 * process the plugin, called when form is submitted
 	 *
-	 * @param object $params
-	 * @param object form
+	 * @param	object	$params
+	 * @param	object	form
 	 */
 
 	function onAfterJSLoad(&$params, &$formModel)
 	{
-		if (!$this->show($params, $formModel)) {
+		if (!$this->show($params, $formModel))
+		{
 			return;
 		}
-		if ($params->get('paginate_ajax') == 0) {
+		if ($params->get('paginate_ajax') == 0)
+		{
 			return;
 		}
 		$opts = new stdClass();
@@ -138,7 +140,7 @@ $where = $params->get('paginate_where');
 		$opts->ids = $this->ids;
 		$opts->pkey = FabrikString::safeColNameToArrayKey($formModel->getTableModel()->getTable()->db_primary_key);
 		$opts = json_encode($opts);
-		$form =& $formModel->getForm();
+		$form = $formModel->getForm();
 		$container = $formModel->editable ? 'form' : 'details';
 		$container .= "_".$form->id;
 		
