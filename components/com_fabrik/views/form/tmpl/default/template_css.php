@@ -16,8 +16,7 @@ echo "
 	margin: 0;
 	padding:0;
 	text-shadow: 0 1px 0 #FFFFFF;
-  zoom: 1;
-	text-transform: uppercase;
+	zoom: 1;
 	width:100%;
 	background: -moz-linear-gradient(center top , #F3F3F3, #D7D7D7) repeat scroll 0 0 #E7E7E7;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#D7D7D7', endColorstr='#F3F3F3'); /* for IE */
@@ -222,6 +221,7 @@ section for dropdowns radio buttons etc**/
 
 #{$view}_$c .fabrikSubGroupElements{
 	width:80%;
+	border: 1px dotted #666;
 	/* float:left; */
 }
 
@@ -385,6 +385,10 @@ section for dropdowns radio buttons etc**/
 #{$view}_$c .fabrikSubElement {
 	display: block;
 	margin-top: 10px;
+}
+
+#{$view}_$c .addGroup:link {
+	text-decoration: none;
 }
 
 /*

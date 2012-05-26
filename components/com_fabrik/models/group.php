@@ -216,6 +216,7 @@ class FabrikFEModelGroup extends FabModel{
 	 * @since 	Fabrik 3.0.5.2
 	 * @param	object	prerender element properties
 	 * @param	int		current key when looping over elements.
+	 * @return	int		the next column count
 	 */
 
 	public function setColumnCss(&$element, $elCount)
@@ -230,10 +231,12 @@ class FabrikFEModelGroup extends FabModel{
 			if ($widths != '')
 			{
 				$widths = explode(',', $widths);
+				// $$$ hugh - http://fabrikar.com/forums/showthread.php?p=140799#post140799
+				//$w = JArrayHelper::getValue($widths, $elCount % $colcount + 1, $w);
 				$w = JArrayHelper::getValue($widths, $elCount % $colcount, $w);
 			}
 			$element->column = ' style="float:left;width:' . $w . ';';
-			if (($elCount % $colcount == 0) || $element->hidden)
+			if ($elCount !== 0 && ($elCount % $colcount + 1 == 0) || $element->hidden)
 			{
 				$element->startRow = true;
 				$element->column .= "clear:both;";
@@ -248,6 +251,12 @@ class FabrikFEModelGroup extends FabModel{
 		{
 			$element->column .= ' style="clear:both;width:100%;"';
 		}
+		// $$$ rob only advance in the column count if the element is not hidden
+		if (!$element->hidden)
+		{
+			$elCount ++;
+		}
+		return $elCount;
 	}
 
 	/**
@@ -364,13 +373,13 @@ class FabrikFEModelGroup extends FabModel{
 		$params = $this->getParams();
 		return $params->get('repeat_group_button');
 	}
-	
+
 	/**
 	 * can the user add a repeat group
 	 * @since 3.0.1
 	 * @return	bool
 	 */
-	
+
 	public function canAddRepeat()
 	{
 		$params = $this->getParams();
@@ -382,15 +391,15 @@ class FabrikFEModelGroup extends FabModel{
 			$ok = in_array($params->get('repeat_add_access', 1), $groups);
 		}
 		return $ok;
-		
+
 	}
-	
+
 	/**
 	* can the user delete a repeat group
 	* @since 3.0.1
 	* @return	bool
 	*/
-	
+
 	public function canDeleteRepeat()
 	{
 		$ok = false;

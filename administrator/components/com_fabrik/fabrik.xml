@@ -2,13 +2,13 @@
 <extension xmlns="http://www.joomla.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" client="site" method="upgrade" type="component" version="2.5" xsi:schemaLocation="http://www.joomla.org extension.xsd ">
 
 	<name>Fabrik</name>
-	<creationDate>April 2012</creationDate>
+	<creationDate>May 2012</creationDate>
 	<author>Fabrik</author>
 	<copyright>(C) 2005-2012 fabrikar.com</copyright>
 	<license>GNU/GPL</license>
 	<authorEmail>rob@pollen-8.co.uk</authorEmail>
 	<authorUrl>www.pollen-8.co.uk</authorUrl>
-	<version>3.0.5.2</version>
+	<version>3.0.6</version>
 	<description>COM_FABRIK_XML_DESCRIPTION</description>
 
 	<scriptfile>com_fabrik.manifest.class.php</scriptfile>
@@ -60,7 +60,7 @@
 	</media>
 		
 	<administration>
-		<menu img="../administrator/components/com_fabrik/images/logo.png" view="home">Fabrik</menu>
+		<menu img="../administrator/components/com_fabrik/images/fabrik.png" view="home">Fabrik</menu>
 		<submenu>
 			<menu alt="Lists" img="../administrator/components/com_fabrik/images/lists.png" link="option=com_fabrik&amp;view=lists" view="lists">com_fabrik_lists</menu>
 			<menu alt="Forms" img="../administrator/components/com_fabrik/images/forms.png" link="option=com_fabrik&amp;view=forms" view="forms">com_fabrik_forms</menu>

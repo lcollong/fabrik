@@ -14,7 +14,6 @@ jimport('joomla.application.component.model');
 
 require_once(JPATH_SITE . '/components/com_fabrik/models/plugin.php');
 
-//class plgFabrik_Visualization extends FabrikPlugin
 class FabrikFEModelVisualization extends JModel
 {
 
@@ -75,7 +74,6 @@ class FabrikFEModelVisualization extends JModel
 		//overwrite in plugin
 	}
 
-
 	/**
 	 * get the vizualizations table models
 	 *
@@ -103,8 +101,8 @@ class FabrikFEModelVisualization extends JModel
 
 	/**
 	 * get a list model
-	 * @param int $id
-	 * @return object fabrik list model
+	 * @param	int		$id
+	 * @return	object	fabrik list model
 	 */
 
 	protected function &getlistModel($id)
@@ -178,14 +176,14 @@ class FabrikFEModelVisualization extends JModel
 			$router->setVar('clearfilters', 0);
 		}
 		$queryvars = $router->getVars();
-		$page = "index.php?";
+		$page = 'index.php?';
 		foreach ($queryvars as $k => $v)
 		{
-			$qs[] = "$k=$v";
+			$qs[] = $k . '=' . $v;
 		}
 		$action = $page . implode("&amp;", $qs);
 		//limitstart gets added in the pageination model
-		$action = preg_replace("/limitstart".$this->getState('id')."}=(.*)?(&|)/", "", $action);
+		$action = preg_replace("/limitstart" . $this->getState('id') . "}=(.*)?(&|)/", '', $action);
 		$action = FabrikString::rtrimword($action, "&");
 		$this->getFilterFormURL	= JRoute::_($action);
 		return $this->getFilterFormURL;
@@ -194,32 +192,10 @@ class FabrikFEModelVisualization extends JModel
 	function getRequireFilterMsg()
 	{
 		$listModels = $this->getlistModels();
-		/* $$$ hugh - rewrote the list stuff for required filtering
 		foreach ($listModels as $model)
 		{
-			$params = $model->getParams();
-			$filters = $model->getFilterArray();
-			$ftypes = JArrayHelper::getValue($filters, 'search_type', array());
-			foreach ($ftypes as $i => $v)
+			if (!$model->gotAllRequiredFilters())
 			{
-				if ($ftypes[$i] == 'prefilter')
-				{
-					unset($ftypes[$i]);
-				}
-			}
-
-			if ($params->get('require-filter', true) && empty($ftypes))
-			{
-				JError::raiseNotice(500, JText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS'));
-			}
-		}
-		if (!$this->getRequiredFiltersFound())
-		{
-			JError::raiseNotice(500, JText::_('COM_FABRIK_PLEASE_SELECT_ALL_REQUIRED_FILTERS'));
-		}
-		*/
-		foreach ($listModels as $model) {
-			if (!$model->gotAllRequiredFilters()) {
 				JError::raiseNotice(500, $model->getRequiredMsg());
 			}
 		}
@@ -247,27 +223,16 @@ class FabrikFEModelVisualization extends JModel
 	/**
 	 * load in any table plugin classes
 	 * needed for radius search filter
-	 * @return array js file paths
+	 * @param	array	existing src file
+	 * @return	array	js file paths
 	 */
 
-	function getPluginJsClasses()
+	function getPluginJsClasses(&$srcs = array())
 	{
-		$srcs = array();
 		$listModels = $this->getListModels();
 		foreach ($listModels as $model)
 		{
-			$paths = $model->getPluginJsClasses();
-			if (!empty($paths))
-			{
-				if (is_array($paths))
-				{
-					$srcs = array_merge($srcs, $paths);
-				}
-				else
-				{
-					$srcs[] = $paths;
-				}
-			}
+			$paths = $model->getPluginJsClasses($srcs);
 		}
 		return $srcs;
 	}
@@ -292,7 +257,7 @@ class FabrikFEModelVisualization extends JModel
 		return implode("\n", $str);
 	}
 
-/**
+	/**
 	 * Method to set the table id
 	 *
 	 * @access	public

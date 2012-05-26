@@ -51,7 +51,7 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 					if (!empty($condition))
 					{
 						$this_condition = $w->parseMessageForPlaceHolder($condition, $row);
-						if (eval($this_condition === false))
+						if (eval($this_condition) === false)
 						{
 							continue;
 						}
@@ -88,7 +88,6 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 			$listModel = JModel::getInstance('list', 'FabrikFEModel');
 			$listModel->setId($params->get('table'));
 			$table = $listModel->getTable();
-
 			$connection = $params->get('connection');
 			$field = $params->get('cronemail-updatefield');
 			$value = $params->get('cronemail-updatefield-value');
@@ -97,9 +96,9 @@ class plgFabrik_Cronemail extends plgFabrik_Cron {
 				$value = @eval($value);
 			}
 			$field = str_replace("___", ".", $field);
+			$fabrikDb = $listModel->getDb();
 			$query = "UPDATE $table->db_table_name set $field = " . $fabrikDb->Quote($value) . " WHERE $table->db_primary_key IN (" . implode(',', $updates) . ")";
 			$this->log .= "\n update query: $query";
-			$fabrikDb = $listModel->getDb();
 			$fabrikDb->setQuery($query);
 			$fabrikDb->query();
 		}

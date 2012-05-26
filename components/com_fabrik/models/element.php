@@ -253,7 +253,6 @@ class plgFabrik_Element extends FabrikPlugin
 		}
 		return $this->group;
 	}
-	
 	/**
 	* @since 3.0.5
 	* set the group model
@@ -265,6 +264,11 @@ class plgFabrik_Element extends FabrikPlugin
 		$this->group = $group;
 	}
 	
+	function getGroupModel($group_id = null)
+	{
+		return $this->getGroup($group_id);
+	}
+
 	/**
 	 * get the elements form model
 	 * @deprecated use getFormModel
@@ -1398,9 +1402,9 @@ class plgFabrik_Element extends FabrikPlugin
 			default:
 			case 'tip':
 				$element->tipAbove = '';
-				$element->tipBelow = '';
-				$element->tipSide = '';
-				break;
+			$element->tipBelow = '';
+			$element->tipSide = '';
+			break;
 			case 'above':
 				$element->tipAbove = $tip;
 				$element->tipBelow = '';
@@ -1598,10 +1602,10 @@ class plgFabrik_Element extends FabrikPlugin
 	}
 
 	/**
-	* helper method to build an input field
-	* @param	string	$node
-	* @param	array	$bits property => value
-	*/
+	 * helper method to build an input field
+	 * @param	string	$node
+	 * @param	array	$bits property => value
+	 */
 
 	protected function buildInput($node = 'input', $bits = array())
 	{
@@ -2112,11 +2116,11 @@ class plgFabrik_Element extends FabrikPlugin
 				$return[] = '<input type="text" name="' . $v . '" class="inputbox fabrik_filter" size="'.$size.'" value="' . $default . '" id="'.$id.'" />';
 				break;
 
-				case "hidden":
-					$default = stripslashes($default);
-					$default = htmlspecialchars($default);
-					$return[] = '<input type="hidden" name="' . $v . '" class="inputbox fabrik_filter" value="' . $default . '" id="'.$id.'" />';
-					break;
+			case "hidden":
+				$default = stripslashes($default);
+				$default = htmlspecialchars($default);
+				$return[] = '<input type="hidden" name="' . $v . '" class="inputbox fabrik_filter" value="' . $default . '" id="'.$id.'" />';
+				break;
 
 			case "auto-complete":
 				$default = stripslashes($default);
@@ -2680,7 +2684,7 @@ class plgFabrik_Element extends FabrikPlugin
 			{
 				# $$$ hugh - darn, this is stripping the ' of the end of things like "select & from foo where bar = '123'"
 				$value = ltrim($value, "'");
-				$value = rtrim($value, "'");
+			$value = rtrim($value, "'");
 			}
 			if ($condition == '=' && $value == "'_null_'")
 			{
@@ -2715,20 +2719,20 @@ class plgFabrik_Element extends FabrikPlugin
 				break;
 			default:
 				if ($this->isJoin())
-				{
-					// query the joined table concatanating into one field
-					$jointable = $this->getJoinModel()->getJoin()->table_join;
-					$pk = $this->getListModel()->getTable()->db_primary_key;
-					$key = "(SELECT GROUP_CONCAT(id SEPARATOR '//..*..//') FROM $jointable WHERE parent_id = $pk)";
-					$value = str_replace("'", '', $value);
-					$query = "($key = '$value' OR $key LIKE '$value" . GROUPSPLITTER . "%' OR
-					$key LIKE '" . GROUPSPLITTER . "$value" . GROUPSPLITTER . "%' OR
-					$key LIKE '%" . GROUPSPLITTER . "$value')";
-				}
-				else
-				{
-					$query = " $key $condition $value ";
-				}
+			{
+				// query the joined table concatanating into one field
+				$jointable = $this->getJoinModel()->getJoin()->table_join;
+				$pk = $this->getListModel()->getTable()->db_primary_key;
+				$key = "(SELECT GROUP_CONCAT(id SEPARATOR '//..*..//') FROM $jointable WHERE parent_id = $pk)";
+				$value = str_replace("'", '', $value);
+				$query = "($key = '$value' OR $key LIKE '$value" . GROUPSPLITTER . "%' OR
+				$key LIKE '" . GROUPSPLITTER . "$value" . GROUPSPLITTER . "%' OR
+				$key LIKE '%" . GROUPSPLITTER . "$value')";
+			}
+			else
+			{
+				$query = " $key $condition $value ";
+			}
 			break;
 		}
 		return $query;
@@ -4180,7 +4184,8 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 
 	/**
 	 * should the element's data be returned in the search all?
-	 * @param bool is the elements' list is advanced search all mode?
+	 * @param	bool	is the elements' list is advanced search all mode?
+	 * @return	bool	true
 	 */
 
 	function includeInSearchAll($advancedMode = false)
@@ -4196,8 +4201,8 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	 * get the value to use for graph calculations
 	 * can be overwritten in plugin
 	 * see fabriktimer which converts the value into seconds
-	 * @param string $v
-	 * @return mixed
+	 * @param	string	$v
+	 * @return	mixed
 	 */
 
 	public function getCalculationValue($v)
@@ -4754,10 +4759,10 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	}
 
 	/**
-   * @since 3.0rc1
-   * when the element is a repeatble join (e.g. db join checkbox) then figure out how many
-   * records have been selected
-   * @return int number of records selected
+	 * @since 3.0rc1
+	 * when the element is a repeatble join (e.g. db join checkbox) then figure out how many
+	 * records have been selected
+	 * @return int number of records selected
 	 */
 
 	public function getJoinRepeatCount($data, $oJoin)
@@ -4792,6 +4797,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$classes = array();
 		$classes[] = $this->getFullName(false, true, false);
 		$classes[] = 'fabrik_element';
+		$classes[] = 'fabrik_list_' . $this->getListModel()->getId() . '_group_' . $this->getGroupModel()->getId();
 		$c = $params->get('tablecss_cell_class', '');
 		if ($c !== '')
 		{
@@ -4813,6 +4819,7 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 		$classes[] = 'fabrik_ordercell';
 		$classes[] = $this->getFullName(false, true, false);
 		$classes[] = $this->getElement()->id . '_order';
+		$classes[] = 'fabrik_list_' . $this->getListModel()->getId() . '_group_' . $this->getGroupModel()->getId();
 		$classes[] = $this->getParams()->get('tablecss_header_class');
 		return implode(' ', $classes);
 	}
@@ -4823,13 +4830,13 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	}
 
 	/**
-	* allows the element to pre-process a rows data before and join mergeing of rows
-	* occurs. Used in calc element to do cals on actual row rather than merged row
-	* @since	3.0.5
-	* @param	string	elements data for the current row
-	* @param	object	current row's data
-	* @return	string	formatted value
-	*/
+	 * allows the element to pre-process a rows data before and join mergeing of rows
+	 * occurs. Used in calc element to do cals on actual row rather than merged row
+	 * @since	3.0.5
+	 * @param	string	elements data for the current row
+	 * @param	object	current row's data
+	 * @return	string	formatted value
+	 */
 
 	public function preFormatFormJoins($data, $row)
 	{
@@ -4861,6 +4868,31 @@ FROM (SELECT DISTINCT $item->db_primary_key, $name AS value, $label AS label FRO
 	protected function _getHiddenField($name, $value, $id)
 	{
 		return '<input class="fabrikinput inputbox" type="hidden" name="' . $name . '" value="' . $value . '" id="' . $id . '" />';
+	}
+
+	public function setRowClass(&$data)
+	{
+		$rowclass = $this->getParams()->get('use_as_row_class');
+		if ($rowclass == 1)
+		{
+			$col = $this->getFullName(false, true, false);
+			$col .= '_raw';
+			foreach ($data as $groupk => $group)
+			{
+				for ($i = 0; $i < count($group); $i ++)
+				{
+					$c = preg_replace('/[^A-Z|a-z|0-9]/', '-', $data[$groupk][$i]->data->$col);
+					$c = FabrikString::ltrim($c, '-');
+					$c = FabrikString::rtrim($c, '-');
+					// $$$ rob 24/02/2011 can't have numeric class names so prefix with element name
+					if (is_numeric($c))
+					{
+						$c = $this->getElement()->name . $c;
+					}
+					$data[$groupk][$i]->class .= ' ' . $c;
+				}
+			}
+		}
 	}
 }
 ?>

@@ -148,7 +148,8 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 			$value = array('label' => '', 'link' => '');
 		}
 
-		if (JRequest::getVar('rowid') == 0)
+		//if (JRequest::getVar('rowid') == 0)
+		if (FabrikWorker::getMenuOrRequestVar('rowid') == 0)
 		{
 			$value['link'] = $params->get('link_default_url');
 		}
@@ -175,7 +176,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 				}
 			}
 		}
-		
+
 		$labelname = FabrikString::rtrimword( $name, "[]").'[label]';
 		$linkname = FabrikString::rtrimword( $name, "[]").'[link]';
 
@@ -254,11 +255,12 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 							$v['link'] = $bitly->shorten($v['link']);
 						}
 					}
-					/*$return .= implode(GROUPSPLITTER2, $v);
-					$return .= GROUPSPLITTER;*/
 				}
 				else
 				{
+					if ($key == 'link') {
+						$v = FabrikString::encodeurl($v);
+					}
 					// not in repeat group
 					if($key == 'link' && $params->get('use_bitly'))
 					{
@@ -591,7 +593,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 		}
 		return false;
 	}
-	
+
 	/**
 	* @param array of scripts previously loaded (load order is important as we are loading via head.js
 	* and in ie these load async. So if you this class extends another you need to insert its location in $srcs above the
@@ -602,7 +604,7 @@ class plgFabrik_ElementLink extends plgFabrik_Element
 	* call FabrikModelElement::formJavascriptClass('plugins/fabrik_element/databasejoin/databasejoin.js', true);
 	* to ensure that the file is loaded only once
 	*/
-	
+
 	function formJavascriptClass(&$srcs, $script = '')
 	{
 		//whilst link isnt really an element list we can use its js AddNewEvent method

@@ -274,11 +274,11 @@ EOD;
 			$status = "status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=400,height=250,directories=no,location=no";
 			if ($app->isAdmin())
 			{
-				$url = 'index.php?option=com_fabrik&task=emailform.display&tmpl=component&formid=' . $formModel->get('id') . '&rowid=' . $formModel->rowId;
+				$url = 'index.php?option=com_fabrik&task=emailform.display&tmpl=component&formid=' . $formModel->get('id') . '&rowid=' . $formModel->getRowId();
 			 }
 			 else
 			 {
-				$url = 'index.php?option=com_fabrik&view=emailform&tmpl=component&formid=' . $formModel->get('id') . '&rowid=' . $formModel->rowId;
+				$url = 'index.php?option=com_fabrik&view=emailform&tmpl=component&formid=' . $formModel->get('id') . '&rowid=' . $formModel->getRowId();
 			}
 
 			if (JRequest::getVar('usekey') !== null)
@@ -385,16 +385,28 @@ EOD;
 
 	/**
 	 * check for a custom css file and include it if it exists
-	 * @param	string	$path NOT including JPATH_SITE (so relative too root dir
-	 * @return	false
+	 * @param	string	$path NOT including JPATH_SITE (so relative too root dir) may include querystring
+	 * @return	bool	if loaded or not
 	 */
 
 	public static function stylesheetFromPath($path)
 	{
-		if (JFile::exists(JPATH_SITE . '/' . $path))
+		if (strstr($path, '?'))
+		{
+			$file = explode('?', $path);
+			$file = $file[0];
+		}
+		else
+		{
+			$file = $path;
+		}
+			
+		if (JFile::exists(JPATH_SITE . '/' . $file))
 		{
 			FabrikHelperHTML::stylesheet($path);
+			return true;
 		}
+		return false;
 	}
 
 	/**
@@ -626,7 +638,6 @@ EOD;
 				$src[] = 'media/com_fabrik/js/icons.js';
 				$src[] = 'media/com_fabrik/js/icongen.js';
 				$src[] = 'media/com_fabrik/js/fabrik.js';
-				//$src[] = 'media/com_fabrik/js/lib/tips/floatingtips.js';
 				$src[] = 'media/com_fabrik/js/tips.js';
 				$src[] = 'media/com_fabrik/js/window.js';
 				$src[] = 'media/com_fabrik/js/lib/Event.mock.js';
@@ -635,11 +646,10 @@ EOD;
 				// $$$ hugh - setting liveSite needs to use addScriptDecleration, so it loads earlier, otherwise
 				// in some browsers it's not available when other things (like map biz) are loading
 				FabrikHelperHTML::addScriptDeclaration("head.ready(function() { Fabrik.liveSite = '".COM_FABRIK_LIVESITE."';});");
-				
+
 				$script = array();
 				$script[] = "Fabrik.fireEvent('fabrik.framework.loaded');";
-				FabrikHelperHTML::script($src, implode("\n", $script));
-				
+
 				$tipOpts = FabrikHelperHTML::tipOpts();
 				FabrikHelperHTML::addScriptDeclaration("head.ready(function () {
 	Fabrik.tips = new FloatingTips('.fabrikTip', " . json_encode($tipOpts) . ");
@@ -653,8 +663,9 @@ EOD;
 });
 				");
 			}
-			self::$framework = true;
+			self::$framework = $src;
 		}
+		return self::$framework;
 	}
 
 	/**
@@ -680,7 +691,7 @@ EOD;
 		$opts->fadein = (bool) $usersConfig->get('tipfx_fadein', false);
 		return $opts;
 	}
-	
+
 	/**
 	 * @param string js $script
 	 * @return null
@@ -752,13 +763,10 @@ EOD;
 		{
 			return;
 		}
-
 		$config = JFactory::getConfig();
 		$debug = $config->get('debug');
-		//$uncompressed	= $debug ? '-uncompressed' : '';
 		$ext = $debug || JRequest::getInt('fabrikdebug', 0) === 1 ? '.js' : '-min.js';
-
-		$file = (array)$file;
+		$file = (array) $file;
 		$src = array();
 		foreach ($file as $f)
 		{
@@ -780,7 +788,7 @@ EOD;
 				{
 					$f = $compressedFile;
 				}
-				$f = COM_FABRIK_LIVESITE.$f;
+				$f = COM_FABRIK_LIVESITE . $f;
 			}
 			if (JRequest::getCmd('format') == 'raw')
 			{
@@ -802,7 +810,8 @@ EOD;
 			}
 			else
 			{
-				$onLoad = "(function() { head.ready(function() {\n" . $onLoad . "\n})\n})";
+				$onLoad = "(function() {\n " . $onLoad . "\n //end load func \n})";
+				//$onLoad = "(function() { head.ready(function() {\n" . $onLoad . "\n})\n})";
 			}
 			$src[] = $onLoad;
 		}

@@ -420,7 +420,8 @@ class FabrikModelList extends FabModelAdmin
 			$join->joinFormFields = array_keys($fields[$join->join_from_table]);
 			$join->joinToFields = array_keys($fields[$join->table_join]);
 		}
-		return $joins;
+		// $$$ re-index the array in case we zapped anything
+		return array_values($joins);
 	}
 
 	/**
@@ -808,7 +809,8 @@ class FabrikModelList extends FabModelAdmin
 		{
 			return;
 		}
-		$query->select('*')->from('#__{package}_joins')->where('list_id = '.(int)$this->getState('list.id'));
+		// $$$ hugh - added "AND element_id = 0" to avoid fallout from "random join and group deletion" issue from May 2012
+		$query->select('*')->from('#__{package}_joins')->where('list_id = '.(int)$this->getState('list.id').' AND element_id = 0');
 		$db->setQuery($query);
 		$aOldJoins = $db->loadObjectList();
 		$params = $data['params'];
@@ -1159,7 +1161,7 @@ class FabrikModelList extends FabModelAdmin
 		$this->getFormModel();
 		if ($formid == 0)
 		{
-			echo 'createLinkedForm';exit;
+			//echo 'createLinkedForm';exit;
 			// $$$ rob required otherwise the JTable is loaed with db_table_name as a property
 			//which then generates an error - not sure why its loaded like that though?
 			// 18/08/2011 - could be due to the Form table class having it in its bind method - (have now overridden form table store() to remove thoes two params)

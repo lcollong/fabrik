@@ -29,9 +29,9 @@ class plgFabrik_FormKunena extends plgFabrik_Form {
 	 * @param object form
 	 */
 
-	function onBeforeStore(&$params, &$formModel)
-	{
-		return;
+	function onAfterProcess(&$params, &$formModel)
+	{		
+		//return;		
 		jimport('joomla.filesystem.file');
 		$files[]  = COM_FABRIK_BASE.'administrator/components/com_kunena/language/kunena.english.php';
 		$files[] = COM_FABRIK_BASE.'components/com_kunena/class.kunena.php';
@@ -48,19 +48,27 @@ class plgFabrik_FormKunena extends plgFabrik_Form {
 		foreach ($files as $file) {
 			require_once($file);
 		}
-		if (JFile::exists(KUNENA_ABSTMPLTPATH . '/post.php')) {
-			$postfile = KUNENA_ABSTMPLTPATH . '/post.php';
+		
+		//if (JFile::exists(KUNENA_ABSTMPLTPATH . '/post.php')) {
+		//	$postfile = KUNENA_ABSTMPLTPATH . '/post.php';
+		//}
+		if (JFile::exists(KUNENA_PATH_FUNCS . '/post.php')) {
+			$postfile = KUNENA_PATH_FUNCS . '/post.php';
 		}
 		else {
 			$postfile = KUNENA_PATH_TEMPLATE_DEFAULT .DS. 'post.php';
 		}
 		$w = new FabrikWorker();
-		$fbSession = CKunenaSession::getInstance();
+		
+		//$fbSession = CKunenaSession::getInstance();
+		//dont need this, session is loaded in CKunenaPost
 
 
 		$catid =$params->get('kunena_category', 0);
 		$parentid = 0;
 		$action = 'post';
+		//added action in request
+		JRequest::setVar('action',$action);
 		$func = 'post';
 		$contentURL = 'empty';
 		JRequest::setVar('catid', $catid);
@@ -68,10 +76,19 @@ class plgFabrik_FormKunena extends plgFabrik_Form {
 		$subject = $params->get('kunena_title');
 		JRequest::SetVar('message', $msg);
 		$subject = $w->parseMessageForPlaceHolder($subject, $formModel->_fullFormData);
+		//added subject in request
+		JRequest::SetVar('subject', $subject);
 		$origId = JRequest::getVar('id');
 		JRequest::setVar('id', 0);
+		/*
 		ob_start();
 		include ($postfile);
+		ob_end_clean();
+		*/
+		ob_start();
+		include ($postfile);
+		$mypost = new CKunenaPost();
+		$mypost->display(); //public CKunenaPost::display() will call protected method CKunenaPost::post() if JRequest action is 'post'
 		ob_end_clean();
 		JRequest::setVar('id', $origId);
 	}

@@ -14,8 +14,7 @@ echo "
 	margin: 0;
 	padding:0;
 	text-shadow: 0 1px 0 #FFFFFF;
-  zoom: 1;
-	text-transform: uppercase;
+	zoom: 1;
 	width:100%;
 	background: -moz-linear-gradient(center top , #F3F3F3, #D7D7D7) repeat scroll 0 0 #E7E7E7;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#D7D7D7', endColorstr='#F3F3F3'); /* for IE */
@@ -59,12 +58,16 @@ echo "
 
 #{$view}_$c fieldset ul{
 	list-style:none;
-	padding:40px 10px 20px 10px;
+	padding: 20px 10px 20px 10px;
 	margin:0;
 }
 
 #{$view}_$c ul.fabrikRepeatData{
 	padding:0;
+}
+
+#{$view}_$c .addGroup:link {
+	text-decoration: none;
 }
 
 #{$view}_$c .fabrikForm .fabrikGroup ul{
@@ -183,12 +186,24 @@ section for dropdowns radio buttons etc**/
 }
 
 #{$view}_$c .fabrikSubGroup{
-	clear:both;
+	border-bottom: 1px dashed #ccc;
+	padding: 10px 0 15px 0;
+	position: relative;
+}
+
+#{$view}_$c legend +.fabrikSubGroup{
+	margin-top:25px;
 }
 
 #{$view}_$c .fabrikSubGroupElements{
-	width:80%;
-	float:left;
+	
+}
+
+#{$view}_$c .fabrikGroupRepeater{
+	position: absolute;
+	right: 10px;
+	padding-top: 20px;
+	top: 0;
 }
 
 #{$view}_$c .geo{
@@ -311,8 +326,6 @@ margin:0;
 	padding-right: 5px;
 }
 
-
-
 #{$view}_$c .fabrikLabel {
 	min-height:1px; /*for elements with no label txt*/
 }
@@ -321,12 +334,6 @@ margin:0;
 	padding-top: 15px;
 	clear: left;
 	padding-bottom: 15px;
-}
-
-#{$view}_$c .fabrikGroupRepeater {
-	padding-top: 50px;
-	float: left;
-	width: 19%;
 }
 
 /** used by password element */

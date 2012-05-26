@@ -10,7 +10,6 @@ class fabrikViewApprovals extends JView
 
 	function display($tmpl = 'default')
 	{
-		FabrikHelperHTML::framework();
 		$model = $this->getModel();
 		$usersConfig = JComponentHelper::getParams('com_fabrik');
 		$id = JRequest::getVar('id', $usersConfig->get('visualizationid', JRequest::getInt('visualizationid', 0)));
@@ -29,8 +28,9 @@ class fabrikViewApprovals extends JView
 		$this->_setPath('template', $tmplpath);
 
 		FabrikHelperHTML::stylesheetFromPath('plugins/fabrik_visualization/approvals/views/approvals/tmpl/' . $tmpl . '/template.css');
-		FabrikHelperHTML::script('plugins/fabrik_visualization/approvals/approvals.js', "var approvals = new fbVisApprovals('approvals_".$id."');");
-
+		$srcs = FabrikHelperHTML::framework();
+		$srcs[] = 'plugins/fabrik_visualization/approvals/approvals.js';
+		FabrikHelperHTML::script($srcs, "var approvals = new fbVisApprovals('approvals_" . $id . "');");
 		$text = $this->loadTemplate();
 		$opt = JRequest::getVar('option');
 		$view = JRequest::getCmd('view');
@@ -43,7 +43,6 @@ class fabrikViewApprovals extends JView
 		JRequest::setVar('option', $opt);
 		echo $text;
 	}
-
 
 }
 ?>

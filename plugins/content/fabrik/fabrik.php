@@ -73,7 +73,8 @@ class plgContentFabrik extends JPlugin
 		// simple performance check to determine whether bot should process further
 		$botRegex = $fparams->get('Botregex') != '' ? $fparams->get('Botregex') : 'fabrik';
 
-		if (JString::strpos($row->text, $botRegex) === false) {
+		if (JString::strpos($row->text, $botRegex) === false)
+		{
 			return true;
 		}
 
@@ -91,7 +92,8 @@ class plgContentFabrik extends JPlugin
 
 	}
 
-	protected function preplace($match) {
+	protected function preplace($match)
+	{
 		$match = $match[0];
 		$match = str_ireplace('<p>', '<div>', $match);
 		$match = str_ireplace('</p>', '</div>', $match);
@@ -107,14 +109,17 @@ class plgContentFabrik extends JPlugin
 		// $$$ hugh - only replace []'s in value, not key, so we handle
 		// ranged filters and 'complex' filters
 		$match2 = array();
-		foreach (explode(" ", $match) as $m) {
-			if (strstr($m, '=')) {
+		foreach (explode(" ", $match) as $m)
+		{
+			if (strstr($m, '='))
+			{
 				list($key, $val) = explode('=', $m);
 				$val = str_replace('[','{', $val);
 				$val = str_replace(']', '}', $val);
 				$match2[] = $key . '=' . $val;
 			}
-			else {
+			else
+			{
 				$match2[] = $m;
 			}
 		}
@@ -129,8 +134,8 @@ class plgContentFabrik extends JPlugin
 	/**
 	 * the function called from the preg_replace_callback - replace the {} with the correct HTML
 	 *
-	 * @param string plug-in match
-	 * @return unknown
+	 * @param	string	plug-in match
+	 * @return	unknown
 	 */
 
 	protected function replace($match)
@@ -140,10 +145,7 @@ class plgContentFabrik extends JPlugin
 		$match = trim($match, "{");
 		$match = trim($match, "}");
 		$ref = preg_replace('/[^A-Z|a-z|0-9]/', '_', $match);
-		//$match = str_replace('[','{', $match);
-		//$match = str_replace(']','}', $match);
 		$match = $this->parse(array($match));
-		//$match = preg_replace('/\s+/', ' ', $match);
 		$match = explode(" ", $match);
 		array_shift($match);
 		$user = JFactory::getUser();
@@ -161,7 +163,9 @@ class plgContentFabrik extends JPlugin
 		$layoutFound = false;
 		$rowid = 0;
 		$usekey = '';
+		$session = JFactory::getSession();
 		$usersConfig->set('rowid', 0);
+		
 		foreach ($match as $m)
 		{
 			$m = explode("=", $m);
@@ -184,13 +188,18 @@ class plgContentFabrik extends JPlugin
 				case 'row':
 				case 'rowid':
 					$row = $m[1];
-					$matches = array();
-					if ($row == -1)
+					//when printing the content the rowid can't be passed in the querystring so don't set here
+					if ($row !== '{rowid}')
 					{
-						$row = $user->get('id');
+						if ($row == -1)
+						{
+							$row = $user->get('id');
+						}
+						$usersConfig->set('rowid', $row);
+						// set the rowid in the session so that print pages can grab it again
+						$session->set('fabrik.plgcontent.rowid', $row);
+						$rowid = $row;
 					}
-					$usersConfig->set('rowid', $row);
-					$rowid = $row;
 					break;
 				case 'element':
 					//{fabrik view=element list=3 rowid=364 element=fielddatatwo}
@@ -210,11 +219,6 @@ class plgContentFabrik extends JPlugin
 				case 'showfilters':
 					$showfilters = $m[1];
 					break;
-					/*case 'subview':
-					 $subview = $m[1];
-					 //for viz to define subview
-					 JRequest::setVar('subview', $subview);
-					 break;*/
 
 					// $$$ rob for these 2 grab the qs var in priority over the plugin settings
 				case 'clearfilters':
@@ -231,8 +235,11 @@ class plgContentFabrik extends JPlugin
 					}
 			}
 		}
+		//get the rowid in the session so that print pages can use it
+		$rowid = $session->get('fabrik.plgcontent.rowid', $rowid);
 		if ($viewName == 'table')
-		{ //some backwards compat with fabrik 2
+		{
+			//some backwards compat with fabrik 2
 			$viewName = 'list';
 		}
 		//moved out of switch as otherwise first plugin to use this will effect all subsequent plugins
@@ -515,10 +522,10 @@ class plgContentFabrik extends JPlugin
 
 	/**
 	 * get the model
-	 * @param object controller
-	 * @param string $viewName
-	 * @param int id
-	 * @return mixed model or false
+	 * @param	object	controller
+	 * @param	string	$viewName
+	 * @param	int		id
+	 * @return	mixed	model or false
 	 */
 
 	protected function getModel(&$controller, $viewName, $id)
@@ -554,9 +561,9 @@ class plgContentFabrik extends JPlugin
 
 	/**
 	 * get a view
-	 * @param object controller
-	 * @param string $viewName
-	 * @param int id
+	 * @param	object	controller
+	 * @param	string	$viewName
+	 * @param	int		id
 	 */
 
 	protected function getView(&$controller, $viewName, $id)
@@ -573,8 +580,8 @@ class plgContentFabrik extends JPlugin
 	/**
 	 * get the viz plugin name
 	 *
-	 * @param int $id
-	 * @return string viz plugin name
+	 * @param	int		$id
+	 * @return	string	viz plugin name
 	 */
 
 	protected function getPluginVizName($id)
@@ -648,8 +655,7 @@ class plgContentFabrik extends JPlugin
 
 	/**
 	 * load the required fabrik files
-	 *
-	 * @param string $view
+	 * @param	string	$view
 	 */
 
 	protected function generalIncludes($view)

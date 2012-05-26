@@ -416,7 +416,7 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 
 	protected function getElementBeforeLabel()
 	{
-		return (bool)$this->getParams()->get('radio_element_before_label', true);
+		return (bool) $this->getParams()->get('radio_element_before_label', true);
 	}
 
 	/**
@@ -433,19 +433,19 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 
 	/**
 	 * determines the value for the element in the form view
-	 * @param array data
-	 * @param int when repeating joinded groups we need to know what part of the array to access
-	 * @param array options
+	 * @param	array	data
+	 * @param	int		when repeating joinded groups we need to know what part of the array to access
+	 * @param	array	options
 	 */
 
 	function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		$data = (array)$data;
+		$data = (array) $data;
 		if (!isset($this->defaults))
 		{
 			$this->defaults = array();
 		}
-		$valueKey = $repeatCounter.serialize($opts);
+		$valueKey = $repeatCounter . serialize($opts);
 		if (!array_key_exists($valueKey, $this->defaults))
 		{
 			$value = '';
@@ -483,7 +483,8 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 					{
 						$value = $data['join'][$joinid][$name];
 					}
-					else {
+					else
+					{
 						if (array_key_exists('join', $data) && array_key_exists($joinid, $data['join']) && is_array($data['join'][$joinid]) && array_key_exists($rawname, $data['join'][$joinid]))
 						{
 							$value = $data['join'][$joinid][$rawname];
@@ -516,18 +517,6 @@ class plgFabrik_ElementList extends plgFabrik_Element{
 				}
 				else
 				{
-					// $$$ rob - default should be an array (otherwise default options for database join element are not used)
-					/* if (array_key_exists($name, $data)) {
-						if (is_array($data[$name])) {
-					//occurs on form submission for fields at least
-					$default = $data[$name];
-					} else {
-					//occurs when getting from the db
-					//$$$ rob changed to false below as when saving encrypted data a stored valued of 62
-					// was being returned as [62], then [[62]] etc.
-					$default = FabrikWorker::JSONtoData($data[$name], false);
-					}
-					} */
 					if (array_key_exists($name, $data))
 					{
 						$value = $data[$name]; //put this back in for radio button after failed validation not picking up previously selected option

@@ -27,16 +27,15 @@ class FabrikViewList extends JView{
 		$listid = $model->getId();
 		$formModel = $model->getFormModel();
 		$elementsNotInTable = $formModel->getElementsNotInList();
-
 		if ($model->requiresSlimbox())
 		{
 			FabrikHelperHTML::slimbox();
 		}
-
-		$src = $this->get('PluginJsClasses');
+		$frameworkJsFiles = FabrikHelperHTML::framework();
+		$src = $model->getPluginJsClasses($frameworkJsFiles);
 		array_unshift($src, 'media/com_fabrik/js/list.js');
 		array_unshift($src, 'media/com_fabrik/js/advanced-search.js');
-		
+
 		$model->getCustomJsAction($src);
 
 		FabrikHelperHTML::script($src);
@@ -45,10 +44,10 @@ class FabrikViewList extends JView{
 
 		$this->get('ListCss');
 		// check for a custom js file and include it if it exists
-		$aJsPath = JPATH_SITE . "/components/com_fabrik/views/list/tmpl/" . $tmpl . "javascript.js";
+		$aJsPath = JPATH_SITE . '/components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js';
 		if (JFile::exists($aJsPath))
 		{
-			FabrikHelperHTML::script('components/com_fabrik/views/list/tmpl/'.$tmpl.'/javascript.js');
+			FabrikHelperHTML::script('components/com_fabrik/views/list/tmpl/' . $tmpl . '/javascript.js');
 		}
 
 		$origRows = $this->rows;
@@ -63,8 +62,8 @@ class FabrikViewList extends JView{
 		$params = $model->getParams();
 		$opts = new stdClass();
 		$opts->admin = $app->isAdmin();
-		$opts->ajax = (int)$model->isAjax();
-		$opts->ajax_links = (bool)$params->get('list_ajax_links', $opts->ajax);
+		$opts->ajax = (int) $model->isAjax();
+		$opts->ajax_links = (bool) $params->get('list_ajax_links', $opts->ajax);
 
 		$opts->links = array('detail' => $params->get('detailurl'), 'edit' => $params->get('editurl'), 'add' => $params->get('addurl'));
 		$opts->filterMethod = $this->filter_action;
@@ -76,7 +75,6 @@ class FabrikViewList extends JView{
 		{
 			$l = strip_tags($l);
 		}
-
 		$opts->labels = $labels;
 		$opts->primaryKey = $item->db_primary_key;
 		$opts->Itemid = $tmpItemid;
@@ -89,27 +87,27 @@ class FabrikViewList extends JView{
 		$opts->formels = $elementsNotInTable;
 		$opts->actionMethod = $params->get('actionMethod');
 		$opts->floatPos = $params->get('floatPos');
-		$opts->csvChoose = (bool)$params->get('csv_frontend_selection');
+		$opts->csvChoose = (bool) $params->get('csv_frontend_selection');
 		$popUpWidth = $params->get('popup_width', '');
 		if ($popUpWidth !== '')
 		{
-			$opts->popup_width = (int)$popUpWidth;
+			$opts->popup_width = (int) $popUpWidth;
 		}
 		$popUpHeight = $params->get('popup_height', '');
 		if ($popUpHeight !== '')
 		{
-			$opts->popup_height = (int)$popUpHeight;
+			$opts->popup_height = (int) $popUpHeight;
 		}
 		$xOffset = $params->get('popup_offset_x', '');
 		if ($xOffset !== '')
 		{ 
-			$opts->popup_offset_x = (int)$xOffset;
+			$opts->popup_offset_x = (int) $xOffset;
 		}
 
 		$yOffset = $params->get('popup_offset_y', '');
 		if ($yOffset !== '')
 		{
-			$opts->popup_offset_y = (int)$yOffset;
+			$opts->popup_offset_y = (int) $yOffset;
 		}
 		$opts->popup_edit_label = $params->get('editlabel', JText::_('COM_FABRIK_EDIT'));
 		$opts->popup_view_label = $params->get('detaillabel', JText::_('COM_FABRIK_VIEW'));
@@ -117,14 +115,14 @@ class FabrikViewList extends JView{
 		$opts->limitLength = $model->limitLength;
 		$opts->limitStart = $model->limitStart;
 		$csvOpts = new stdClass();
-		$csvOpts->excel = (int)$params->get('csv_format');
-		$csvOpts->inctabledata = (int)$params->get('csv_include_data');
-		$csvOpts->incraw = (int)$params->get('csv_include_raw_data');
-		$csvOpts->inccalcs = (int)$params->get('csv_include_calculations');
+		$csvOpts->excel = (int) $params->get('csv_format');
+		$csvOpts->inctabledata = (int) $params->get('csv_include_data');
+		$csvOpts->incraw = (int) $params->get('csv_include_raw_data');
+		$csvOpts->inccalcs = (int) $params->get('csv_include_calculations');
 		$opts->csvOpts = $csvOpts;
 
 		$opts->csvFields = $this->get('CsvFields');
-		$csvOpts->incfilters = (int)$params->get('incfilters');
+		$csvOpts->incfilters = (int) $params->get('incfilters');
 
 		$opts->data = $data;
 		//if table data starts as empty then we need the html from the row
@@ -221,7 +219,6 @@ class FabrikViewList extends JView{
 
 	function display($tpl = null)
 	{
-		FabrikHelperHTML::framework();
 		if ($this->getLayout() == '_advancedsearch')
 		{
 			$this->advancedSearch($tpl);
@@ -229,7 +226,6 @@ class FabrikViewList extends JView{
 		}
 		$profiler = JProfiler::getInstance('Application');
 		$app = JFactory::getApplication();
-
 		//force front end templates
 		$tmpl = $this->get('tmpl');
 		$this->_basePath = COM_FABRIK_FRONTEND . '/views';
@@ -238,17 +234,13 @@ class FabrikViewList extends JView{
 
 		require_once(COM_FABRIK_FRONTEND . '/views/modifiers.php');
 		$user = JFactory::getUser();
-
 		$model = $this->getModel();
 		$document = JFactory::getDocument();
-
 		$item = $model->getTable();
 		$data = $model->render();
-
 		$w = new FabrikWorker();
 
 		//add in some styling short cuts
-
 		$c = 0;
 		$form = $model->getFormModel();
 		$nav = $this->get('Pagination');
@@ -264,8 +256,8 @@ class FabrikViewList extends JView{
 				$o->data = $data[$groupk][$i];
 				$o->cursor = $num_rows + $nav->limitstart;
 				$o->total = $nav->total;
-				$o->id = 'list_' . $model->getRenderContext() . '_row_'. @ $o->data->__pk_val;
-				$o->class = "fabrik_row oddRow".$c;
+				$o->id = 'list_' . $model->getRenderContext() . '_row_' . @$o->data->__pk_val;
+				$o->class = 'fabrik_row oddRow' . $c;
 				$data[$groupk][$i] = $o;
 				$c = 1 - $c;
 				$num_rows ++;
@@ -278,25 +270,7 @@ class FabrikViewList extends JView{
 			foreach ($elementModels as $elementModel)
 			{
 				$elementModel->setContext($groupModel, $form, $model);
-				$col = $elementModel->getFullName(false, true, false);
-				$col .= '_raw';
-				$rowclass = $elementModel->getParams()->get('use_as_row_class');
-				if ($rowclass == 1)
-				{
-					foreach ($data as $groupk => $group)
-					{
-						for ($i = 0; $i < count($group); $i++)
-						{
-							$c = preg_replace('/[^A-Z|a-z|0-9]/', '-', $data[$groupk][$i]->data->$col);
-							// $$$ rob 24/02/2011 can't have numeric class names so prefix with element name
-							if (is_numeric($c))
-							{
-								$c = $elementModel->getElement()->name . $c;
-							}
-							$data[$groupk][$i]->class .= " " . $c;
-						}
-					}
-				}
+				$rowclass = $elementModel->setRowClass($data);
 			}
 		}
 		$this->rows = $data;
@@ -420,6 +394,7 @@ class FabrikViewList extends JView{
 		$this->assign('filterMode', (int) $params->get('show-table-filters'));
 		$this->assign('toggleFilters', ($this->filterMode == 2 || $this->filterMode == 4));
 		$this->assign('showFilters', $this->get('showFilters'));
+		$this->showClearFilters = ($this->showFilters || $params->get('advanced-filter')) ? true : false;
 		$this->assign('emptyDataMessage', $this->get('EmptyDataMsg'));
 		$this->assignRef('groupheadings', $groupHeadings);
 		$calculations = $this->_getCalculations($this->headings, $params->get('actionMethod'));
@@ -464,6 +439,8 @@ class FabrikViewList extends JView{
 	 */
 	protected function buttons()
 	{
+		$model = $this->getModel();
+		$params = $model->getParams();
 		$this->buttons = new stdClass();
 		$buttonProperties = array('class' => 'fabrikTip', 'opts' => "{notice:true}", 'title' => '<span>'.JText::_('COM_FABRIK_EXPORT_TO_CSV').'</span>');
 		$buttonProperties['alt'] = JText::_('COM_FABRIK_EXPORT_TO_CSV');
@@ -486,8 +463,8 @@ class FabrikViewList extends JView{
 		$buttonProperties['alt'] = JText::_('COM_FABRIK_FILTER');
 		$this->buttons->filter = FabrikHelperHTML::image('filter.png', 'list', $this->tmpl, $buttonProperties);
 
-		$buttonProperties['title'] = '<span>'.JText::_('COM_FABRIK_ADD').'</span>';
-		$buttonProperties['alt'] = JText::_('COM_FABRIK_ADD');
+		$buttonProperties['title'] = '<span>' . $params->get('addlabel', JText::_('COM_FABRIK_ADD')) . '</span>';
+		$buttonProperties['alt'] = $params->get('addlabel', JText::_('COM_FABRIK_ADD'));
 		$this->buttons->add = FabrikHelperHTML::image('add.png', 'list', $this->tmpl, $buttonProperties);
 	}
 
@@ -503,7 +480,8 @@ class FabrikViewList extends JView{
 		$modelCals = $model->getCalculations();
 		foreach ($aCols as $key => $val)
 		{
-			if ($key == 'fabrik_actions' && $method == 'floating') {
+			if ($key == 'fabrik_actions' && $method == 'floating')
+			{
 				continue;
 			}
 			$calc = '';
@@ -516,7 +494,7 @@ class FabrikViewList extends JView{
 				$found = true;
 				$res = $modelCals['sums'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", '___', $key) . "_calc_sum";
+				$tmpKey = str_replace('.', '___', $key) . '_calc_sum';
 				$oCalcs->$tmpKey = $res;
 			}
 			if (array_key_exists($key . '_obj', $modelCals['sums']))
@@ -537,7 +515,7 @@ class FabrikViewList extends JView{
 				$found = true;
 				$res = $modelCals['avgs'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", '___', $key) . "_calc_average";
+				$tmpKey = str_replace('.', '___', $key) . '_calc_average';
 				$oCalcs->$tmpKey = $res;
 			}
 
@@ -554,7 +532,8 @@ class FabrikViewList extends JView{
 				}
 			}
 
-			if (array_key_exists($key. '_obj', $modelCals['medians'])) {
+			if (array_key_exists($key . '_obj', $modelCals['medians']))
+			{
 				$found = true;
 				$res = $modelCals['medians'][$key. '_obj'];
 				foreach ($res as $k => $v)
@@ -571,14 +550,14 @@ class FabrikViewList extends JView{
 				$found = true;
 				$res = $modelCals['medians'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", '___', $key) . "_calc_median";
+				$tmpKey = str_replace('.', '___', $key) . "_calc_median";
 				$oCalcs->$tmpKey = $res;
 			}
 
-			if (array_key_exists($key. '_obj', $modelCals['count']))
+			if (array_key_exists($key . '_obj', $modelCals['count']))
 			{
 				$found = true;
-				$res = $modelCals['count'][$key. '_obj'];
+				$res = $modelCals['count'][$key . '_obj'];
 				foreach ($res as $k => $v)
 				{
 					if ($k != 'calc')
@@ -592,15 +571,15 @@ class FabrikViewList extends JView{
 			{
 				$res = $modelCals['count'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", '___', $key) . "_calc_count";
+				$tmpKey = str_replace('.', '___', $key) . "_calc_count";
 				$oCalcs->$tmpKey = $res;
 				$found = true;
 			}
 
-			if (array_key_exists($key. '_obj', $modelCals['custom_calc']))
+			if (array_key_exists($key . '_obj', $modelCals['custom_calc']))
 			{
 				$found = true;
-				$res = $modelCals['custom_calc'][$key. '_obj'];
+				$res = $modelCals['custom_calc'][$key . '_obj'];
 				foreach ($res as $k => $v)
 				{
 					if ($k != 'calc')
@@ -614,12 +593,12 @@ class FabrikViewList extends JView{
 			{
 				$res = $modelCals['custom_calc'][$key];
 				$calc .= $res;
-				$tmpKey = str_replace(".", '___', $key) . "_calc_custom_calc";
+				$tmpKey = str_replace('.', '___', $key) . "_calc_custom_calc";
 				$oCalcs->$tmpKey = $res;
 				$found = true;
 			}
 
-			$key = str_replace(".", '___', $key);
+			$key = str_replace('.', '___', $key);
 			$oCalcs->calc = $calc;
 			$aData[$key] = $oCalcs;
 		}
@@ -686,7 +665,8 @@ class FabrikViewList extends JView{
 		$this->hiddenFields[] = '<input type="hidden" name="incfilters" value="1" />';
 
 		// $$$ hugh - testing social profile hash stuff
-		if (JRequest::getVar('fabrik_social_profile_hash', '') != '') {
+		if (JRequest::getVar('fabrik_social_profile_hash', '') != '')
+		{
 			$this->hiddenFields[] = '<input type="hidden" name="fabrik_social_profile_hash" value="'. JRequest::getVar('fabrik_social_profile_hash') .'" />';
 		}
 		$this->hiddenFields = implode("\n", $this->hiddenFields);
@@ -694,8 +674,11 @@ class FabrikViewList extends JView{
 
 	protected function advancedSearch($tpl)
 	{
-		$id = $this->getModel()->getState('list.id');
+		$model = $this->getModel();
+		$id = $model->getState('list.id');
 		$this->assign('tmpl', $this->get('tmpl'));
+		$model->setRenderContext($id);
+		$this->listref = $model->getRenderContext();
 		//advanced search script loaded in list view - avoids timing issues with ie loading the ajax content and script
 		$rows = $this->get('advancedSearchRows');
 		$this->assignRef('rows', $rows);

@@ -15,8 +15,6 @@ defined('_JEXEC') or die();
 //require the abstract plugin class
 require_once(COM_FABRIK_FRONTEND . '/models/plugin-cron.php');
 
-
-//require_once(JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps.php');
 require_once(JPATH_SITE . '/plugins/fabrik_cron/geocode/libs/gmaps2.php');
 
 class plgFabrik_CronGeocode extends plgFabrik_Cron {

@@ -248,7 +248,7 @@ Fabrik.Window = new Class({
 			//as iframe content may not be on the same domain we CAN'T guarentee access to its body element to work out its dimensions
 			var contentEl = this.window.getElement('.itemContent');
 			var h = contentEl.getScrollSize().y < window.getHeight() ? contentEl.getScrollSize().y : window.getHeight();
-			var w = contentEl.getScrollSize().x + 40 < window.getWidth() ? contentEl.getScrollSize().x + 40 : window.getWidth();
+			var w = contentEl.getScrollSize().x + 17 < window.getWidth() ? contentEl.getScrollSize().x + 17 : window.getWidth();
 			this.window.setStyle('height', h);
 			this.window.setStyle('width', w);
 		}
