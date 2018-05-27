@@ -223,7 +223,7 @@ class PlgFabrik_ElementBirthday extends PlgFabrik_Element
 					{
 						if ($fd != '{age}' && $dateAndAge == 1)
 						{
-							$detailValue .= ' (' . ($ageYear - $year) . ')';
+							$detailValue .= ' (' . ($ageYear - intval($year)) . ')';
 						}
 					}
 				}
